@@ -1,0 +1,432 @@
+<!doctype html>
+<html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml" manifest="videoskip.appcache">
+<head>
+<meta charset="UTF-8">
+<title>Video Skip player</title>
+<meta name="Description" content="Video Skip player">
+<meta name="author" content="F. Ruiz">
+<meta name="robots" content="index">
+<link rel="shortcut icon" type="image/x-icon" href="favicon.png">
+
+<style>
+video {
+    display: block;
+}
+input[type=checkbox] {
+	/* Larger checkboxes */
+	-ms-transform: scale(1.7); /* IE */
+	-moz-transform: scale(1.7); /* FF */
+	-webkit-transform: scale(1.7); /* Safari and Chrome */
+	-o-transform: scale(1.7); /* Opera */
+	padding: 0px;
+	cursor: pointer;
+	border: 1px solid #dedede;
+}
+.info {
+    background-color: palegreen;            
+}
+.error {
+    background-color: red;
+    color: white;
+}
+#skipBox {
+	height: 300px;
+	width: 280px;
+}
+#videoFile {
+	display: none;
+}
+#subFile {
+	display: none;
+}
+#skipFile {
+	display: none;
+}
+.cssbutton {
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	font-family: Arial;
+	font-size: 18px;
+	padding: 12px;
+	text-decoration: none;
+	border: 0px;
+	color: #555555;
+	background: #e6e6e6;
+}
+.cssbutton:hover {
+	text-decoration: none;
+	cursor: pointer;
+	background: #c4c4c4;
+}
+.small {
+	font-size: 12px;
+	padding: 9px;
+}
+#credits {
+	font-size: xx-small;
+}
+</style>
+
+<script>
+        /*
+		@source: https://github.com/fruiz500/VideoSkip
+
+        @licstart  The following is the entire license notice for the
+        JavaScript code in this page.
+
+        Copyright (C) 2020  Francisco Ruiz
+
+        The JavaScript code in this page is free software: you can
+        redistribute it and/or modify it under the terms of the GNU
+        General Public License (GNU GPL) as published by the Free Software
+        Foundation, either version 3 of the License, or (at your option)
+        any later version.  The code is distributed WITHOUT ANY WARRANTY;
+        without even the implied warranty of MERCHANTABILITY or FITNESS
+        FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+        As additional permission under GNU GPL version 3 section 7, you
+        may distribute non-source (e.g., minimized or compacted) forms of
+        that code without the copy of the GNU GPL normally required by
+        section 4, provided you include this license notice and a URL
+        through which recipients can access the Corresponding Source.
+
+
+        @licend  The above is the entire license notice
+        for the JavaScript code in this page.
+        */
+
+    if (window.location.protocol == "http:") {				//force SSL/TLS
+
+        var restOfUrl = window.location.href.substr(5);
+        window.location = "https:" + restOfUrl;
+    }
+</script>
+
+</head>
+
+<body>                    
+	<h2>Video Skip Player</h2>
+    <p>v 0.1 &nbsp;&#169; F. Ruiz 2020</p>
+<div id="videoMsg">Load video file with left button, VTT subtitles with right button</div>
+<br>
+<label for="videoFile" title="load mp4, ogg, webm video file"><span class="cssbutton" id="videoFileBtn" title="load mp4, ogg, webm video file">Load video</span></label>
+<input type="file" id="videoFile" title="load mp4, ogg, webm video file" accept="video/*"/>
+<label for="subFile" title="load vtt subtitles"><span class="cssbutton" id="subFileBtn" title="load vtt subtitles">Load subtitles</span></label>
+<input type="file" id="subFile" title="load vtt subtitles"/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button id="help" class="cssbutton" title="toggle instructions">Help</button><br>
+<br>
+<video controls disablePictureInPicture id="myVideo"></video>
+    <br>
+    Select the content to skip:
+    <br><br>
+    <div>
+    &nbsp;&nbsp;
+    <input type="checkbox" id="sexMode"/>&nbsp;Sex and Nudity&nbsp;&nbsp;
+    <input type="checkbox" id="violenceMode"/>&nbsp;Violence and Gore&nbsp;&nbsp;
+    <input type="checkbox" id="curseMode"/>&nbsp;Profanity and Hate&nbsp;&nbsp;
+    <input type="checkbox" id="boozeMode"/>&nbsp;Alcohol, Drugs and Smoking&nbsp;&nbsp;
+    <input type="checkbox" id="scareMode"/>&nbsp;Frightening and Intense&nbsp;&nbsp;
+    <input type="checkbox" id="otherMode"/>&nbsp;Other
+    </div>
+    <br>
+    <div id="boxMsg">Load here the .skp file containing the skips:</div>
+    <br>
+    <label for="skipFile" title="load skip file"><span class="cssbutton" id="skipFileBtn" title="load skip file">Load skip file</span></label>
+	<input type="file" id="skipFile"/>
+    <br><br>
+    Edit skips&nbsp;&nbsp;
+    <button id="time" class="cssbutton small">Insert time</button>
+    <button id="arrow" class="cssbutton small">Insert arrow</button>
+    <button id="saveFile" class="cssbutton small">Save</button>
+    <br>
+	<textarea id="skipBox" rows="10"></textarea>
+    <br>
+<div id="instructions">
+  <h2>Instructions</h2>   
+<p> This little app allows you to filter out several types of objectionable content from video files. It uses the same categories as the &quot;Parents Guide&quot; section of IMDB.com. It can skip sections entirely, or simply mute the sound or blank the video, at your discretion.</p>
+<p>Step by step:</p>
+<ol>
+  <li>Load the video from a local file using the &quot;Load video&quot; button. Because the video must be playable in a browser, it can take .mp4, .ogg, and .webm formats. You can save videos from streaming sources in these formats, rip a disc using software, or convert video files into these formats from a different format (more information below).</li>
+  <li>Optionally, load a file containing subtitles using the &quot;Load subtitles&quot; button next to it. Subtitles must be in .vtt format. They will show as &quot;English&quot; but never mind.</li>
+  <li>Toggle the category filters using the checkboxes below the video frame. A check means that the filter is on and content labeled accordingly will be skipped or blanked out. Otherwise it will be shown.</li>
+  <li>If you have a file containing the skips, you can load it now with the &quot;Load skip file&quot; button. Once loaded, its contents will appear in the box. Each skip consists of  beginning and end times relative to the start of the video, with an arrow between them, and on the line below a category plus maybe a handling label (such as &quot;video&quot; or &quot;audio&quot;).</li>
+  <li>If you want to change something in the list of skips, go right ahead. There's a button to insert the current time on the video (the video itself has a scroll bar to get there), and a correctly formatted &quot;arrow&quot; if you feel lazy. There's also a button to save your edited skip list.</li>
+  <li>Click the play button on the video, and maybe the fullscreen button, sit back, and enjoy. Skips will take place when their time arrives.</li>
+</ol>
+<p>Getting the video files:</p>
+<ul>
+  <li>If you are using a streaming service, these often allow you to pre-download the complete video in order to avoid stuttering on low-badwidth connections. YouTube and Vimeo videos are very easy to get this way (Google it), but other services may use copy-protection schemes that will need to be removed before you can use the file.</li>
+  <li>If the video is in a DVD or BlueRay disc that your own, there are excellent programs that will extract the data into whatever format you choose. Currently my favorite is Handbrake, available for <a href="https://handbrake.en.softonic.com/" target="_blank">Windows</a> and for <a href="https://handbrake.en.softonic.com/mac" target="_blank">Mac</a>.</li>
+  <li>Or you may have an old avi, mkv, or some other format. Handbrake can also convert the file from those formats into mp4. A feature film may take an hour of processing. There are online converters as well, but they usually limit how much processing you can do in one day.</li>
+  <li>Another way to get them is by sharing with others, via BitTorrent or similar protocol. Be advised that this is not always legal.</li>
+  <li>Subtitle files in .srt format are very easy to find online, but this app takes .vtt format. No problem, because conversion is quick and easy using an online utility like <a href="https://atelier.u-sub.net/srt2vtt/" target="_blank">this one</a>.</li>
+</ul>
+<p>Making your own skips:</p>
+<ul>
+  <li>As mentioned above, inserting new skips is as easy as scrolling to the point where the skip/mute/blank is supposed to begin, clicking the &quot;Insert time&quot; button on a new line, then the &quot;Insert arrow&quot; button, scrolling to the point where the skip is to end, clicking the &quot;Insert time&quot; button once more, and then going to the next line and writing a content and (optionally) handling label.</li>
+  <li>Content labels are case-insensitive. They consist of any word (actually, the first three letters are enough) of the IMDB categories, which are displayed next to the checkboxes, such as &quot;sex&quot;, &quot;nudity&quot;, &quot;gore&quot;, &quot;drugs&quot;, etc. Handling labels are these words: &quot;audio&quot;, &quot;sound&quot;, &quot;video&quot;, &quot;image&quot; (or the first three letters of each, including &quot;img&quot;) also case-insensitive.</li>
+  <li>The &quot;audio&quot; or &quot;sound&quot; keywords will cause the sound to be muted during the given interval while the video is still shown, rather than skipping the section entirely, which might be useful for removing profanity. The &quot;video&quot; and &quot;image&quot; keywords cause the image to blank out while the sound still plays, which might be useful for instances of nudity, etc. No handling keyword means that the section will be completely skipped.</li>
+  <li>Everything is editable in the box. Use this to fine-tune timings. For instance, words to be muted typically take a lot less than a second.</li>
+  <li>The Insert buttons put things always at the end of the list. You may want to cut and paste text in order to put skips in the correct order. In any case, skips will be made at the right times even though they are not in sequence on the list.</li>
+  <li>The Save button will save your list in text format in your default Download folder. You will have to move it from there to the folder where you want it.</li>
+  </ul>
+<p>Sample skip, which will cause the screen to blank out from 14 minutes, 8.27 seconds from the start of the movie until 14 minutes, 14 seconds, while the sound still plays, if &quot;Sex and Nudity&quot; is checked:</p>
+<p>0:14:08.27 --&gt; 0:14:14<br>
+  nude image</p>
+<p>Legal Notice: Content copyright owners and distributors are hereby informed that users and developers of this software are exercising their right of free speech, guaranteed by law in many nations, by voluntarily refraining from seeing or hearing content without modifying said content in any way. Legal action that ignores this notice will be considered harassment and infringement of basic rights, and prosecuted according to the law.</p>
+<div id='credits'>
+<div>Favicon made by <a href="https://www.flaticon.com/authors/smashicons" title="Smashicons">Smashicons</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+</div>
+</div>
+<script>
+//to load video from local file, by Dimitar Bonev, as answered on StackOverflow. Also https://jsfiddle.net/dsbonev/cCCZ2/
+(function localFileVideoPlayer() {
+  var URL = window.URL || window.webkitURL;
+  var playSelectedFile = function (event) {
+    var file = this.files[0]
+    var type = file.type
+    var videoNode = document.querySelector('video')
+    var canPlay = videoNode.canPlayType(type)
+    if (canPlay === '') canPlay = 'no'
+    var message = 'Can play type "' + type + '": ' + canPlay
+    var isError = canPlay === 'no'
+    displayMessage(message, isError)
+
+    if (isError) {
+      return
+    }
+
+    var fileURL = URL.createObjectURL(file)
+    videoNode.src = fileURL
+  }
+  var inputNode = document.querySelector('input')
+  inputNode.addEventListener('change', playSelectedFile, false)
+})();
+
+var displayMessage = function (message, isError) {
+    var element = document.querySelector('#videoMsg')
+    element.innerHTML = message
+    element.className = isError ? 'error' : 'info'
+  }
+
+var fileName = '';		//global variable with name of skip file, minus extension
+
+//this one loads the edits file
+function loadFileAsURL(){
+	var fileToLoad = skipFile.files[0],
+		fileReader = new FileReader();
+	fileReader.onload = function(fileLoadedEvent){
+		var URLFromFileLoaded = fileLoadedEvent.target.result;
+		if(fileToLoad.name.slice(-4) == ".skp"){
+			skipBox.value = URLFromFileLoaded;
+			fileName = fileToLoad.name
+		}else{
+			boxMsg.textContent = "wrong file type"
+		}
+	};
+	fileReader.readAsText(fileToLoad);
+	boxMsg.textContent = 'This is the content of file: ' + fileToLoad.name;
+	setTimeout(function(){cuts = PF_SRT.parse(skipBox.value)},1000)				//give it a whole second to load before data is extracted to memory
+}
+
+//similar, for loading subtitles
+function loadSubs(){
+	var fileToLoad = subFile.files[0],
+		fileReader = new FileReader();
+	fileReader.onload = function(fileLoadedEvent){
+		var URLFromFileLoaded = fileLoadedEvent.target.result;
+		if(fileToLoad.name.slice(-4) == ".vtt"){						//allow only .vtt format
+			track = document.createElement("track");
+			track.kind = "captions";
+  			track.label = "English";
+   			track.srclang = "en";
+			var trackBlob = new Blob([URLFromFileLoaded], {"type": 'text/plain'});
+			track.src = URL.createObjectURL(trackBlob);
+			track.addEventListener("load", function(){
+				this.mode = "showing";
+				myVideo.textTracks[0].mode = "showing"; // thanks Firefox
+			});
+			myVideo.appendChild(track);
+			displayMessage("Subtitles loaded",false)
+		}else{
+			displayMessage("Only vtt subs are supported",true)
+		}
+	};
+	fileReader.readAsText(fileToLoad)
+}
+
+// Function to download data to a file, from StackOverflow
+function download(data, filename, type) {
+    var file = new Blob([data], {"type": type});
+    if (window.navigator.msSaveOrOpenBlob) // IE10+
+        window.navigator.msSaveOrOpenBlob(file, filename);
+    else { // Others
+        var a = document.createElement("a"),
+                url = URL.createObjectURL(file);
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        setTimeout(function() {
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);  
+        }, 0); 
+    }
+}
+
+//to parse the content of the skip box in something close to .srt format, from StackOverflow
+var PF_SRT = function() {
+  //SRT format
+  var pattern = /([\d:,.]+)\s+-{2}\>\s+([\d:,.]+)\n([\s\S]*?(?=\n{2}|$))?/gm;		//no item number, can use decimal dot instead of comma
+  var _regExp;
+
+  var init = function() {
+    _regExp = new RegExp(pattern);
+  };
+  var parse = function(f) {
+    if (typeof(f) != "string")
+      throw "Sorry, the parser accepts only strings";
+
+    var result = [];
+    if (f == null)
+      return _subtitles;
+
+    f = f.replace(/\r\n|\r|\n/g, '\n')
+
+    while ((matches = pattern.exec(f)) != null) {
+      result.push(toLineObj(matches));
+    }
+    return result;
+  }
+  var toLineObj = function(group) {
+    return {
+      startTime: group[1],
+      endTime: group[2],
+      text: group[3]
+    };
+  }
+  init();
+  return {
+    parse: parse
+  }
+}();
+
+//to put seconds into hour:minute:second format
+function toHMS(seconds) {
+	var hours = Math.floor(seconds / 3600);
+	seconds -= hours * 3600;
+    var minutes = Math.floor(seconds / 60);
+    minutes = (minutes >= 10) ? minutes : "0" + minutes;
+    seconds = Math.floor((seconds % 60) * 100) / 100;			//precision is 0.01 s
+    seconds = (seconds >= 10) ? seconds : "0" + seconds;
+    return hours + ":" + minutes + ":" + seconds;
+}
+  
+//the opposite: hour:minute:second string to decimal seconds
+function fromHMS(timeString){
+	timeString = timeString.replace(/,/,".");			//in .srt format, decimal seconds use a comma
+	var time = timeString.split(":");
+	if(time.length == 3){							//has hours
+		return parseInt(time[0])*3600 + parseInt(time[1])*60 + parseInt(time[2])
+	}else if(time.length == 2){					//minutes and seconds
+		return parseInt(time[0])*60 + parseInt(time[1])
+	}else{											//only seconds
+		return parseInt(time[0])
+	}
+}
+
+//insert things in box
+function writeTime(){
+	skipBox.value += toHMS(myVideo.currentTime)
+}
+function writeArrow(){
+	skipBox.value += ' --> '
+}
+
+//toggles instructions on and off
+function toggleHelp(){
+	if(instructions.style.display == 'none'){
+		instructions.style.display = 'block'
+	}else{
+		instructions.style.display = 'none'
+	}
+}
+
+skipFile.addEventListener('change', loadFileAsURL);
+
+subFile.addEventListener('change', loadSubs);
+
+time.addEventListener('click', writeTime);
+
+arrow.addEventListener('click', writeArrow);
+
+instructions.style.display = 'none';
+help.addEventListener('click', toggleHelp);
+
+saveFile.addEventListener('click', function(){
+	if(fileName){
+		var name = fileName
+	}else{
+		var name = prompt('Enter the file name. Extension .skp wil be added');
+		fileName = name + '.skp'
+	}
+	if(name){
+		download(skipBox.value,name,"text/plain")
+		boxMsg.textContent = 'File saved with name ' + name
+	}else{
+		boxMsg.textContent = 'File save canceled'
+	}
+})
+
+var cuts = [];				//global variable containing the cuts, each array element is an object with this format {startTime,endTime,text}
+
+skipBox.addEventListener('change', function(){cuts = PF_SRT.parse(skipBox.value)})
+
+//function to skip video
+myVideo.ontimeupdate = function(){
+	for(var i = 0; i < cuts.length; i++){
+		var startTime = fromHMS(cuts[i].startTime),
+			endTime = fromHMS(cuts[i].endTime),
+			label = cuts[i].text,
+			isAudio = (label.toLowerCase().match(/aud|sou/) != null),
+			isVideo = (label.toLowerCase().match(/vid|ima|img/) != null);
+		if(!isAudio && !isVideo){
+			if(myVideo.currentTime > startTime && myVideo.currentTime < endTime && isSkipped(label)) myVideo.currentTime = endTime			//skip range
+		}else if(isAudio){
+			myVideo.muted = myVideo.currentTime > startTime && myVideo.currentTime < endTime && isSkipped(label);								//mute range
+			if(myVideo.textTracks.length > 0){																										//mute subtitles
+				if(myVideo.currentTime > startTime && myVideo.currentTime < endTime && isSkipped(label)){
+					myVideo.textTracks[0].mode = 'disabled'
+				}else{
+					myVideo.textTracks[0].mode = 'showing'
+				}
+			}
+		}else{
+			myVideo.style.opacity = (myVideo.currentTime > startTime && myVideo.currentTime < endTime && isSkipped(label)) ? "0" : ""			//blank range
+		}
+	}	
+}
+
+//function to decide whether a particular content is to be skipped. Allows alternative and incomplete keywords
+function isSkipped(label){
+	if(label.toLowerCase().match(/sex|nud/) && sexMode.checked){
+		return true
+	}else if(label.toLowerCase().match(/vio|gor/) && violenceMode.checked){
+		return true
+	}else if(label.toLowerCase().match(/pro|wor|cur|hat/) && curseMode.checked){
+		return true
+	}else if(label.toLowerCase().match(/alc|dru|smo/) && boozeMode.checked){
+		return true
+	}else if(label.toLowerCase().match(/fri|sca|int/) && scareMode.checked){
+		return true
+	}else if(label.toLowerCase().match(/oth|bor/) && otherMode.checked){
+		return true
+	}else{
+		return false
+	}
+}
+
+  </script>
+</body>
+</html>
