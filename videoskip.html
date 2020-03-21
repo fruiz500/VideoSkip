@@ -148,7 +148,7 @@ input[type=checkbox] {
 <p>Step by step:</p>
 <ol>
   <li>Load the video from a local file using the &quot;Load video&quot; button. Because the video must be playable in a browser, it can take .mp4, .ogg, and .webm formats. You can save videos from streaming sources in these formats, rip a disc using software, or convert video files into these formats from a different format (more information below).</li>
-  <li>Optionally, load a file containing subtitles using the &quot;Load subtitles&quot; button next to it. Subtitles must be in .vtt format. They will show as &quot;English&quot; but never mind.</li>
+  <li>Optionally, load a file containing subtitles using the &quot;Load subtitles&quot;. Subtitles must be in .vtt format. They may show as &quot;English&quot; but never mind.</li>
   <li>Toggle the category filters using the checkboxes below the video frame. A check means that the filter is on and content labeled accordingly will be skipped or blanked out. Otherwise it will be shown.</li>
   <li>If you have a file containing the skips, you can load it now with the &quot;Load skip file&quot; button. Once loaded, its contents will appear in the box. Each skip consists of  beginning and end times relative to the start of the video, with an arrow between them, and on the line below a category plus maybe a handling label (such as &quot;video&quot; or &quot;audio&quot;).</li>
   <li>If you want to change something in the list of skips, go right ahead. There's a button to insert the current time on the video (the video itself has a scroll bar to get there), and a correctly formatted &quot;arrow&quot; if you feel lazy. There's also a button to save your edited skip list.</li>
@@ -239,10 +239,9 @@ function loadSubs(){
 		if(fileToLoad.name.slice(-4) == ".vtt"){						//allow only .vtt format
 			track = document.createElement("track");
 			track.kind = "captions";
-  			track.label = "English";
+  			track.label = "Loaded";
    			track.srclang = "en";
-			var trackBlob = new Blob([URLFromFileLoaded], {"type": 'text/plain'});
-			track.src = URL.createObjectURL(trackBlob);
+			track.src = URL.createObjectURL(fileToLoad);
 			track.addEventListener("load", function(){
 				this.mode = "showing";
 				myVideo.textTracks[0].mode = "showing"; // thanks Firefox
