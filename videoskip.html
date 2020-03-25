@@ -30,8 +30,8 @@ input[type=checkbox] {
     color: white;
 }
 #skipBox {
-	height: 300px;
-	width: 280px;
+	height: 250px;
+	width: 356px;
 }
 #videoFile {
 	display: none;
@@ -62,6 +62,10 @@ input[type=checkbox] {
 .small {
 	font-size: 12px;
 	padding: 9px;
+}
+#fine {
+	font-size: small;
+	color: gray;
 }
 #credits {
 	font-size: xx-small;
@@ -107,12 +111,12 @@ input[type=checkbox] {
 
 <body>                    
 	<h2>Video Skip Player</h2>
-    <p>v 0.1 &nbsp;&#169; F. Ruiz 2020</p>
-<div id="videoMsg">Load video file with left button, VTT subtitles with right button</div>
+    <p>v 0.1.1 &nbsp;&#169; F. Ruiz 2020</p>
+<div id="videoMsg">Load video file with left button, .vtt or .srt subtitles with right button</div>
 <br>
 <label for="videoFile" title="load mp4, ogg, webm video file"><span class="cssbutton" id="videoFileBtn" title="load mp4, ogg, webm video file">Load video</span></label>
 <input type="file" id="videoFile" title="load mp4, ogg, webm video file" accept="video/*"/>
-<label for="subFile" title="load vtt subtitles"><span class="cssbutton" id="subFileBtn" title="load vtt subtitles">Load subtitles</span></label>
+<label for="subFile" title="load vtt, srt subtitles"><span class="cssbutton" id="subFileBtn" title="load vtt subtitles">Load subtitles</span></label>
 <input type="file" id="subFile" title="load vtt subtitles"/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button id="help" class="cssbutton" title="toggle instructions">Help</button><br>
 <br>
@@ -136,11 +140,21 @@ input[type=checkbox] {
 	<input type="file" id="skipFile"/>
     <br><br>
     Edit skips&nbsp;&nbsp;
-    <button id="time" class="cssbutton small">Insert time</button>
-    <button id="arrow" class="cssbutton small">Insert arrow</button>
+    <button id="shiftBtn" class="cssbutton small">Shift skips</button>
+    <button id="timeBtn" class="cssbutton small">Insert time</button>
+    <button id="arrowBtn" class="cssbutton small">Insert arrow</button>
     <button id="saveFile" class="cssbutton small">Save</button>
+        &nbsp;&nbsp;
+    <button id="backBtn"class="cssbutton small">&#9668;</button>
+    <input type="checkbox" id="fineMode"/>&nbsp;<span id="fine">Fine</span>
+    <button id="fwdBtn"class="cssbutton small">&#9658;</button>
+    <button id="shotTimeBtn"class="cssbutton small">Scroll player</button>
+    <button id="moveBtn" class="cssbutton small">Superimpose</button>
+    <button id="syncBtn"class="cssbutton small">Sync times</button>
+    <button id="shotBtn"class="cssbutton small">Take screenshot</button>
     <br>
 	<textarea id="skipBox" rows="10"></textarea>
+    &nbsp;&nbsp;&nbsp;<img id="screenShot">
     <br>
 <div id="instructions">
   <h2>Instructions</h2>   
@@ -148,19 +162,27 @@ input[type=checkbox] {
 <p>Step by step:</p>
 <ol>
   <li>Load the video from a local file using the &quot;Load video&quot; button. Because the video must be playable in a browser, it can take .mp4, .ogg, and .webm formats. You can save videos from streaming sources in these formats, rip a disc using software, or convert video files into these formats from a different format (more information below).</li>
-  <li>Optionally, load a file containing subtitles using the &quot;Load subtitles&quot;. Subtitles must be in .vtt format. They may show as &quot;English&quot; but never mind.</li>
+  <li>Optionally, load a file containing subtitles using the &quot;Load subtitles&quot;. Subtitles must be in .vtt or .srt format. They might show as &quot;English&quot; but never mind.</li>
   <li>Toggle the category filters using the checkboxes below the video frame. A check means that the filter is on and content labeled accordingly will be skipped or blanked out. Otherwise it will be shown.</li>
-  <li>If you have a file containing the skips, you can load it now with the &quot;Load skip file&quot; button. Once loaded, its contents will appear in the box. Each skip consists of  beginning and end times relative to the start of the video, with an arrow between them, and on the line below a category plus maybe a handling label (such as &quot;video&quot; or &quot;audio&quot;).</li>
-  <li>If you want to change something in the list of skips, go right ahead. There's a button to insert the current time on the video (the video itself has a scroll bar to get there), and a correctly formatted &quot;arrow&quot; if you feel lazy. There's also a button to save your edited skip list.</li>
+  <li>If you have a .skp file containing the skips, you can load it now with the &quot;Load skip file&quot; button. Once loaded, its contents will appear in the box, plus perhaps a screenshot on its right. Each skip consists of  beginning and end times relative to the start of the video, with an arrow between them, and on the line below a category plus maybe a handling label (such as &quot;video&quot; or &quot;audio&quot;).</li>
+  <li>If the first line does not contain an arrow, this means it is used for syncing the skips for different versions of the video. The process for syncing, explained below, can be done at this point.</li>
+  <li>If you want to change something in the list of skips, go right ahead. There's a button to insert the current time on the video (the video itself has a scroll bar to get there), and a correctly formatted &quot;arrow&quot; if you feel lazy. There are also buttons for shifting the time of all skips by a given amount, and for saving your edited skip list.</li>
   <li>Click the play button on the video, and maybe the fullscreen button, sit back, and enjoy. Skips will take place when their time arrives.</li>
+  </ol>
+<p>How to sync the skips:</p>
+<ol>
+  <li>There may be a screenshot, but  there is none, likely there is some text below the initial time entry that will tell you what happens in the video at that time. Click the &quot;Scroll player&quot; button to take the video to that time. If the video matches the screenshot (or the literal description, if there is no screenshot), everything is in sync and you're done with this phase. Scroll the video back to the beginning and start watching.</li>
+  <li>But if the video is from a source different from that used to make the sync file, there may be a mismatch. Use the arrow buttons to scroll the video until the screen matches the screenshot or description (frame by frame, if  &quot;Fine&quot; is checked). If there's a screenshot, the &quot;Superimpose&quot; button will put it right on top of the video, so you can see the precise moment when they match.</li>
+  <li>Click the &quot;Sync times&quot; button when video and screenshot match. This will shift all the skips by the right amount, so they wil happen at the correct times.</li>
+  <li>If you had placed a screenshot on top of the video, click &quot;Superimpose&quot; again in order to put it back in its place.</li>
 </ol>
 <p>Getting the video files:</p>
 <ul>
   <li>If you are using a streaming service, these often allow you to pre-download the complete video in order to avoid stuttering on low-badwidth connections. YouTube and Vimeo videos are very easy to get this way (Google it), but other services may use copy-protection schemes that will need to be removed before you can use the file.</li>
   <li>If the video is in a DVD or BlueRay disc that your own, there are excellent programs that will extract the data into whatever format you choose. Currently my favorite is Handbrake, available for <a href="https://handbrake.en.softonic.com/" target="_blank">Windows</a> and for <a href="https://handbrake.en.softonic.com/mac" target="_blank">Mac</a>.</li>
-  <li>Or you may have an old avi, mkv, or some other format. Handbrake can also convert the file from those formats into mp4. A feature film may take an hour of processing. There are online converters as well, but they usually limit how much processing you can do in one day.</li>
+  <li>Or you may have an old .avi, .mkv, or some other format. Handbrake can also convert the file from those formats into .mp4. A feature film may take an hour of processing. There are online converters as well, but they usually limit how much processing you can do in one day.</li>
   <li>Another way to get them is by sharing with others, via BitTorrent or similar protocol. Be advised that this is not always legal.</li>
-  <li>Subtitle files in .srt format are very easy to find online, but this app takes .vtt format. No problem, because conversion is quick and easy using an online utility like <a href="https://atelier.u-sub.net/srt2vtt/" target="_blank">this one</a>.</li>
+  <li>Subtitles in .srt format are very easy to find online. This app will load them in this format, but if you want to convert them to .vtt there are easy online utilities like <a href="https://atelier.u-sub.net/srt2vtt/" target="_blank">this one</a>.</li>
 </ul>
 <p>Making your own skips:</p>
 <ul>
@@ -169,7 +191,8 @@ input[type=checkbox] {
   <li>The &quot;audio&quot; or &quot;sound&quot; keywords will cause the sound to be muted during the given interval while the video is still shown, rather than skipping the section entirely, which might be useful for removing profanity. The &quot;video&quot; and &quot;image&quot; keywords cause the image to blank out while the sound still plays, which might be useful for instances of nudity, etc. No handling keyword means that the section will be completely skipped.</li>
   <li>Everything is editable in the box. Use this to fine-tune timings. For instance, words to be muted typically take a lot less than a second.</li>
   <li>The Insert buttons put things always at the end of the list. You may want to cut and paste text in order to put skips in the correct order. In any case, skips will be made at the right times even though they are not in sequence on the list.</li>
-  <li>The Save button will save your list in text format in your default Download folder. You will have to move it from there to the folder where you want it.</li>
+  <li>The Save button will save your list, plus optional screenshot, in .skp format in your default Download folder. You will have to move it from there to the folder where you want it. This format is text-based, so you can view the file in any text editor.</li>
+  <li>A well-constructed skip file will have a first entry  with the timing of an event near the start of the video that viewers can recognize accurately (for instance, the moment the screen first goes dark, or when a certain logo changes) or a screenshot (best if the image is changing quickly at that point), plus a description of it on the line below it. This is to allow viewers to use the skips in the file even if they are watching a video obtained from a different source, which might have a slightly different timing. It is best to make this entry at the start of the process. To take a screenshot, just scroll the video to the desired time and click &quot;Take screenshot&quot;; the time will be added automatically.</li>
   </ul>
 <p>Sample skip, which will cause the screen to blank out from 14 minutes, 8.27 seconds from the start of the movie until 14 minutes, 14 seconds, while the sound still plays, if &quot;Sex and Nudity&quot; is checked:</p>
 <p>0:14:08.27 --&gt; 0:14:14<br>
@@ -210,17 +233,20 @@ var displayMessage = function (message, isError) {
     element.className = isError ? 'error' : 'info'
   }
 
-var fileName = '';		//global variable with name of skip file, minus extension
+var name = '';		//global variable with name of skip file, minus extension
 
-//this one loads the edits file
+//loads the skips file
 function loadFileAsURL(){
 	var fileToLoad = skipFile.files[0],
 		fileReader = new FileReader();
 	fileReader.onload = function(fileLoadedEvent){
 		var URLFromFileLoaded = fileLoadedEvent.target.result;
-		if(fileToLoad.name.slice(-4) == ".skp"){
-			skipBox.value = URLFromFileLoaded;
-			fileName = fileToLoad.name
+		var extension = fileToLoad.name.slice(-4);
+		if(extension == ".skp"){
+			var data = URLFromFileLoaded.split('data:image/jpeg;base64,');			//separate skips from screenshot
+			name = fileToLoad.name.slice(0,-4);
+			skipBox.value = data[0].trim();
+			screenShot.src = 'data:image/jpeg;base64,' + data[1];
 		}else{
 			boxMsg.textContent = "wrong file type"
 		}
@@ -236,12 +262,20 @@ function loadSubs(){
 		fileReader = new FileReader();
 	fileReader.onload = function(fileLoadedEvent){
 		var URLFromFileLoaded = fileLoadedEvent.target.result;
-		if(fileToLoad.name.slice(-4) == ".vtt"){						//allow only .vtt format
+		var extension = fileToLoad.name.slice(-4);
+		if(extension == ".vtt" || extension == ".srt"){						//allow only .vtt and .srt formats
 			track = document.createElement("track");
 			track.kind = "captions";
   			track.label = "Loaded";
    			track.srclang = "en";
-			track.src = URL.createObjectURL(fileToLoad);
+			if(extension == ".vtt"){
+				track.src = URL.createObjectURL(fileToLoad)
+			}else{
+				var subs = URLFromFileLoaded;										//get subs in text format, to be edited
+				subs = 'WEBVTT\n\n' + subs.replace(/(\d),(\d)/g,'$1.$2');		//convert decimal commas to periods and add header
+				var subBlob = new Blob([subs], {"type": 'text/plain'});
+				track.src = URL.createObjectURL(subBlob);
+			}
 			track.addEventListener("load", function(){
 				this.mode = "showing";
 				myVideo.textTracks[0].mode = "showing"; // thanks Firefox
@@ -255,23 +289,19 @@ function loadSubs(){
 	fileReader.readAsText(fileToLoad)
 }
 
-// Function to download data to a file, from StackOverflow
+//to download data to a file, from StackOverflow
 function download(data, filename, type) {
-    var file = new Blob([data], {"type": type});
-    if (window.navigator.msSaveOrOpenBlob) // IE10+
-        window.navigator.msSaveOrOpenBlob(file, filename);
-    else { // Others
-        var a = document.createElement("a"),
-                url = URL.createObjectURL(file);
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        setTimeout(function() {
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(url);  
-        }, 0); 
-    }
+	var a = document.createElement("a");
+	var file = new Blob([data], {"type": type}),
+		url = URL.createObjectURL(file);
+	a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(function() {
+       document.body.removeChild(a);
+       window.URL.revokeObjectURL(url);  
+    }, 0)
 }
 
 //to parse the content of the skip box in something close to .srt format, from StackOverflow
@@ -300,8 +330,8 @@ var PF_SRT = function() {
   }
   var toLineObj = function(group) {
     return {
-      startTime: group[1],
-      endTime: group[2],
+      startTime: fromHMS(group[1]),
+      endTime: fromHMS(group[2]),
       text: group[3]
     };
   }
@@ -324,15 +354,76 @@ function toHMS(seconds) {
   
 //the opposite: hour:minute:second string to decimal seconds
 function fromHMS(timeString){
-	timeString = timeString.replace(/,/,".");			//in .srt format, decimal seconds use a comma
+	timeString = timeString.replace(/,/,".");			//in .srt format decimal seconds use a comma
 	var time = timeString.split(":");
 	if(time.length == 3){							//has hours
-		return parseInt(time[0])*3600 + parseInt(time[1])*60 + parseInt(time[2])
+		return parseInt(time[0])*3600 + parseInt(time[1])*60 + parseFloat(time[2])
 	}else if(time.length == 2){					//minutes and seconds
-		return parseInt(time[0])*60 + parseInt(time[1])
+		return parseInt(time[0])*60 + parseFloat(time[1])
 	}else{											//only seconds
-		return parseInt(time[0])
+		return parseFloat(time[0])
 	}
+}
+
+//shift all times by a number of seconds entered in prompt
+function shiftTimes(){
+	var reply = prompt('Click OK to sync w/ screenshot, or enter seconds to delay skips (negative for advance)');
+	if(reply == null){boxMsg.textContent = 'Time shift canceled'; return};
+	
+	var	initialData = skipBox.value.trim().split('\n').slice(0,2);					//first two lines
+
+	if(reply){												//number entered, so apply the given shift
+		var seconds = parseFloat(reply)	
+	}else{													//nothing entered, so shift to match player position relative to first entry
+		var shotTime = fromHMS(initialData[0]),
+			seconds = shotTime ? myVideo.currentTime - shotTime : 0
+	}
+	for(var i = 0; i < cuts.length; i++){
+		cuts[i].startTime += seconds;
+		cuts[i].endTime += seconds
+	}
+	times2box();											//put shifted times in the box
+	
+	if(shotTime){										//reconstruct initial data, if present
+		initialData[0] = toHMS(shotTime + seconds);
+		skipBox.value = initialData.join('\n') + '\n\n' + skipBox.value
+	}
+	if(seconds >= 0){
+		boxMsg.textContent = "Skips delayed by " + seconds + " seconds"
+	}else{
+		boxMsg.textContent = "Skips advanced by " + (- seconds) + " seconds"
+	}
+}
+
+//shift all times so the screenshot has correct timing in the video. ShiftTimes also has this functionality, with empty input
+function syncTimes(){
+	var	initialData = skipBox.value.trim().split('\n').slice(0,2),					//first two lines
+		shotTime = fromHMS(initialData[0]),
+		seconds = shotTime ? myVideo.currentTime - shotTime : 0;
+	for(var i = 0; i < cuts.length; i++){
+		cuts[i].startTime += seconds;
+		cuts[i].endTime += seconds
+	}
+	times2box();											//put shifted times in the box
+	
+	if(shotTime){										//reconstruct initial data, if present
+		initialData[0] = toHMS(shotTime + seconds);
+		skipBox.value = initialData.join('\n') + '\n\n' + skipBox.value
+	}
+	if(seconds >= 0){
+		boxMsg.textContent = "Skips delayed by " + seconds + " seconds"
+	}else{
+		boxMsg.textContent = "Skips advanced by " + (- seconds) + " seconds"
+	}
+}
+
+//put data from the cuts array into skipBox
+function times2box(){
+	var text = '';
+	for(var i = 0; i < cuts.length; i++){
+		text += toHMS(cuts[i].startTime) + ' --> ' + toHMS(cuts[i].endTime) + '\n' + cuts[i].text + '\n\n'
+	}
+	skipBox.value = text.trim()
 }
 
 //insert things in box
@@ -343,7 +434,7 @@ function writeArrow(){
 	skipBox.value += ' --> '
 }
 
-//toggles instructions on and off
+//toggle instructions on and off
 function toggleHelp(){
 	if(instructions.style.display == 'none'){
 		instructions.style.display = 'block'
@@ -356,39 +447,32 @@ skipFile.addEventListener('change', loadFileAsURL);
 
 subFile.addEventListener('change', loadSubs);
 
-time.addEventListener('click', writeTime);
+shiftBtn.addEventListener('click', shiftTimes);
 
-arrow.addEventListener('click', writeArrow);
+timeBtn.addEventListener('click', writeTime);
+
+arrowBtn.addEventListener('click', writeArrow);
 
 instructions.style.display = 'none';
 help.addEventListener('click', toggleHelp);
 
 saveFile.addEventListener('click', function(){
-	if(fileName){
-		var name = fileName
-	}else{
-		var name = prompt('Enter the file name. Extension .skp wil be added');
-		fileName = name + '.skp'
-	}
-	if(name){
-		download(skipBox.value,name,"text/plain")
-		boxMsg.textContent = 'File saved with name ' + name
-	}else{
-		boxMsg.textContent = 'File save canceled'
-	}
+	if(!name) name = prompt('Enter the file name. Extension .skp wil be added');
+	download(skipBox.value + '\n' + screenShot.src, name + '.skp', "text/plain");	
+	boxMsg.textContent = 'File saved with name ' + name + '.skp'
 })
 
 var cuts = [];				//global variable containing the cuts, each array element is an object with this format {startTime,endTime,text}
 
 skipBox.addEventListener('change', function(){cuts = PF_SRT.parse(skipBox.value)})
 
-//function to skip video
+//to skip video during playback
 myVideo.ontimeupdate = function(){
 	for(var i = 0; i < cuts.length; i++){
-		var startTime = fromHMS(cuts[i].startTime),
-			endTime = fromHMS(cuts[i].endTime),
+		var startTime = cuts[i].startTime,
+			endTime = cuts[i].endTime,
 			label = cuts[i].text,
-			isAudio = (label.toLowerCase().match(/aud|sou/) != null),
+			isAudio = (label.toLowerCase().match(/aud|sou|spe/) != null),
 			isVideo = (label.toLowerCase().match(/vid|ima|img/) != null);
 		if(!isAudio && !isVideo){
 			if(myVideo.currentTime > startTime && myVideo.currentTime < endTime && isSkipped(label)) myVideo.currentTime = endTime			//skip range
@@ -407,7 +491,7 @@ myVideo.ontimeupdate = function(){
 	}	
 }
 
-//function to decide whether a particular content is to be skipped. Allows alternative and incomplete keywords
+//to decide whether a particular content is to be skipped. Allows alternative and incomplete keywords
 function isSkipped(label){
 	if(label.toLowerCase().match(/sex|nud/) && sexMode.checked){
 		return true
@@ -426,6 +510,67 @@ function isSkipped(label){
 	}
 }
 
-  </script>
+//for screenshots
+var canvas = document.createElement('canvas');
+canvas.width = 320;  //for full scale: myVideo.videoWidth - 100 
+canvas.height = 240;
+var ctx = canvas.getContext('2d');
+	// attach the canvas to the DOM somewhere you can see it.
+shotBtn.addEventListener('click', function(){
+	skipBox.value += toHMS(myVideo.currentTime) + '\n';		//get time
+		//draw image to canvas. scale to target dimensions
+	canvas.width = myVideo.videoWidth / myVideo.videoHeight * canvas.height;
+	ctx.drawImage(myVideo, 0, 0, canvas.width, canvas.height);
+
+		//convert to desired file format
+	var dataURI = canvas.toDataURL('image/jpeg'); // can also use 'image/png' but the file is 10x bigger
+	screenShot.src = dataURI
+})
+
+fwdBtn.addEventListener('click',fwdSkip);
+
+backBtn.addEventListener('click',backSkip);
+
+shotTimeBtn.addEventListener('click',move2shot);
+
+moveBtn.addEventListener('click',moveShot);
+
+syncBtn.addEventListener('click',syncTimes);
+
+//called by forward button
+function fwdSkip(){
+	myVideo.pause();
+	myVideo.currentTime += fineMode.checked ? 0.04 : 0.4
+}
+
+//called by back button
+function backSkip(){
+	myVideo.pause();
+	myVideo.currentTime -= fineMode.checked ? 0.04 : 0.4
+}
+
+//move playhead to first time in the box
+function move2shot(){
+	var shotTime = fromHMS(skipBox.value.trim().split(/\s/)[0]);
+	myVideo.currentTime = shotTime
+}
+
+//put the screenshot on top of the video so a perfect match can be found, and back
+function moveShot(){
+	if(screenShot.style.opacity == ''){
+		screenShot.height = myVideo.videoHeight;				//rescales the picture
+		screenShot.style.position = 'absolute';
+		screenShot.style.top = myVideo.offsetTop + 'px';
+		screenShot.style.left = myVideo.offsetLeft + 'px';
+		screenShot.style.opacity = "50%"
+	}else{
+		screenShot.height = 240;
+		screenShot.style.position = '';
+		screenShot.style.top = '';
+		screenShot.style.left = '';
+		screenShot.style.opacity = ''		
+	}
+}
+</script>
 </body>
 </html>
