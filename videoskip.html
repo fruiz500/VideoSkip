@@ -125,7 +125,7 @@ input[type=checkbox] {
 
 <body>                    
 	<h2>Video Skip Player</h2>
-    <p>v 0.1.2 &nbsp;&#169; F. Ruiz 2020</p>
+    <p>v 0.1.3 &nbsp;&#169; F. Ruiz 2020</p>
 <div id="videoMsg">Load video file with left button, .vtt or .srt subtitles with right button</div>
 <br>
 <label for="videoFile"><span class="cssbutton" id="videoFileBtn" title="load .mp4, .ogg, .webm video file">Load video</span></label>
@@ -138,7 +138,7 @@ input[type=checkbox] {
     <br>
     Select the content to skip:
     <br><br>
-    <div>
+    <div id="checkBoxes">
     &nbsp;&nbsp;
     <input type="checkbox" id="sexMode"/>&nbsp;Sex and Nudity&nbsp;&nbsp;
     <input type="checkbox" id="violenceMode"/>&nbsp;Violence and Gore&nbsp;&nbsp;
@@ -239,7 +239,7 @@ input[type=checkbox] {
 
     var fileURL = URL.createObjectURL(file)
     videoNode.src = fileURL;
-	setTimeout(function(){cuts = PF_SRT.parse(skipBox.value); makeTimeLabels()},1000)
+	setTimeout(function(){cuts = PF_SRT.parse(skipBox.value); setActions(); makeTimeLabels()},1000)
   }
   var inputNode = document.querySelector('input')
   inputNode.addEventListener('change', playSelectedFile, false)
@@ -252,14 +252,16 @@ var displayMessage = function (message, isError) {
   }
 
 var name = '';		//global variable with name of skip file, minus extension
-var cuts = [];		//global variable containing the cuts, each array element is an object with this format {startTime,endTime,text}
+var cuts = [];		//global variable containing the cuts, each array element is an object with this format {startTime,endTime,text,action}
 
 var ua = navigator.userAgent.toLowerCase(); 		//to add a fix for Safari and choose fastest filter method, per https://jsben.ch/5qRcU
 if (ua.indexOf('safari') != -1) { 
   if (ua.indexOf('chrome') == -1){ var isSafari = true
   }else{ var isChrome = true
   }
-}else if(typeof InstallTrigger !== 'undefined'){var isFirefox = true}
+}else if(typeof InstallTrigger !== 'undefined'){var isFirefox = true
+}else if (document.documentMode || /Edge/.test(navigator.userAgent)){var isEdge = true
+}
 
 if(isSafari) videoFile.accept = 'video/mp4,video/x-m4v,video/*';		//file loading fix
 
@@ -281,7 +283,7 @@ function loadFileAsURL(){
 	};
 	fileReader.readAsText(fileToLoad);
 	boxMsg.textContent = 'This is the content of file: ' + fileToLoad.name;
-	setTimeout(function(){cuts = PF_SRT.parse(skipBox.value); makeTimeLabels()},1000)				//give it a whole second to load before data is extracted to memory
+	setTimeout(function(){cuts = PF_SRT.parse(skipBox.value); setActions(); makeTimeLabels()},1000)				//give it a whole second to load before data is extracted to memory
 }
 
 //similar, for loading subtitles
@@ -360,7 +362,8 @@ var PF_SRT = function() {
     return {
       startTime: fromHMS(group[1]),
       endTime: fromHMS(group[2]),
-      text: group[3]
+      text: group[3],
+	  action: ''				//no action by default, to be filled later
     };
   }
   init();
@@ -423,7 +426,7 @@ function shiftTimes(){
 	}else{
 		boxMsg.textContent = "Skips advanced by " + Math.floor(- seconds*100)/100 + " seconds"
 	}
-	setTimeout(function(){makeTimeLabels()},100)
+	setTimeout(function(){makeTimeLabels(); if(isSuper)moveShot()},100)
 }
 
 //shift all times so the screenshot has correct timing in the video. ShiftTimes also has this functionality, with empty input
@@ -446,7 +449,7 @@ function syncTimes(){
 	}else{
 		boxMsg.textContent = "Skips advanced by " + Math.floor(- seconds*100)/100 + " seconds"
 	}
-	setTimeout(function(){makeTimeLabels();if(isSuper)moveShot()},100)
+	setTimeout(function(){makeTimeLabels(); if(isSuper)moveShot()},100)
 }
 
 //put data from the cuts array into skipBox
@@ -470,8 +473,35 @@ function writeIn(string,isScrub){
 	}else{
 		skipBox.setSelectionRange(newEnd,newEnd);
 	}
-	setTimeout(function(){cuts = PF_SRT.parse(skipBox.value); makeTimeLabels()},100);
+	setTimeout(function(){cuts = PF_SRT.parse(skipBox.value); setActions(); makeTimeLabels()},100);
 	skipBox.focus()
+}
+
+//gets index of a particular HMS time in the box
+function getTimeIndex(string){
+	var stringStart = skipBox.value.indexOf(string);
+	for(var i = 0; i < timeLabels[0].length; i++){
+		if(timeLabels[0][i].match(string)) return i
+	}
+}
+
+//for screenshots
+var canvas = document.createElement('canvas');
+canvas.width = 320;  //for full scale: myVideo.videoWidth - 100 
+canvas.height = 240;
+var ctx = canvas.getContext('2d')
+
+//to take a screen shot
+function makeShot(){
+	myVideo.pause();
+	skipBox.value = toHMS(myVideo.currentTime) + '\n' + skipBox.value;		//put time at start
+		//draw image to canvas. scale to target dimensions
+	canvas.width = myVideo.videoWidth / myVideo.videoHeight * canvas.height;
+	ctx.drawImage(myVideo, 0, 0, canvas.width, canvas.height);
+
+		//convert to desired file format
+	var dataURI = canvas.toDataURL('image/jpeg'); // can also use 'image/png' but the file is 10x bigger
+	screenShot.src = dataURI
 }
 
 //called by forward button
@@ -551,20 +581,11 @@ function toggleFF(){
 	}
 }
 
-//move playhead to first time in the box, unless a time is selected
-function move2shot(){
-	myVideo.pause();
-	var selection = skipBox.value.slice(skipBox.selectionStart,skipBox.selectionEnd).trim();
-	if(selection != '' && !selection.match(/[^\d:.]/)){				//valid time selected, so scrub to it
-		var index = getTimeIndex(selection);
-		if(index != null){
-			myVideo.currentTime = fromHMS(timeLabels[0][index]);
-			skipBox.focus()
-		}
-	}else{											//scrub to 1st time
-		myVideo.currentTime = fromHMS(timeLabels[0][0])
-	}
-}
+//for screenshots
+var canvas = document.createElement('canvas');
+canvas.width = 320;  //for full scale: myVideo.videoWidth - 100 
+canvas.height = 240;
+var ctx = canvas.getContext('2d')
 
 //to take a screen shot
 function makeShot(){
@@ -577,6 +598,21 @@ function makeShot(){
 		//convert to desired file format
 	var dataURI = canvas.toDataURL('image/jpeg'); // can also use 'image/png' but the file is 10x bigger
 	screenShot.src = dataURI
+}
+
+//scrub to first time in the box, unless a time is selected
+function scrub2shot(){
+	myVideo.pause();
+	var selection = skipBox.value.slice(skipBox.selectionStart,skipBox.selectionEnd).trim();
+	if(selection != '' && !selection.match(/[^\d:.]/)){				//valid time selected, so scrub to it
+		var index = getTimeIndex(selection);
+		if(index != null){
+			myVideo.currentTime = fromHMS(timeLabels[0][index]);
+			skipBox.focus()
+		}
+	}else{											//scrub to 1st time
+		myVideo.currentTime = fromHMS(timeLabels[0][0])
+	}
 }
 
 var isSuper = false;
@@ -622,14 +658,6 @@ function makeTimeLabels(){
 	}
 }
 
-//gets index of a particular HMS time in the box
-function getTimeIndex(string){
-	var stringStart = skipBox.value.indexOf(string);
-	for(var i = 0; i < timeLabels[0].length; i++){
-		if(timeLabels[0][i].match(string)) return i
-	}
-}
-
 //toggle instructions on and off
 function toggleHelp(){
 	if(instructions.style.display == 'none'){
@@ -643,10 +671,10 @@ function toggleHelp(){
 document.onkeydown = checkKey;
 
 function checkKey(e) {
-  if(isSuper){								//this only works when a screenshot is superimposed on the video
-    e = e || window.event;
-    if(e.altKey){						//alt combinations resize, regular moves, hold shift for fine movement
-		if(e.keyCode == '38'){
+	if(isSuper){							//this only works when a screenshot is superimposed on the video
+    	e = e || window.event;
+    	if(e.altKey){						//alt combinations resize, regular moves, hold shift for fine movement
+			if(e.keyCode == '38'){
 				screenShot.height -= e.shiftKey ? 1 : 10
 			}else if(e.keyCode == '40'){
 				screenShot.height += e.shiftKey ? 1 : 10
@@ -666,8 +694,10 @@ function checkKey(e) {
 				screenShot.style.left = parseInt(screenShot.style.left.slice(0,-2)) + (e.shiftKey ? 1 : 10) + 'px'
 			}
 		}	
-  }
+	}
 }
+
+checkBoxes.addEventListener('change', setActions);
 
 skipFile.addEventListener('change', loadFileAsURL);
 
@@ -694,7 +724,7 @@ fFwdBtn.addEventListener('click',toggleFF);
 
 backBtn.addEventListener('click',backSkip);
 
-shotTimeBtn.addEventListener('click',move2shot);
+shotTimeBtn.addEventListener('click',scrub2shot);
 
 moveBtn.addEventListener('click',moveShot);
 
@@ -703,10 +733,10 @@ syncBtn.addEventListener('click',syncTimes);
 shotBtn.addEventListener('click',makeShot);
 
 skipBox.addEventListener('change', function(){
-	setTimeout(function(){cuts = PF_SRT.parse(skipBox.value); makeTimeLabels()},100)
+	setTimeout(function(){cuts = PF_SRT.parse(skipBox.value); setActions(); makeTimeLabels()},100)
 })
 
-//faster way to check for content depanding on browser; returns a Boolean; regex and stringArray content should match
+//faster way to check for content depending on browser; returns a Boolean; regex and stringArray content should match
 function isContained(containerStr, stringArray, regex){
 	var result = false;
 	if(isChrome){
@@ -715,7 +745,7 @@ function isContained(containerStr, stringArray, regex){
 		}
 	}else if(isFirefox){
 		result = containerStr.search(regex) != -1
-	}else if(isSafari){
+	}else if(isSafari || isEdge){
 		result = regex.test(containerStr)
 	}else{
 		result = !!containerStr.match(regex)
@@ -723,32 +753,7 @@ function isContained(containerStr, stringArray, regex){
 	return result
 }
 
-//to skip video during playback
-myVideo.ontimeupdate = function(){
-	for(var i = 0; i < cuts.length; i++){
-		var startTime = cuts[i].startTime,
-			endTime = cuts[i].endTime,
-			label = cuts[i].text.toLowerCase(),
-			isAudio = isContained(label,['aud','sou','spe','wor'],/aud|sou|spe|wor/),
-			isVideo = isContained(label,['vid','ima','img'],/vid|ima|img/);
-		if(!isAudio && !isVideo){
-			if(myVideo.currentTime > startTime && myVideo.currentTime < endTime && isSkipped(label)) myVideo.currentTime = endTime			//skip range
-		}else if(isAudio){
-			myVideo.muted = myVideo.currentTime > startTime && myVideo.currentTime < endTime && isSkipped(label);								//mute range
-			if(myVideo.textTracks.length > 0){																										//mute subtitles
-				if(myVideo.currentTime > startTime && myVideo.currentTime < endTime && isSkipped(label)){
-					myVideo.textTracks[0].mode = 'disabled'
-				}else{
-					myVideo.textTracks[0].mode = 'showing'
-				}
-			}
-		}else{
-			myVideo.style.opacity = (myVideo.currentTime > startTime && myVideo.currentTime < endTime && isSkipped(label)) ? "0" : ""			//blank range
-		}
-	}	
-}
-
-//to decide whether a particular content is to be skipped. Allows alternative and incomplete keywords
+//to decide whether a particular content is to be skipped, according to check boxes. Allows alternative and incomplete keywords
 function isSkipped(label){
 	if(isContained(label,['sex','nud'],/sex|nud/) && sexMode.checked){
 		return true
@@ -767,11 +772,81 @@ function isSkipped(label){
 	}
 }
 
-//for screenshots
-var canvas = document.createElement('canvas');
-canvas.width = 320;  //for full scale: myVideo.videoWidth - 100 
-canvas.height = 240;
-var ctx = canvas.getContext('2d')
+//fills the action field in object cuts, according to the position of the check boxes and the text at each time
+function setActions(){
+	for(var i = 0; i < cuts.length; i++){
+		var label = cuts[i].text.toLowerCase(),
+			isAudio = isContained(label,['aud','sou','spe','wor'],/aud|sou|spe|wor/),
+			isVideo = isContained(label,['vid','ima','img'],/vid|ima|img/);
+		if(!isAudio && !isVideo){
+			cuts[i].action = isSkipped(label) ? 'skip' : ''	
+		}else if(isAudio){
+			cuts[i].action = isSkipped(label) ? 'mute' : ''
+		}else{
+			cuts[i].action = isSkipped(label) ? 'blank' : ''
+		}
+	}
+}
+
+var prevAction = '';
+
+//to skip video during playback
+myVideo.ontimeupdate = function(){
+	var action = '', startTime, endTime;
+	for(var i = 0; i < cuts.length; i++){			//find out what action to take, according to timing and setting in cuts object
+		startTime = cuts[i].startTime;
+		endTime = cuts[i].endTime;
+//			label = cuts[i].text.toLowerCase(),
+//			isAudio = isContained(label,['aud','sou','spe','wor'],/aud|sou|spe|wor/),
+//			isVideo = isContained(label,['vid','ima','img'],/vid|ima|img/);
+/*		if(!isAudio && !isVideo){
+			if(myVideo.currentTime > startTime && myVideo.currentTime < endTime && isSkipped(label)) myVideo.currentTime = endTime			//skip range
+		}else if(isAudio){
+			myVideo.muted = myVideo.currentTime > startTime && myVideo.currentTime < endTime && isSkipped(label);								//mute range
+			if(myVideo.textTracks.length > 0){																										//mute subtitles
+				if(myVideo.currentTime > startTime && myVideo.currentTime < endTime && isSkipped(label)){
+					myVideo.textTracks[0].mode = 'disabled'
+				}else{
+					myVideo.textTracks[0].mode = 'showing'
+				}
+			}
+		}else{
+			myVideo.style.opacity = (myVideo.currentTime > startTime && myVideo.currentTime < endTime && isSkipped(label)) ? "0" : ""			//blank range
+		}*/
+		if(myVideo.currentTime > startTime && myVideo.currentTime < endTime){
+/*			if(cuts[i].action == 'skip'){
+				myVideo.currentTime = endTime
+			}else if(cuts[i].action == 'blank'){
+				myVideo.style.opacity =  0
+			}else if(cuts[i].action == 'mute'){
+				myVideo.muted = true;
+				if(myVideo.textTracks.length > 0) myVideo.textTracks[0].mode = 'disabled'
+			}*/
+			action = cuts[i].action;
+			break
+		}else{
+//			myVideo.style.opacity =  '';
+//			myVideo.muted = false;
+//			if(myVideo.textTracks.length > 0) myVideo.textTracks[0].mode = 'showing'
+			action = ''
+		}
+	}
+	if(action == prevAction){					//apply action to the DOM if there's a change
+		return
+	}else if(action == 'skip'){
+		myVideo.currentTime = endTime
+	}else if(action == 'blank'){
+		myVideo.style.opacity =  0
+	}else if(action == 'mute'){
+		myVideo.muted = true;
+		if(myVideo.textTracks.length > 0) myVideo.textTracks[0].mode = 'disabled'
+	}else{
+		myVideo.style.opacity =  '';
+		myVideo.muted = false;
+		if(myVideo.textTracks.length > 0) myVideo.textTracks[0].mode = 'showing'
+	}
+	prevAction = action
+}
 </script>
 </body>
 </html>
