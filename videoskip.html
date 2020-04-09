@@ -202,13 +202,13 @@ input[type=checkbox] {
 </ul>
 <p>Making your own skips:</p>
 <ul>
-  <li>As mentioned above, inserting new skips is as easy as scrubbing to the point where the skip/mute/blank is supposed to begin, clicking the &quot;Insert time&quot; button on a new line, then the &quot;Insert arrow&quot; button, scrubbing to the point where the skip is to end, clicking the &quot;Insert time&quot; button once more, and then going to the next line and writing a content and (optionally) handling label. If you are initially unsure of where the skips should be inserted, there is a &quot;Fast Forward&quot; button that scrubs the video at high speed.</li>
+  <li>As mentioned above, inserting new skips is as easy as scrubbing to the point where the skip/mute/blank is supposed to begin, clicking the &quot;Insert time&quot; button on a new line, then the &quot;Insert arrow&quot; button, scrubbing to the point where the skip is to end, clicking the &quot;Insert time&quot; button once more, and then going to the next line and writing a content and (optionally) handling label. If you are initially unsure of where the skips should be inserted, there is a &quot;Fast Forward&quot; button that scrubs the video at high speed. Click it again to return to normal speed. The button to its left stops the video when it's running.</li>
   <li>Content labels are case-insensitive. They consist of any word (actually, the first three letters are enough) of the IMDB categories, which are displayed next to the checkboxes, such as &quot;sex&quot;, &quot;nudity&quot;, &quot;gore&quot;, &quot;drugs&quot;, etc. Handling labels are these words: &quot;audio&quot;, &quot;sound&quot;, &quot;video&quot;, &quot;image&quot; (or the first three letters of each, including &quot;img&quot;) also case-insensitive.</li>
   <li>The &quot;audio&quot; or &quot;sound&quot; keywords will cause the sound to be muted during the given interval while the video is still shown, rather than skipping the section entirely, which might be useful for removing profanity. The &quot;video&quot; and &quot;image&quot; keywords cause the image to blank out while the sound still plays, which might be useful for instances of nudity, etc. No handling keyword means that the section will be completely skipped.</li>
   <li>Everything is editable in the box. Use this to fine-tune timings. For instance, words to be muted typically take a lot less than a second. You can review each timing by selecting on the list and clicking &quot;Go to time&quot;, or by clicking the forward and back buttons when a time is selected on the list. If the &quot;Shift&quot; box is checked, the selected timing will shift with the arrows, rather than moving to another timing.</li>
-  <li>The Insert buttons put things always at the current cursor position. In any case, skips will be made at the right times even though they may not be in sequence on the list.</li>
+  <li>The &quot;Insert&quot; buttons put things always at the current cursor position. In any case, skips will be made at the right times even though they may not be in sequence on the list.</li>
   <li>The &quot;Shift skips&quot; button opens a dialog where you can enter a number of seconds to delay all skips, or advance them if you enter a negative number, including the screenshot time at the top, if any. Clicking OK with nothing entered sorts the skips in ascending order of start times leaving the screenshot time at the top, if any, unchanged.</li>
-  <li>The Save button will save your list, plus optional screenshot, in .skp format in your default Download folder. You will have to move it from there to the folder where you want it. This format is text-based, so you can view the file in any text editor.</li>
+  <li>The &quot;Save&quot; button will save your list, plus optional screenshot, in .skp format in your default Download folder. You will have to move it from there to the folder where you want it. This format is text-based, so you can view the file in any text editor.</li>
   <li>A well-constructed skip file will have a first entry  with the timing of an event near the start of the video that viewers can recognize accurately (for instance, the moment the screen first goes dark, or when a certain logo changes) or a screenshot (best if the image is changing quickly at that point), plus a description of it on the line below it (do not use numbers in the description). This is to allow viewers to use the skips in the file even if they are watching a video obtained from a different source, which might have a slightly different timing. It is best to make this entry at the start of the process. To take a screenshot, just scrub the video to the desired time and click &quot;Take screenshot&quot;; the time will be added at the beginning of the skip list.</li>
   </ul>
 <p>Sample skip, which will cause the screen to blank out from 14 minutes, 8.27 seconds from the start of the movie until 14 minutes, 14 seconds, while the sound still plays, if &quot;Sex and Nudity&quot; is checked:</p>
@@ -529,7 +529,8 @@ function fwdSkip(){
 		myVideo.currentTime += fineMode.checked ? 0.0417 : 0.417
 	}
   }else{
-	myVideo.pause()
+	myVideo.pause();
+	isFF = false
   }
 }
 
@@ -558,7 +559,8 @@ function backSkip(){
 		myVideo.currentTime -= fineMode.checked ? 0.0417 : 0.417
 	}
   }else{
-	myVideo.pause()
+	myVideo.pause();
+	isFF = false
   }
 }
 
@@ -567,6 +569,9 @@ var isFF = false;
 //toggles normal and max speeds
 function toggleFF(){
 	if(myVideo.paused){							//if paused, restart, no speed change
+		isFF = false;
+		myVideo.muted = false;
+		myVideo.playbackRate = 1;
 		myVideo.play()
 	}else{											//if playing, set speed
 		if(isFF){
@@ -796,38 +801,10 @@ myVideo.ontimeupdate = function(){
 	for(var i = 0; i < cuts.length; i++){			//find out what action to take, according to timing and setting in cuts object
 		startTime = cuts[i].startTime;
 		endTime = cuts[i].endTime;
-//			label = cuts[i].text.toLowerCase(),
-//			isAudio = isContained(label,['aud','sou','spe','wor'],/aud|sou|spe|wor/),
-//			isVideo = isContained(label,['vid','ima','img'],/vid|ima|img/);
-/*		if(!isAudio && !isVideo){
-			if(myVideo.currentTime > startTime && myVideo.currentTime < endTime && isSkipped(label)) myVideo.currentTime = endTime			//skip range
-		}else if(isAudio){
-			myVideo.muted = myVideo.currentTime > startTime && myVideo.currentTime < endTime && isSkipped(label);								//mute range
-			if(myVideo.textTracks.length > 0){																										//mute subtitles
-				if(myVideo.currentTime > startTime && myVideo.currentTime < endTime && isSkipped(label)){
-					myVideo.textTracks[0].mode = 'disabled'
-				}else{
-					myVideo.textTracks[0].mode = 'showing'
-				}
-			}
-		}else{
-			myVideo.style.opacity = (myVideo.currentTime > startTime && myVideo.currentTime < endTime && isSkipped(label)) ? "0" : ""			//blank range
-		}*/
 		if(myVideo.currentTime > startTime && myVideo.currentTime < endTime){
-/*			if(cuts[i].action == 'skip'){
-				myVideo.currentTime = endTime
-			}else if(cuts[i].action == 'blank'){
-				myVideo.style.opacity =  0
-			}else if(cuts[i].action == 'mute'){
-				myVideo.muted = true;
-				if(myVideo.textTracks.length > 0) myVideo.textTracks[0].mode = 'disabled'
-			}*/
 			action = cuts[i].action;
 			break
 		}else{
-//			myVideo.style.opacity =  '';
-//			myVideo.muted = false;
-//			if(myVideo.textTracks.length > 0) myVideo.textTracks[0].mode = 'showing'
 			action = ''
 		}
 	}
