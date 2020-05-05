@@ -71,7 +71,13 @@ input[type=checkbox] {
 .cssbutton:hover {
 	text-decoration: none;
 	cursor: pointer;
-	background: #c4c4c4;
+	background: #cfcfcf;
+}
+.imptButton {
+	background: #e8eef3;
+}
+.imptButton:hover {
+	background: #c1dfff;
 }
 .small {
 	font-size: 12px;
@@ -80,9 +86,6 @@ input[type=checkbox] {
 .fineText {
 	font-size: small;
 	color: gray;
-}
-#credits {
-	font-size: xx-small;
 }
 </style>
 
@@ -125,10 +128,10 @@ input[type=checkbox] {
 
 <body>                    
 	<h2>Video Skip Player</h2>
-    <p>v 0.1.4 &nbsp;&#169; F. Ruiz 2020</p>
+    <p>v 0.1.5 &nbsp;&#169; F. Ruiz 2020</p>
 <div id="videoMsg">Load video file with left button, .vtt or .srt subtitles with right button</div>
 <br>
-<label for="videoFile"><span class="cssbutton" id="videoFileBtn" title="load .mp4, .ogg, .webm video file">Load video</span></label>
+<label for="videoFile"><span class="cssbutton imptButton" id="videoFileBtn" title="load .mp4, .ogg, .webm video file">Load video</span></label>
 <input type="file" id="videoFile" accept="video/*"/>
 <label for="subFile"><span class="cssbutton" id="subFileBtn" title="load .vtt, .srt subtitles; then enable them in the video">Load subtitles</span></label>
 <input type="file" id="subFile"/>
@@ -150,7 +153,7 @@ input[type=checkbox] {
     <br>
     <div id="boxMsg">Load here the .skp file containing the skips:</div>
     <br>
-    <label for="skipFile"><span class="cssbutton" id="skipFileBtn" title="load .skp file">Load skip file</span></label>
+    <label for="skipFile"><span class="cssbutton imptButton" id="skipFileBtn" title="load .skp file">Load skip file</span></label>
 	<input type="file" id="skipFile"/>
     <button id="exchangeBtn"class="cssbutton small" title="open the VideoSkip Exchange in a separate tab">VideoSkip Exchange</button>
     <br><br>
@@ -158,7 +161,7 @@ input[type=checkbox] {
     <button id="timeBtn" class="cssbutton small" title="insert current time">Insert time</button>
     <button id="arrowBtn" class="cssbutton small" title="insert a correctly formatted arrow">Insert arrow</button>
     <button id="shiftBtn" class="cssbutton small" title="delay or advance by given seconds; leave empty to sort by time">Shift skips</button>
-    <button id="saveFile" class="cssbutton small" title="save .skp file to Downloads">Save</button>
+    <button id="saveFile" class="cssbutton imptButton small" title="save .skp file to Downloads">Save</button>
         &nbsp;&nbsp;
     <button id="backBtn"class="cssbutton small" title="step rewind / go to previous time">&#9668;</button>
     <input type="checkbox" id="fineMode"/ title="frame by frame">&nbsp;<span class="fineText">Fine</span>&nbsp;
@@ -167,7 +170,7 @@ input[type=checkbox] {
     <button id="fFwdBtn"class="cssbutton small" title="toggle play / fast forward / stop">&#9658;&#9658;</button>
     <button id="shotTimeBtn"class="cssbutton small" title="go to selected time / screenshot time">Go to time</button>
     <button id="moveBtn" class="cssbutton small" title="overlay shot on video">Superimpose</button>
-    <button id="syncBtn"class="cssbutton small" title="change all times when video and shot match">Sync times</button>
+    <button id="syncBtn"class="cssbutton imptButton small" title="change all times when video and shot match">Sync times</button>
     <button id="shotBtn"class="cssbutton small" title="take screenshot">Take screenshot</button>
     <br>
 	<textarea id="skipBox" rows="10" placeholder="Skips appear here"></textarea>
@@ -180,18 +183,19 @@ input[type=checkbox] {
 <ol>
   <li>Load the video from a local file using the &quot;Load video&quot; button. Because the video must be playable in a browser, it can take .mp4, .ogg, and .webm formats. You can save videos from streaming sources in these formats, rip a disc using software, or convert video files into these formats from a different format (more information below).</li>
   <li>Optionally, load a file containing subtitles using the &quot;Load subtitles&quot;. Subtitles must be in .vtt or .srt format. They might show as &quot;English&quot; but never mind.</li>
-  <li>Toggle the category filters using the checkboxes below the video frame. A check means that the filter is on and content labeled accordingly will be skipped or blanked out. Otherwise it will be shown.</li>
-  <li>If you have a .skp file containing the skips, you can load it now with the &quot;Load skip file&quot; button. Once loaded, its contents will appear in the box, plus perhaps a screenshot on its right. Each skip consists of  beginning and end times relative to the start of the video, with an arrow between them, and on the line below a category plus maybe a handling label (such as &quot;video&quot; or &quot;audio&quot;).</li>
-  <li>If the first line contains only one time, this means it is used for syncing the skips for different versions of the video. The process for syncing, explained below, can be done at this point. If when you click the &quot;Go to time&quot; button the video shows the same image as the screenshot everything is in sync.</li>
-  <li>If you want to change something in the list of skips, go right ahead. There's a button to insert the current time on the video (the video itself has a scrub bar to get there), and a correctly formatted &quot;arrow&quot; if you feel lazy. There are also buttons for shifting the time of all skips by a given amount, and for saving your edited skip list.</li>
+  <li>Toggle the category filters using the checkboxes. A check means that the filter is on and content labeled accordingly will be skipped or blanked out. Otherwise it will be shown.</li>
+  <li>If you have a .skp file containing the skips, you can load it now with the "Load skip file" button. Once loaded, its contents will appear in the box, plus a screenshot on its right. Each skip consists of beginning and end times relative to the start of the video, with an arrow between them, and on the line below a category plus maybe a handling label (such as "video" or "audio").</li>
+  <li>If you don't have a skip file for the film you're watching, chances are another user has made one, and has posted it in the VideoSkip Exchange. There's a button to load the Exchange on a separate tab. You don't have to register in order to browse and download skip files.</li>
+  <li>The time shown on the first line of a loaded skip file is used for syncing the skips for different versions of the video. Click the "Go to time" button; if the video shows the same image as the screenshot, everything is in sync and you can go ahead and watch it, otherwise you need to sync the skips as explained in the section below.</li>
+  <li>If you want to change something in the list of skips, go right ahead. There's a button to insert the current time on the video (the video itself has a scrub bar to get there), and a correctly formatted "arrow" if you feel lazy. There are also buttons for shifting the time of all skips by a given amount, and for saving your edited skip list.</li>
   <li>Click the play button on the video, and maybe the fullscreen button, sit back, and enjoy. Skips will take place when their time arrives.</li>
   </ol>
 <p>How to sync the skips:</p>
 <ol>
-  <li>There may be a screenshot, but  there is none, likely there is some text below the initial time entry that will tell you what happens in the video at that time. Click the &quot;Go to time&quot; button to take the video to that time. If the video matches the screenshot (or the literal description, if there is no screenshot), everything is in sync and you're done with this phase. Scrub the video back to the beginning and start watching.</li>
-  <li>But if the video is from a source different from that used to make the sync file, there may be a mismatch. Use the arrow buttons to scrub the video until the screen matches the screenshot or description (frame by frame, if  &quot;Fine&quot; is checked). The fast forward button toggles the speed, or resumes playing if paused. If there's a screenshot, the &quot;Superimpose&quot; button will put it right on top of the video, so you can see the precise moment when they match. If the picture does not match the video, you can move it around with the arrow keys, and resize it if you also hold the Alt key. Hold Shift for fine corrections.</li>
-  <li>Click the &quot;Sync times&quot; button when video and screenshot match. This will shift all the skips by the right amount, so they wil happen at the correct times.</li>
-  <li>If the screenshot is still on top of the video, click &quot;Superimpose&quot; again in order to put it back in its place.</li>
+  <li>If the video matches the screenshot when you click the "Go to Time" button, everything is in sync and you're done with this phase. Scrub the video back to the beginning and start watching.</li>
+  <li>But if the video is from a source different from that used to make the sync file, there may be a mismatch. Use the arrow buttons to scrub the video until the screen matches the screenshot or description (frame by frame, if "Fine" is checked). The fast forward button toggles the speed, or resumes playing if paused. The "Superimpose" button puts the screenshot right on top of the video, so you can see the precise moment when they match.You can move the screenshot around with the arrow keys, and resize it if you hold the Alt key as well. Hold Shift also for fine corrections.</li>
+  <li>Click the "Sync times" button when video and screenshot match. This will shift all the skips by the right amount, so they will happen at the correct times.</li>
+  <li>If the screenshot is still on top of the video, click "Superimpose" again in order to remove it.</li>
 </ol>
 <p>Getting the video files:</p>
 <ul>
@@ -203,14 +207,15 @@ input[type=checkbox] {
 </ul>
 <p>Making your own skips:</p>
 <ul>
-  <li>As mentioned above, inserting new skips is as easy as scrubbing to the point where the skip/mute/blank is supposed to begin, clicking the &quot;Insert time&quot; button on a new line, then the &quot;Insert arrow&quot; button, scrubbing to the point where the skip is to end, clicking the &quot;Insert time&quot; button once more, and then going to the next line and writing a content and (optionally) handling label. If you are initially unsure of where the skips should be inserted, there is a &quot;Fast Forward&quot; button that scrubs the video at high speed. Click it again to return to normal speed. The button to its left stops the video when it's running.</li>
-  <li>Content labels are case-insensitive. They consist of any word (actually, the first three letters are enough) of the IMDB categories, which are displayed next to the checkboxes, such as &quot;sex&quot;, &quot;nudity&quot;, &quot;gore&quot;, &quot;drugs&quot;, etc. Handling labels are these words: &quot;audio&quot;, &quot;sound&quot;, &quot;video&quot;, &quot;image&quot; (or the first three letters of each, including &quot;img&quot;) also case-insensitive.</li>
-  <li>The &quot;audio&quot; or &quot;sound&quot; keywords will cause the sound to be muted during the given interval while the video is still shown, rather than skipping the section entirely, which might be useful for removing profanity. The &quot;video&quot; and &quot;image&quot; keywords cause the image to blank out while the sound still plays, which might be useful for instances of nudity, etc. No handling keyword means that the section will be completely skipped. You can add explanatory text in parentheses, which won't trigger the filters.</li>
-  <li>Everything is editable in the box. Use this to fine-tune timings. For instance, words to be muted typically take a lot less than a second. You can review each timing by selecting on the list and clicking &quot;Go to time&quot;, or by clicking the forward and back buttons when a time is selected on the list. If the &quot;Shift&quot; box is checked, the selected timing will shift with the arrows, rather than moving to another timing.</li>
-  <li>The &quot;Insert&quot; buttons put things always at the current cursor position. In any case, skips will be made at the right times even though they may not be in sequence on the list.</li>
-  <li>The &quot;Shift skips&quot; button opens a dialog where you can enter a number of seconds to delay all skips, or advance them if you enter a negative number, including the screenshot time at the top, if any. Clicking OK with nothing entered sorts the skips in ascending order of start times leaving the screenshot time at the top, if any, unchanged.</li>
-  <li>The &quot;Save&quot; button will save your list, plus optional screenshot, in .skp format in your default Download folder. You will have to move it from there to the folder where you want it. This format is text-based, so you can view the file in any text editor.</li>
-  <li>A well-constructed skip file will have a first entry  with the timing of an event near the start of the video that viewers can recognize accurately (for instance, the moment the screen first goes dark, or when a certain logo changes) or a screenshot (best if the image is changing quickly at that point), plus a description of it on the line below it (do not use numbers in the description). This is to allow viewers to use the skips in the file even if they are watching a video obtained from a different source, which might have a slightly different timing. It is best to make this entry at the start of the process. To take a screenshot, just scrub the video to the desired time and click &quot;Take screenshot&quot;; the time will be added at the beginning of the skip list.</li>
+  <li>A well-constructed skip file will have a first entry with the timing of an event near the start of the video where the image is changing quickly, plus a description of it on the line below it (do not use numbers in the description), and a screenshot. This is to allow viewers to use the skips in the file even if they are watching a video obtained from a different source, which might have a different timing. To take a screenshot, just scrub the video to the desired time and click "Take screenshot"; the time will be added at the beginning of the skip list.</li>
+  <li>Inserting skips is as easy as scrubbing to the point where the skip/mute/blank is supposed to begin, clicking the "Insert time" button on a new line, then the "Insert arrow" button, scrubbing to the point where the skip is to end, clicking the "Insert time" button once more, and then going to the next line and writing a content and (optionally) handling label. If you are initially unsure of where the skips should be inserted, there is a "Fast Forward" button that scrubs the video at high speed. Click it again to stop. The button to its left also stops the video.</li>
+  <li>Content labels are case-insensitive. They consist of any word (actually, the first three letters are enough) of the IMDB categories, which are displayed next to the checkboxes, such as "sex", "nudity", "gore", "drugs", etc. Handling labels are these words: "audio", "sound", "video", "image" (or the first three letters of each, including "img") also case-insensitive.</li>
+  <li>The "audio" or "sound" keywords will cause the sound to be muted during the given interval while the video is still shown, rather than skipping the section entirely, which might be useful for removing profanity. The "video" and "image" keywords cause the image to blank out while the sound still plays, which might be useful for instances of nudity, etc. No handling keyword means that the section will be completely skipped. You can add explanatory text in parentheses, which won't trigger the filters.</li>
+  <li>Everything is editable in the box. Use this to fine-tune timings. For instance, words to be muted typically take a lot less than a second. You can review each timing by selecting on the list and clicking "Go to time", or by clicking the forward and back buttons when a time is selected on the list. If the "Shift" box is checked, the selected timing will shift with the arrows, rather than moving to another timing.</li>
+  <li>The "Insert" buttons put things always at the current cursor position.</li>
+  <li>The "Shift skips" button opens a dialog where you can enter a number of seconds to delay all skips, or advance them if you enter a negative number, including the screenshot time at the top, if any. Clicking OK with nothing entered sorts the skips in ascending order of start times leaving the screenshot time at the top, if any, unchanged. In any case, skips will be made at the right times even though they may not be in sequence on the list.</li>
+  <li>The "Save" button will save your list, plus screenshot, in .skp format in your default Download folder. You will have to move it from there to the folder where you want it. This format is text-based, so you can view the file in any text editor.</li>
+  <li>The "VideoSkip Exchange" button will open a web page where you can share your skip file with other VideoSkip users.</li>
   </ul>
 <p>Sample skip, which will cause the screen to blank out from 14 minutes, 8.27 seconds from the start of the movie until 14 minutes, 14 seconds, while the sound still plays, if &quot;Sex and Nudity&quot; is checked:</p>
 <p>0:14:08.27 --&gt; 0:14:14<br>
@@ -227,9 +232,7 @@ input[type=checkbox] {
 <p>Posting a skip file to the VideoSkip Exchange:<br>
   <a href="https://www.youtube.com/watch?v=Tv5wXTkXhcs" target="_blank">https://www.youtube.com/watch?v=Tv5wXTkXhcs</a></p>
 <p>Legal Notice: Content copyright owners and distributors are hereby informed that users and developers of this software are exercising their right of free speech, guaranteed by law in many nations, by voluntarily refraining from seeing or hearing content without modifying said content in any way. Legal action that ignores this notice will be considered harassment and infringement of basic rights, and prosecuted according to the law.</p>
-<div id='credits'>
 <div>Favicon made by <a href="https://www.flaticon.com/authors/smashicons" title="Smashicons">Smashicons</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
-</div>
 </div>
 <script>
 //to load video from local file, by Dimitar Bonev, as answered on StackOverflow. Also https://jsfiddle.net/dsbonev/cCCZ2/
@@ -349,7 +352,7 @@ function download(data, filename, type) {
 //to parse the content of the skip box in something close to .srt format, from StackOverflow
 var PF_SRT = function() {
   //SRT format
-  var pattern = /([\d:,.]+)\s+-{2}\>\s+([\d:,.]+)\n([\s\S]*?(?=\n{2}|$))?/gm;		//no item number, can use decimal dot instead of comma
+  var pattern = /([\d:,.]+)\s*-+\>\s*([\d:,.]+)\n([\s\S]*?(?=\n{2}|$))?/gm;		//no item number, can use decimal dot instead of comma, malformed arrows
   var _regExp;
 
   var init = function() {
