@@ -1,0 +1,88 @@
+/* General */
+html {
+  scroll-padding-top: 70px; /* height of sticky header */
+}
+
+body {
+  font: 20px Montserrat, sans-serif;
+  line-height: 1.8;
+  color: #f5f6f7;
+}
+
+p {
+  font-size: 16px;
+}
+.info {
+  background-color: palegreen;
+}
+.error {
+  background-color: red;
+  color: white;
+}
+
+/* Navbar Elements */
+.navbar {
+  padding-top: 15px;
+  padding-bottom: 15px;
+  border: 0;
+  border-radius: 0;
+  margin-bottom: 0;
+  letter-spacing: 2px;
+}
+.navbar-nav  li a:hover {
+  color: #1abc9c !important;
+}
+
+/* First jumbotron */
+.jumbotron {
+  margin-top: 50px !important;
+  color: #000;
+  padding: 100px 25px;
+  font-family: Montserrat, sans-serif;
+  font-size: x-large;
+}
+
+/* Skip container Area */
+.skip-container {
+  margin-top: 15px;
+}
+#skipMsg {
+  margin-bottom: 5px !important;
+}
+#boxMsg {
+  color: blue;
+  z-index: 2;
+}
+/*#subFile {
+  display: none;
+}
+#skipFile {
+  display: none;
+}
+#screenShot {
+  z-index: 1;
+}
+.cssbutton {
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+  font-family: Arial;
+  font-size: 18px;
+  padding: 12px;
+  text-decoration: none;
+  border: 0px;
+  color: #555555;
+  background: #e6e6e6;
+  z-index: 2;
+}
+.cssbutton:hover {
+  text-decoration: none;
+  cursor: pointer;
+  background: #cfcfcf;
+}
+.imptButton {
+  background: #e8eef3;
+}
+.imptButton:hover {
+  background: #c1dfff;
+}*/
