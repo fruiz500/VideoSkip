@@ -6,12 +6,17 @@
 <meta name="Description" content="VideoSkip player">
 <meta name="author" content="F. Ruiz">
 <meta name="robots" content="index">
+<meta name="viewport" content="width=device-width, minimum-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="apple-touch-icon" href="videoskip-touch-icon.png">
 <link rel="shortcut icon" type="image/x-icon" href="favicon.png">
 
 <style>
 video {
     display: block;
 	z-index: 0;
+	width: 95%;
 }
 video:focus {
 	outline: none;
@@ -40,7 +45,7 @@ input[type=checkbox] {
 }
 #skipBox {
 	height: 250px;
-	width: 356px;
+	width: 95%;
 	background: #fffffc;
 	z-index: 2;
 }
@@ -132,56 +137,57 @@ input[type=checkbox] {
 </head>
 
 <body>                    
-	<h2>VideoSkip Player</h2>
+	<h2>VideoSkip Player Mobile</h2>
     <p>v 0.1.6 &nbsp;&#169; F. Ruiz 2020</p>
-<div id="videoMsg">Load video file with left button, .vtt or .srt subtitles with right button</div>
-<br>
+<div id="videoMsg">Load video file with left button, .vtt or .srt subtitles with middle button</div>
 <label for="videoFile"><span class="cssbutton imptButton" id="videoFileBtn" title="load .mp4, .ogg, .webm video file">Load video</span></label>
 <input type="file" id="videoFile" accept="video/*"/>
-<label for="subFile"><span class="cssbutton" id="subFileBtn" title="load .vtt, .srt subtitles; then enable them in the video">Load subtitles</span></label>
+<label for="subFile"><span class="cssbutton small" id="subFileBtn" title="load .vtt, .srt subtitles; then enable them in the video">Load subtitles</span></label>
 <input type="file" id="subFile"/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button id="help" class="cssbutton" title="toggle instructions">Help</button><br>
-<br>
+<button id="help" class="cssbutton" title="toggle instructions">Help</button><br>
 <video controls disablePictureInPicture id="myVideo"></video>
+    <button id="backBtn"class="cssbutton" title="step rewind / go to previous time">&#9668;</button>
+    &nbsp;
+    <input type="checkbox" id="fineMode"/ title="frame by frame">
+    &nbsp;<span class="fineText">Fine</span>
+    <button id="fwdBtn"class="cssbutton" title="step advance / go to next time">&#9658;</button>
+    <button id="fFwdBtn"class="cssbutton" title="toggle play / fast forward / stop">&#9658;&#9658;</button>
     <br>
-    Select the content to skip:
-    <br><br>
+    <button id="shotTimeBtn"class="cssbutton small" title="go to selected time / screenshot time">Go to time</button>
+    <button id="moveBtn" class="cssbutton small" title="overlay shot on video">Superimp.</button>
+    <button id="syncBtn"class="cssbutton imptButton small" title="change all times when video and shot match">Sync</button>
+    <button id="shotBtn"class="cssbutton small" title="take screenshot">Screenshot</button>
+    <br>
+    <br>
+    <b>Select the content to skip:</b>
     <div id="checkBoxes">
-    &nbsp;&nbsp;
-    <input type="checkbox" id="sexMode"/>&nbsp;Sex and Nudity&nbsp;&nbsp;
-    <input type="checkbox" id="violenceMode"/>&nbsp;Violence and Gore&nbsp;&nbsp;
-    <input type="checkbox" id="curseMode"/>&nbsp;Profanity and Hate&nbsp;&nbsp;
-    <input type="checkbox" id="boozeMode"/>&nbsp;Alcohol, Drugs and Smoking&nbsp;&nbsp;
-    <input type="checkbox" id="scareMode"/>&nbsp;Frightening and Intense&nbsp;&nbsp;
-    <input type="checkbox" id="otherMode"/>&nbsp;Other
+      <p>&nbsp;&nbsp;
+        <input type="checkbox" id="sexMode"/>&nbsp;Sex&nbsp;&nbsp;
+        <input type="checkbox" id="violenceMode"/>&nbsp;Violence&nbsp;&nbsp;
+      <input type="checkbox" id="curseMode"/>&nbsp;Profanity</p>
+      <p>&nbsp;&nbsp;
+        <input type="checkbox" id="boozeMode"/>&nbsp;Substance&nbsp;&nbsp;
+        <input type="checkbox" id="scareMode"/>&nbsp;Intense&nbsp;&nbsp;
+        <input type="checkbox" id="otherMode"/>&nbsp;Other
+      </p>
     </div>
-    <br>
-    <div id="boxMsg">Load here the .skp file containing the skips:</div>
+    <div id="boxMsg"><b>Load here the .skp file containing the skips:</b></div>
     <br>
     <label for="skipFile"><span class="cssbutton imptButton" id="skipFileBtn" title="load .skp file">Load skip file</span></label>
 	<input type="file" id="skipFile"/>
     <button id="exchangeBtn"class="cssbutton small" title="open the VideoSkip Exchange in a separate tab">VideoSkip Exchange</button>
     <br><br>
-    Edit skips&nbsp;&nbsp;
+    <b>Edit skips:</b>
+    <br>
     <button id="timeBtn" class="cssbutton small" title="insert current time">Insert time</button>
     <button id="arrowBtn" class="cssbutton small" title="insert a correctly formatted arrow">Insert arrow</button>
     <button id="saveFile" class="cssbutton imptButton small" title="save .skp file to Downloads">Save</button>
-    <span class="hspacer2"></span>
-    <button id="backBtn"class="cssbutton small" title="step rewind / go to previous time">&#9668;</button>
-    <input type="checkbox" id="fineMode"/ title="frame by frame">&nbsp;<span class="fineText">Fine</span>
-    <button id="fwdBtn"class="cssbutton small" title="step advance / go to next time">&#9658;</button>
-    <button id="fFwdBtn"class="cssbutton small" title="toggle play / fast forward / stop">&#9658;&#9658;</button>
-    <button id="shotTimeBtn"class="cssbutton small" title="go to selected time / screenshot time">Go to time</button>
-    <button id="moveBtn" class="cssbutton small" title="overlay shot on video">Superimpose</button>
-    <button id="syncBtn"class="cssbutton imptButton small" title="change all times when video and shot match">Sync times</button>
-    <button id="shotBtn"class="cssbutton small" title="take screenshot">Take screenshot</button>
-    <br>
-	<textarea id="skipBox" rows="10" placeholder="Skips appear here"></textarea>
-    &nbsp;&nbsp;&nbsp;<img id="screenShot">
-    <br>
+          <textarea id="skipBox" rows="10" placeholder="Skips appear here"></textarea>
+	</p>
+    <img id="screenShot">
 <div id="instructions">
   <h2>Instructions</h2>   
-<p> This little app allows you to filter out several types of objectionable content from downloaded video files. It uses the same categories as the &quot;Parents Guide&quot; section of IMDB.com. It can skip sections entirely, or simply mute the sound or blank the video, at your discretion. Skip files can be shared at the official VideoSkip Exchange, or any way you want. The exchange is at <a href="https://videoskip.org/exchange" target="_blank">https://videoskip.org/exchange</a> There is also an exension version of this app, available from the Chrome and Firefox web stores, which works on streaming video from any source, and a mobile version that might be easier to use than this one at <a href="https://videoskip.org/mobile" target="_blank">https://videoskip.org/mobile</a></p>
+<p> This little app allows you to filter out several types of objectionable content from downloaded video files. It uses the same categories as the &quot;Parents Guide&quot; section of IMDB.com. It can skip sections entirely, or simply mute the sound or blank the video, at your discretion. Skip files can be shared at the official VideoSkip Exchange, or any way you want. The exchange is at <a href="https://videoskip.org/exchange" target="_blank">https://videoskip.org/exchange</a> There is also an exension version of this app, available from the Chrome and Firefox web stores, which works on streaming video from any source, and a desktop version that might be easier to use than this one at <a href="https://videoskip.org/app" target="_blank">https://videoskip.org/app</a></p>
 <p>Step by step:</p>
 <ol>
   <li>Load the video from a local file using the &quot;Load video&quot; button. Because the video must be playable in a browser, it can take .mp4, .ogg, and .webm formats. You can save videos from streaming sources in these formats, rip a disc using software, or convert video files into these formats from a different format (more information below).</li>
@@ -770,7 +776,8 @@ myVideo.ontimeupdate = function(){
 	if(action == prevAction){					//apply action to the DOM if there's a change
 		return
 	}else if(action == 'skip'){
-		myVideo.currentTime = endTime
+		myVideo.currentTime = endTime;
+		myVideo.play()
 	}else if(action == 'blank'){
 		myVideo.style.opacity =  0
 	}else if(action == 'mute'){
