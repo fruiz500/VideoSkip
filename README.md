@@ -13,4 +13,4 @@ Firefox: https://addons.mozilla.org/en-US/firefox/addon/videoskip/
 
 There's also a promotional page at https://videoskip.org, which redirects to https://videoskip.weebly.com
 
-The VideoSkip Exchange, where users can get and contribute skip files for popular feature films, is live at https://prgomez.com/videoskip/exchange
+The VideoSkip Exchange, where users can get and contribute skip files for popular feature films, is live at https://videoskip.org/exchange
