@@ -310,7 +310,7 @@ function loadFileAsURL(){
 	};
 	fileReader.readAsText(fileToLoad);
 	boxMsg.textContent = 'This is the content of file: ' + fileToLoad.name;
-	setTimeout(function(){cuts = PF_SRT.parse(skipBox.value); setActions(); makeTimeLabels()},1000)				//give it a whole second to load before data is extracted to memory
+	setTimeout(function(){cuts = PF_SRT.parse(skipBox.value); setSwitches(); setActions(); makeTimeLabels()},1000)				//give it a whole second to load before data is extracted to memory
 }
 
 //similar, for loading subtitles
@@ -566,7 +566,7 @@ var ctx = canvas.getContext('2d')
 //to take a screen shot
 function makeShot(){
 	myVideo.pause();
-	skipBox.value = toHMS(myVideo.currentTime) + '\n' + skipBox.value;		//put time at start
+	writeIn(toHMS(myVideo.currentTime));							//insert time in box
 		//draw image to canvas. scale to target dimensions
 	canvas.width = myVideo.videoWidth / myVideo.videoHeight * canvas.height;
 	ctx.drawImage(myVideo, 0, 0, canvas.width, canvas.height);
@@ -739,6 +739,21 @@ function isSkipped(label){
 		return true
 	}else{
 		return false
+	}
+}
+
+//set switches for edits present in skip file; used only when a file is loaded
+function setSwitches(){
+	var boxes = checkBoxes.querySelectorAll('input');
+	for(var i = 0; i < 6; i++) boxes[i].checked = false;
+	for(var i = 0; i < cuts.length; i++){
+		var label = cuts[i].text.toLowerCase().replace(/\(.*\)/g,'');						//ignore text in parentheses
+		sexMode.checked = sexMode.checked || isContained(label,/sex|nud/);
+		violenceMode.checked = violenceMode.checked || isContained(label,/vio|gor/);
+		curseMode.checked = curseMode.checked || isContained(label,/pro|cur|hat/);
+		boozeMode.checked = boozeMode.checked || isContained(label,/alc|dru|smo/);
+		scareMode.checked = scareMode.checked || isContained(label,/fri|sca|int/);
+		otherMode.checked = otherMode.checked || isContained(label,/oth|bor/)
 	}
 }
 
