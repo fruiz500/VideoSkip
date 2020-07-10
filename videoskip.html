@@ -33,11 +33,6 @@ input[type=checkbox] {
     background-color: red;
     color: white;
 }
-.hspacer2 {
-	width: 90px;
-	height: auto;
-	display:inline-block;
-}
 #skipBox {
 	height: 250px;
 	width: 356px;
@@ -133,7 +128,7 @@ input[type=checkbox] {
 
 <body>                    
 	<h2>VideoSkip Player</h2>
-    <p>v 0.1.6 &nbsp;&#169; F. Ruiz 2020</p>
+    <p>v 0.2 &nbsp;&#169; F. Ruiz 2020</p>
 <div id="videoMsg">Load video file with left button, .vtt or .srt subtitles with right button</div>
 <br>
 <label for="videoFile"><span class="cssbutton imptButton" id="videoFileBtn" title="load .mp4, .ogg, .webm video file">Load video</span></label>
@@ -162,11 +157,12 @@ input[type=checkbox] {
 	<input type="file" id="skipFile"/>
     <button id="exchangeBtn"class="cssbutton small" title="open the VideoSkip Exchange in a separate tab">VideoSkip Exchange</button>
     <br><br>
-    Edit skips&nbsp;&nbsp;
+    Edit &nbsp;&nbsp;&nbsp;
     <button id="timeBtn" class="cssbutton small" title="insert current time">Insert time</button>
     <button id="arrowBtn" class="cssbutton small" title="insert a correctly formatted arrow">Insert arrow</button>
+    <button id="beepBtn" class="cssbutton small" title="insert a quick word mute">Insert silence</button>
     <button id="saveFile" class="cssbutton imptButton small" title="save .skp file to Downloads">Save</button>
-    <span class="hspacer2"></span>
+    &nbsp;&nbsp;
     <button id="backBtn"class="cssbutton small" title="step rewind / go to previous time">&#9668;</button>
     <input type="checkbox" id="fineMode"/ title="frame by frame">&nbsp;<span class="fineText">Fine</span>
     <button id="fwdBtn"class="cssbutton small" title="step advance / go to next time">&#9658;</button>
@@ -190,7 +186,7 @@ input[type=checkbox] {
   <li>If you have a .skp file containing the skips, you can load it now with the "Load skip file" button. Once loaded, its contents will appear in the box, plus a screenshot on its right. Each skip consists of beginning and end times relative to the start of the video, with an arrow between them, and on the line below a category plus maybe a handling label (such as "video" or "audio").</li>
   <li>If you don't have a skip file for the film you're watching, chances are another user has made one, and has posted it in the VideoSkip Exchange. There's a button to load the Exchange on a separate tab. You don't have to register in order to browse and download skip files.</li>
   <li>The time shown on the first line of a loaded skip file is used for syncing the skips for different versions of the video. Click the "Go to time" button; if the video shows the same image as the screenshot, everything is in sync and you can go ahead and watch it, otherwise you need to sync the skips as explained in the section below.</li>
-  <li>If you want to change something in the list of skips, go right ahead. There's a button to insert the current time on the video (the video itself has a scrub bar to get there), and a correctly formatted "arrow" if you feel lazy. There is also a button for saving your edited skip list in the default folder for downloads.</li>
+  <li>If you want to change something in the list of skips, go right ahead. There's a button to insert the current time on the video (the video itself has a scrub bar to get there), and a correctly formatted "arrow" if you feel lazy, plus another button to insert a silence over the word just pronounced. There is also a button for saving your edited skip list in the default folder for downloads.</li>
   <li>Click the play button on the video, and maybe the fullscreen button, sit back, and enjoy. Skips will take place when their time arrives.</li>
   </ol>
 <p>How to sync the skips:</p>
@@ -211,7 +207,7 @@ input[type=checkbox] {
 <p>Making your own skips:</p>
 <ul>
   <li>A well-constructed skip file will have a first entry with the timing of an event near the start of the video where the image is changing quickly, plus a description of it on the line below it, and a screenshot. This is to allow viewers to use the skips in the file even if they are watching a video obtained from a different source, which might have a different timing. To take a screenshot, just scrub the video to the desired time and click "Take screenshot"; the time will be added at the beginning of the skip list.</li>
-  <li>Inserting skips is as easy as scrubbing to the point where the skip/mute/blank is supposed to begin, clicking the "Insert time" button on a new line, then the "Insert arrow" button, scrubbing to the point where the skip is to end, clicking the "Insert time" button once more, and then going to the next line and writing a content and (optionally) handling label. If you are initially unsure of where the skips should be inserted, there is a "Fast Forward" button that scrubs the video at high speed. Click it again to stop. The arrow buttons to its left also stop the video.</li>
+  <li>Inserting skips is as easy as scrubbing to the point where the skip/mute/blank is supposed to begin, clicking the "Insert time" button on a new line, then the "Insert arrow" button, scrubbing to the point where the skip is to end, clicking the "Insert time" button once more, and then going to the next line and writing a content and (optionally) handling label. If you are initially unsure of where the skips should be inserted, there is a "Fast Forward" button that scrubs the video at high speed. Click it again to stop. The arrow buttons to its left also stop the video. There is also an &quot;Insert silence&quot; button that inserts a single-word muting for profanity; click it as soon as you hear the word while the video plays normally.</li>
   <li>Content labels are case-insensitive. They consist of any word (actually, the first three letters are enough) of the IMDB categories, which are displayed next to the checkboxes, such as "sex", "nudity", "gore", "drugs", etc. Handling labels are these words: "audio", "sound", "video", "image" (or the first three letters of each, including "img") also case-insensitive.</li>
   <li>The "audio" or "sound" keywords will cause the sound to be muted during the given interval while the video is still shown, rather than skipping the section entirely, which might be useful for removing profanity. The "video" and "image" keywords cause the image to blank out while the sound still plays, which might be useful for instances of nudity, etc. No handling keyword means that the section will be completely skipped. You can add explanatory text in parentheses, which won't trigger the filters.</li>
   <li>Everything is editable in the box. Use this to fine-tune timings. For instance, words to be muted typically take a lot less than a second. You can review each timing by clicking it on the list andthen clicking "Go to time". If the time is selected, the arrows will shift the time as well as scrub the video.</li>
@@ -676,6 +672,11 @@ subFile.addEventListener('change', loadSubs);
 timeBtn.addEventListener('click', function(){writeIn(toHMS(myVideo.currentTime))});
 
 arrowBtn.addEventListener('click', function(){writeIn(' --> ')});
+
+beepBtn.addEventListener('click', function(){
+	var time  = myVideo.currentTime;
+	writeIn(toHMS(time - 0.7) + ' --> ' + toHMS(time) + '\nprofane word\n\n')
+});
 
 instructions.style.display = 'none';
 help.addEventListener('click', toggleHelp);
