@@ -154,6 +154,7 @@ input[type=checkbox] {
     <button id="fFwdBtn"class="cssbutton" title="toggle play / fast forward / stop">&#9658;&#9658;</button>
     <br>
     <button id="shotTimeBtn"class="cssbutton small" title="go to selected time / screenshot time">Go to time</button>
+    <button id="autoBtn" class="cssbutton small" title="find shot in video">Find shot</button>
     <button id="moveBtn" class="cssbutton small" title="overlay shot on video">Superimp.</button>
     <button id="syncBtn"class="cssbutton imptButton small" title="change all times when video and shot match">Sync</button>
     <button id="shotBtn"class="cssbutton small" title="take screenshot">Screenshot</button>
@@ -203,7 +204,7 @@ input[type=checkbox] {
 <p>How to sync the skips:</p>
 <ol>
   <li>If the video matches the screenshot when you click the "Go to time" button, everything is in sync and you're done with this phase. Scrub the video back to the beginning and start watching.</li>
-  <li>But if the video is from a source different from that used to make the sync file, there may be a mismatch. Use the arrow buttons to scrub the video until the screen matches the screenshot or description (frame by frame, if "Fine" is checked). The fast forward button toggles the speed, or resumes playing if paused. The "Superimpose" button puts the screenshot right on top of the video, so you can see the precise moment when they match.You can move the screenshot around with the arrow keys, and resize it if you hold the Alt key as well. Hold Shift also for fine corrections.</li>
+  <li>But if the video is from a source different from that used to make the sync file, there may be a mismatch. Use the arrow buttons to scrub the video until the screen matches the screenshot or description (frame by frame, if "Fine" is checked). The fast forward button toggles the speed, or resumes playing if paused. The "Superimpose" button puts the screenshot right on top of the video, so you can see the precise moment when they match.You can move the screenshot around with the arrow keys, and resize it if you hold the Alt key as well. Hold Shift also for fine corrections. VideoSkip has an automatic process for finding the screenshot time by clicking the &quot;Find shot&quot; button. Make sure you are within a second of the correct time before clicking it.</li>
   <li>Click the "Sync times" button when video and screenshot match. This will shift all the skips by the right amount, so they will happen at the correct times.</li>
 </ol>
 <p>Getting the video files:</p>
@@ -481,6 +482,8 @@ function getTimeIndex(){
 	}
 }
 
+var	deltaT = 0.0417;				//seconds for each frame at 24 fps
+
 //called by forward button
 function fwdSkip(){
   if(myVideo.paused){
@@ -493,13 +496,13 @@ function fwdSkip(){
 			if(Math.abs(myVideo.currentTime - selectedTime) > tol){				//first go there
 				myVideo.currentTime = selectedTime;
 			}else{
-				myVideo.currentTime += fineMode.checked ? 0.0417 : 0.417;		//now scrub by a small amount
+				myVideo.currentTime += fineMode.checked ? deltaT : deltaT*10;		//now scrub by a small amount
 				writeIn(toHMS(myVideo.currentTime),true);							//and write it in
 			}			
 			skipBox.focus()
 		}
 	}else{											//scrub by a small amount
-		myVideo.currentTime += fineMode.checked ? 0.0417 : 0.417
+		myVideo.currentTime += fineMode.checked ? deltaT : deltaT*10
 	}
   }else{
 	myVideo.pause();
@@ -519,13 +522,13 @@ function backSkip(){
 			if(Math.abs(myVideo.currentTime - selectedTime) > tol){				//first go there
 				myVideo.currentTime = selectedTime;
 			}else{
-				myVideo.currentTime -= fineMode.checked ? 0.0417 : 0.417;		//now scrub by a small amount
+				myVideo.currentTime -= fineMode.checked ? deltaT : deltaT*10;		//now scrub by a small amount
 				writeIn(toHMS(myVideo.currentTime),true)							//and write it in
 			}
 			skipBox.focus()
 		}
 	}else{											//scrub by a small amount
-		myVideo.currentTime -= fineMode.checked ? 0.0417 : 0.417
+		myVideo.currentTime -= fineMode.checked ? deltaT : deltaT*10
 	}
   }else{
 	myVideo.pause();
@@ -577,6 +580,24 @@ function makeShot(){
 	screenShot.src = dataURI
 }
 
+//get image data at current time; returns an array
+function imageData(source){
+	canvas.width = source.clientWidth / source.clientHeight * canvas.height;
+	ctx.drawImage(source, 0, 0, canvas.width, canvas.height);
+	return ctx.getImageData(0,0,canvas.width,canvas.height).data
+}
+
+//get the absolute error between the screenShot and the video
+function errorCalc(){
+	var videoData = imageData(myVideo),
+		length = Math.min(shotData.length,videoData.length),
+		error = 0;
+	for(var i = 0; i < length / 4; i++){			//every pixel takes 4 data points: R, G, B, alpha, in the 0 to 255 range; alpha data ignored
+		error += Math.abs(videoData[4*i] - shotData[4*i])+ Math.abs(videoData[4*i+1] - shotData[4*i+1]) + Math.abs(videoData[4*i+2] - shotData[4*i+2])	//all channels abs
+	}
+	return error / length
+}
+
 //scrub to first time in the box, unless a time is selected
 function scrub2shot(){
 	myVideo.pause();
@@ -597,15 +618,15 @@ function moveShot(){
 	if(isSuper){
 		isSuper = false;
 		screenShot.height = 240;
-		screenShot.width = myVideo.offsetWidth / myVideo.offsetHeight * 240;
+		screenShot.width = myVideo.clientWidth / myVideo.clientHeight * 240;
 		screenShot.style.position = '';
 		screenShot.style.top = '';
 		screenShot.style.left = '';
 		screenShot.style.opacity = ''	
 	}else{
 		isSuper = true;
-		screenShot.height = myVideo.offsetHeight;				//rescales the picture
-		screenShot.width = myVideo.offsetWidth;
+		screenShot.height = myVideo.clientHeight;				//rescales the picture
+		screenShot.width = myVideo.clientWidth;
 		screenShot.style.position = 'absolute';
 		screenShot.style.top = myVideo.offsetTop + 'px';
 		screenShot.style.left = myVideo.offsetLeft + 'px';
@@ -706,6 +727,8 @@ backBtn.addEventListener('click',backSkip);
 
 shotTimeBtn.addEventListener('click',scrub2shot);
 
+autoBtn.addEventListener('click',findShot);
+
 moveBtn.addEventListener('click',moveShot);
 
 syncBtn.addEventListener('click',syncTimes);
@@ -777,6 +800,48 @@ function setActions(){
 			cuts[i].action = isSkipped(label) ? 'blank' : ''
 		}
 	}
+}
+
+var	errorData = [[],[]];
+
+//process to get the error between the video and the screenshot as a double array of times and errors, starting 2 seconds before current video time, and move to best
+function findShot(){
+	shotData = imageData(screenShot);				//previously defined global variables
+	errorData = [[],[]];
+	var endTime = myVideo.currentTime,
+		startTime = endTime - 1.5;
+	myVideo.currentTime = startTime;
+	if(!isSuper) moveShot();							//superimpose shot for best results
+	myVideo.muted = true;
+	myVideo.play();
+	var collection = setInterval(function () {							//collect data every deltaT seconds
+		errorData[0].push(myVideo.currentTime);
+		errorData[1].push(errorCalc())
+	}, deltaT*1000);
+	setTimeout(function(){
+		clearInterval(collection);
+		myVideo.pause();		
+		myVideo.currentTime = minTime(errorData) + deltaT/2;					//scrub video to position of minimum error, plus half frame as fix
+		myVideo.muted = false;
+		fineMode.checked = true;
+		boxMsg.textContent = "Auto shot finding done. You may need to repeat it or adjust with time arrows. Then click Sync times."
+	},2500)									//do all this for 2.5 seconds so it catches 1.5 second before and 1 after. Results will be in errorData array
+}
+
+//find time for minimum error; errorData is a double list of errors and time
+function minTime(errorData){
+	var minError = 5000,						//sufficiently large to be larger than any error in errorData
+		lastTime = errorData[0][0],
+		minIndex = 0,
+		lastIndex = errorData[0].length - 1;
+	for(var i = 1; i <= lastIndex; i++){		//first find index for the minimum error in the array, ignoring first one
+		if(errorData[1][i] < minError && errorData[0][i] != lastTime){
+			minError = errorData[1][i];
+			minIndex = i
+		}
+		lastTime = errorData[0][i]			//to get beyond stuck time at the beginning
+	}
+	return errorData[0][minIndex]				//time for minimum error in the data array
 }
 
 var prevAction = '';
