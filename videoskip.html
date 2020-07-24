@@ -182,7 +182,7 @@ input[type=checkbox] {
 <p>Step by step:</p>
 <ol>
   <li>Load the video from a local file using the &quot;Load video&quot; button. Because the video must be playable in a browser, it can take .mp4, .ogg, and .webm formats. You can save videos from streaming sources in these formats, rip a disc using software, or convert video files into these formats from a different format (more information below).</li>
-  <li>Optionally, load a file containing subtitles using the &quot;Load subtitles&quot;. Subtitles must be in .vtt or .srt format. They might show as &quot;English&quot; but never mind.</li>
+  <li>Optionally, load a file containing subtitles using the &quot;Load subtitles&quot;. Subtitles must be in .vtt or .srt format. They might show as &quot;English&quot; but never mind. You will be asked whether or not you want to generate skips for profanity automatically. If this is the case, it is best to load the subtitles after the skip file in step 4. You can display and edit the list of filtered words by clicking the Help button; the list is at the bottom.</li>
   <li>Toggle the category filters using the checkboxes. A check means that the filter is on and content labeled accordingly will be skipped or blanked out. Otherwise it will be shown.</li>
   <li>If you have a .skp file containing the skips, you can load it now with the "Load skip file" button. Once loaded, its contents will appear in the box, plus a screenshot on its right. Each skip consists of beginning and end times relative to the start of the video, with an arrow between them, and on the line below a category plus maybe a handling label (such as "video" or "audio").</li>
   <li>If you don't have a skip file for the film you're watching, chances are another user has made one, and has posted it in the VideoSkip Exchange. There's a button to load the Exchange on a separate tab. You don't have to register in order to browse and download skip files.</li>
@@ -235,6 +235,8 @@ input[type=checkbox] {
   <p><strong>Credits:</strong></p>
   <p>VideoSkip.org domain kindly donated by <a href="https://jeremyplsek.com" target="_blank">Jeremy Plsek</a>. The successor of his VideoSkip is <a href="https://sponsor.ajay.app/" target="_blank">SponsorBlock</a>, which skips ads in YouTube</p>
   <p>Favicon made by <a href="https://www.flaticon.com/authors/smashicons" title="Smashicons">Smashicons</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></p>
+  <p>Below is the block list used for automatically generating silences from a subtitle file, derived from a list courtesy of <a href="https://www.freewebheaders.com/full-list-of-bad-words-banned-by-google/" target="_blank">freewebheaders.com</a>. Edit as needed while maintaining the format:</p>
+  <div id="blockList" contenteditable>anus, ass fuck, ass hole, assfuck, asshole, assshole, assbag, assbandit, assbang, assbanged, assbanger, assbangs, assbite, assclown, asscock, asscracker, assface, assfaces, assfuck, assfucker, ass-fucker, assfukka, assgoblin, assh0le, asshat, ass-hat, asshead, asshopper, ass-jabber, assjacker, asslick, asslicker, assmaster, assmonkey, assmucus, assmucus, assmunch, assmuncher, assnigger, asspirate, ass-pirate, assshit, asssucker, asswad, asswhole, asswipe, asswipes, auto erotic, bastard, beatch, bimbo, bitch, black cock, bloke, bloody hell, bollock, bollok, bollox, boong, bull shit, bullshit, butt, clit, cock, cockfucker, cocksuck, cocksucker, condom, coonnass, crap, cunt, cyberfuck, dago, damn, darn, dego, dick, dildo, dike, douche, dyke, ejaculate, erect, erection, erotic, escort, fag, faggot, fuck, fuck off, fuck you, fuckass, fuckhole, gay, god damn, goddam, gooch, gook, hard core, hardcore, homoerotic, honky, hooker, hoor, hootch, hore, horniest, horny, hussy, hymen, injun, intercourse, jack off, jackass, jackhole, jackoff, jack-off, jaggi, jagoff, jail bait, jailbait, jerk, jerk off, jerk0ff, jerkass, jerked, jerkoff, jerk-off, jigaboo, jiggaboo, jiggerboo, jism, jiz, jizm, jizz, jizzed, jock, juggs, jungle bunny, junglebunny, junkie, junky, kafir, kawk, kinbaku, kinkster, klan, knob end, knobbing, knobead, knobed, knobend, knobhead, knobjocky, knobjokey, kock, kondum, kondums, kooch, kooches, kootch, kum, kummer, kumming, kums, kunilingus, kunja, kunt, kwif, kike, kraut, kyke, lameass, lardass, lesbian, lezzie, masterbat, masturbat, motha, mother fucker, motherfuck, motherfucker, negro, nigger, nimrod, ninny, nipple, orgasim, orgasm, paedophil, paki, panooch, pansy, pantie, pants down, panty, pedophil, pee, penis, penisfucker, pikey, pillowbiter, pimp, pimpis, pinko, piss, piss off, polack, pollack, poop, porn, porno, pornography, pubi, pussy, puto, queaf, queef, queer, quim, raghead, retard, russkie, russky, sadist, schizo, schlong, scissoring, screw, screwed, screwing, scroat, scrog, scrot, sex, sexy, shit, skag, skank, skeet, slanteye, sleaze, sleazy, slut, smartass, smeg, smegma, smut, sodomi, sodomy, son of a bitch, souse, sperm, spick, splooge, spooge, suck, swastika, swinger, tampon, teat, tits, titt, towelhead, twat, twunt, upskirt, viagra, voyeur, wank, wazoo, wedgie, weenie, weewee, weiner, weirdo, wench, wet dream, wetback, whore, wiseass, wog, wop, xxx, yid, yiffy, yobbo, zibbi, zoophilia, zubb</div>
 </div>
 </div>
 <script>
@@ -308,7 +310,7 @@ function loadFileAsURL(){
 	setTimeout(function(){cuts = PF_SRT.parse(skipBox.value); setSwitches(); setActions(); makeTimeLabels()},1000)	//give it a whole second to load before data is extracted to memory
 }
 
-//similar, for loading subtitles
+//similar, for loading subtitles; includes option to generate skips for profanity
 function loadSubs(){
 	var fileToLoad = subFile.files[0],
 		fileReader = new FileReader();
@@ -328,6 +330,9 @@ function loadSubs(){
 				var subBlob = new Blob([subs], {"type": 'text/plain'});
 				track.src = URL.createObjectURL(subBlob);
 			}
+			if(confirm("Do you want to generate silences for profanity found in the subtitles? Otherwise Cancel")){
+				if(!autoBeepGen(subs)) return			//bail out if subs aren't really needed
+			}
 			track.addEventListener("load", function(){
 				this.mode = "showing";
 				myVideo.textTracks[0].mode = "showing"; // thanks Firefox
@@ -339,6 +344,26 @@ function loadSubs(){
 		}
 	};
 	fileReader.readAsText(fileToLoad)
+}
+
+//inserts a silence for each subtitle found to contain words in the blockList, using full time for each; then reorders the skips by time
+function autoBeepGen(subs){
+	var blockListExp = new RegExp(blockList.textContent.replace(/, +/g,'|'),"g");
+	var subObj = PF_SRT.parse(subs);				//similar in structure to cuts, with keys: startTime, endTime, text, action (empty)
+	writeIn('\n\n');
+	for(var i = 0; i < subObj.length; i++){
+		var word = subObj[i].text.toLowerCase().match(blockListExp);
+		if(word){	//word found in block list
+			writeIn(toHMS(subObj[i].startTime) + ' --> ' + toHMS(subObj[i].endTime) + '\nprofane word (' + word[0] + ')\n\n')
+		}
+	}
+	var	initialData = skipBox.value.trim().split('\n').slice(0,2);					//first two lines containing screenshot timing
+	cuts = PF_SRT.parse(skipBox.value);
+	cuts.sort(function(a, b){return a.startTime - b.startTime;});
+	times2box();
+	skipBox.value = initialData.join('\n') + '\n\n' + skipBox.value;
+	curseMode.checked = true;
+	return confirm("Cancel if don't really want to see subtitles, just scan for profanity")
 }
 
 //to download data to a file, from StackOverflow
@@ -359,7 +384,7 @@ function download(data, filename, type) {
 //to parse the content of the skip box in something close to .srt format, from StackOverflow
 var PF_SRT = function() {
   //SRT format
-  var pattern = /([\d:,.]+)\s*-+\>\s*([\d:,.]+)\s*\n([\s\S]*?(?=\n{2}|$))?/gm;		//no item number, can use decimal dot instead of comma, malformed arrows
+  var pattern = /([\d:,.]+)\s*-+\>\s*([\d:,.]+)\s*\n([\s\S]*?(?=\n{2}|=\n{2}))?/gm;		//no item number, can use decimal dot instead of comma, malformed arrows
   var _regExp;
 
   var init = function() {
@@ -373,7 +398,7 @@ var PF_SRT = function() {
     if (f == null)
       return _subtitles;
 
-    f = f.replace(/\r\n|\r|\n/g, '\n')
+    f = f.replace(/\r\n|\r|\n/g, '\n') + '\n\n';
 
     while ((matches = pattern.exec(f)) != null) {
       result.push(toLineObj(matches));
@@ -420,6 +445,13 @@ function fromHMS(timeString){
 
 //shift all times so the screenshot has correct timing in the video
 function syncTimes(){
+	if(timeLabels.length == 0){
+		boxMsg.textContent = "Must have at least one time in the box before clicking";
+		return
+	}else if(timeLabels[0].length < 1){
+		boxMsg.textContent = "Must have at least one time in the box before clicking";
+		return
+	}
 	var	initialData = skipBox.value.trim().split('\n').slice(0,2),					//first two lines
 		shotTime = fromHMS(initialData[0]),
 		seconds = shotTime ? myVideo.currentTime - shotTime : 0;
@@ -533,6 +565,7 @@ var speedMode = 1;
 
 //toggles normal, max, and zero speeds
 function toggleFF(){
+	if(myVideo.src == '') return;
 	skipBox.selectionStart = skipBox.selectionEnd;		//clear selection, if any
 	skipBox.focus();
 	if(myVideo.paused){							//if paused, restart, no speed change
@@ -562,6 +595,10 @@ var ctx = canvas.getContext('2d')
 
 //to take a screen shot
 function makeShot(){
+	if(myVideo.src == ''){
+		boxMsg.textContent = "Load a video first";
+		return
+	}
 	myVideo.pause();
 	writeIn(toHMS(myVideo.currentTime));							//insert time in box
 		//draw image to canvas. scale to target dimensions
@@ -585,14 +622,21 @@ function errorCalc(){
 	var videoData = imageData(myVideo),
 		length = Math.min(shotData.length,videoData.length),
 		error = 0;
-	for(var i = 0; i < length / 4; i++){			//every pixel takes 4 data points: R, G, B, alpha, in the 0 to 255 range; alpha data ignored
-		error += Math.abs(videoData[4*i] - shotData[4*i])+ Math.abs(videoData[4*i+1] - shotData[4*i+1]) + Math.abs(videoData[4*i+2] - shotData[4*i+2])	//all channels abs
+	for(var i = 0; i < length; i += 4){			//every pixel takes 4 data points: R, G, B, alpha, in the 0 to 255 range; alpha data ignored
+		error += Math.abs(videoData[i] - shotData[i]) + Math.abs(videoData[i+1] - shotData[i+1]) + Math.abs(videoData[i+2] - shotData[i+2])		//all channels abs
 	}
 	return error / length
 }
 
 //scrub to first time in the box, unless a time is selected
 function scrub2shot(){
+	if(timeLabels.length == 0){
+		boxMsg.textContent = "Must have at least one time in the box before clicking";
+		return
+	}else if(timeLabels[0].length < 1){
+		boxMsg.textContent = "Must have at least one time in the box before clicking";
+		return
+	}
 	myVideo.pause();
 	var index = getTimeIndex();
 	if(index != null){
@@ -608,6 +652,10 @@ var isSuper = false;
 
 //put the screenshot on top of the video so a perfect match can be found, and back
 function moveShot(){
+	if(screenShot.src == ''){
+		boxMsg.textContent = "Nothing to superimpose";
+		return
+	}
 	if(isSuper){
 		isSuper = false;
 		screenShot.height = 240;
@@ -707,6 +755,7 @@ instructions.style.display = 'none';
 help.addEventListener('click', toggleHelp);
 
 saveFile.addEventListener('click', function(){
+	if(screenShot.src == '' && timeLabels.length == 0) return;
 	if(!name) name = prompt('Enter the file name. Extension .skp wil be added');
 	download(skipBox.value + '\n' + screenShot.src, name + '.skp', "text/plain");	
 	boxMsg.textContent = 'File saved with name ' + name + '.skp'
@@ -795,10 +844,15 @@ function setActions(){
 	}
 }
 
-var	errorData = [[],[]];
+var	errorData = [[],[]],
+	accel = 2;				//determined experimentally
 
 //process to get the error between the video and the screenshot as a double array of times and errors, starting 2 seconds before current video time, and move to best
 function findShot(){
+	if(screenShot.src == ''){
+		boxMsg.textContent = "Must have a screenshot first";
+		return
+	}
 	shotData = imageData(screenShot);				//previously defined global variables
 	errorData = [[],[]];
 	var endTime = myVideo.currentTime,
@@ -806,19 +860,21 @@ function findShot(){
 	myVideo.currentTime = startTime;
 	if(!isSuper) moveShot();							//superimpose shot for best results
 	myVideo.muted = true;
+	myVideo.playbackRate = accel;
 	myVideo.play();
 	var collection = setInterval(function () {							//collect data every deltaT seconds
 		errorData[0].push(myVideo.currentTime);
 		errorData[1].push(errorCalc())
-	}, deltaT*1000);
+	}, deltaT*1000/accel);
 	setTimeout(function(){
 		clearInterval(collection);
-		myVideo.pause();		
-		myVideo.currentTime = minTime(errorData) + deltaT/2;					//scrub video to position of minimum error, plus half frame as fix
+		myVideo.pause();
+		myVideo.playbackRate = 1;	
+		myVideo.currentTime = minTime(errorData) + deltaT/2*accel;					//scrub video to position of minimum error, plus half frame as fix
 		myVideo.muted = false;
 		fineMode.checked = true;
 		boxMsg.textContent = "Auto shot finding done. You may need to repeat it or adjust with time arrows. Then click Sync times."
-	},2500)									//do all this for 2.5 seconds so it catches 1.5 second before and 1 after. Results will be in errorData array
+	},2500/accel)									//do all this for 2.5 seconds so it catches 1.5 second before and 1 after. Results will be in errorData array
 }
 
 //find time for minimum error; errorData is a double list of errors and time
