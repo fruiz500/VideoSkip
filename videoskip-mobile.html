@@ -31,6 +31,16 @@ input[type=checkbox] {
 	cursor: pointer;
 	border: 1px solid #dedede;
 }
+input[type=range][orient=vertical] {
+    writing-mode: bt-lr; /* IE */
+    -webkit-appearance: slider-vertical; /* WebKit */
+    width: 8px;
+    height: 70px;
+    padding: 0 5px;
+}
+td {
+	align-content: center;
+}
 .info {
     background-color: palegreen;            
 }
@@ -138,7 +148,7 @@ input[type=checkbox] {
 
 <body>                    
 	<h2>VideoSkip Player Mobile</h2>
-    <p>v 0.2 &nbsp;&#169; F. Ruiz 2020</p>
+    <p>v 0.2.3 &nbsp;&#169; F. Ruiz 2020</p>
 <div id="videoMsg">Load video file with left button, .vtt or .srt subtitles with middle button</div>
 <label for="videoFile"><span class="cssbutton imptButton" id="videoFileBtn" title="load .mp4, .ogg, .webm video file">Load video</span></label>
 <input type="file" id="videoFile" accept="video/*"/>
@@ -150,6 +160,8 @@ input[type=checkbox] {
     &nbsp;
     <input type="checkbox" id="fineMode"/ title="frame by frame">
     &nbsp;<span class="fineText">Fine</span>
+    <input type="checkbox" id="altMode" title="shift auto prof. skips / resize shot"/>
+    &nbsp;<span class="fineText">Alt.</span>
     <button id="fwdBtn"class="cssbutton" title="step advance / go to next time">&#9658;</button>
     <button id="fFwdBtn"class="cssbutton" title="toggle play / fast forward / stop">&#9658;&#9658;</button>
     <br>
@@ -160,18 +172,28 @@ input[type=checkbox] {
     <button id="shotBtn"class="cssbutton small" title="take screenshot">Screenshot</button>
     <br>
     <br>
-    <b>Select the content to skip:</b>
-    <div id="checkBoxes">
-      <p>&nbsp;&nbsp;
-        <input type="checkbox" id="sexMode"/>&nbsp;Sex&nbsp;&nbsp;
-        <input type="checkbox" id="violenceMode"/>&nbsp;Violence&nbsp;&nbsp;
-      <input type="checkbox" id="curseMode"/>&nbsp;Profanity</p>
-      <p>&nbsp;&nbsp;
-        <input type="checkbox" id="boozeMode"/>&nbsp;Substance&nbsp;&nbsp;
-        <input type="checkbox" id="scareMode"/>&nbsp;Intense&nbsp;&nbsp;
-        <input type="checkbox" id="otherMode"/>&nbsp;Other
-      </p>
-    </div>
+    <b>Select the filters and their strength:</b>
+    <br>
+    <table id="filters">
+    <tr>
+    <td></td>
+    <th align="center">&nbsp;Sex and Nudity&nbsp;</th>
+    <th align="center">&nbsp;Violence and Gore&nbsp;</th>
+    <th align="center">&nbsp;Profanity and Hate&nbsp;</th>
+    <th align="center">&nbsp;Alcohol, Drugs, Smoking&nbsp;</th>
+    <th align="center">&nbsp;Frightening, Intense&nbsp;</th>
+    <th align="center">&nbsp;Other&nbsp;</th>
+    </tr>
+    <tr>
+    <td>High<br>Medium<br>Low<br>Off</td>
+    <td align="center"><input id="sexNum" type="range" orient="vertical" min="0" max="3" step="1" value="0"></td>
+    <td align="center"><input id="violenceNum" type="range" orient="vertical" min="0" max="3" step="1" value="0"></td>
+    <td align="center"><input id="curseNum" type="range" orient="vertical" min="0" max="3" step="1" value="0"></td>
+    <td align="center"><input id="boozeNum" type="range" orient="vertical" min="0" max="3" step="1" value="0"></td>
+    <td align="center"><input id="scareNum" type="range" orient="vertical" min="0" max="3" step="1" value="0"></td>
+    <td align="center"><input id="otherNum" type="range" orient="vertical" min="0" max="3" step="1" value="0"></td>
+    </tr>
+    </table>
     <div id="boxMsg"><b>Load here the .skp file containing the skips:</b></div>
     <br>
     <label for="skipFile"><span class="cssbutton imptButton" id="skipFileBtn" title="load .skp file">Load skip file</span></label>
@@ -193,18 +215,18 @@ input[type=checkbox] {
 <p>Step by step:</p>
 <ol>
   <li>Load the video from a local file using the &quot;Load video&quot; button. Because the video must be playable in a browser, it can take .mp4, .ogg, and .webm formats. You can save videos from streaming sources in these formats, rip a disc using software, or convert video files into these formats from a different format (more information below).</li>
-  <li>Optionally, load a file containing subtitles using the &quot;Load subtitles&quot;. Subtitles must be in .vtt or .srt format. They might show as &quot;English&quot; but never mind. You will be asked whether or not you want to generate skips for profanity automatically. If this is the case, it is best to load the subtitles after the skip file in step 4. You can display and edit the list of filtered words by clicking the Help button; the list is at the bottom.</li>
-  <li>Toggle the category filters using the checkboxes. A check means that the filter is on and content labeled accordingly will be skipped or blanked out. Otherwise it will be shown.</li>
+  <li>Optionally, load a file containing subtitles using the &quot;Load subtitles&quot;. Subtitles must be in .vtt or .srt format. They might show as &quot;English&quot; but never mind. You will be asked whether or not you want to generate skips for profanity automatically. If this is the case, it is best to load the subtitles after the skip file in step 4. You can display and edit the list of filtered words by clicking the Help button; the list is at the bottom. The overall timing of these skips can be adjusted with the arrow buttons, after checking &quot;Alt.&quot;</li>
+  <li>Set the category filters using the sliders according to the audience. The higher, the more stringent the filter (for instance, High = for children, Medium = for teens, Low = for adults). If a filter is Off, the flagged content will be shown.</li>
   <li>If you have a .skp file containing the skips, you can load it now with the "Load skip file" button. Once loaded, its contents will appear in the box, plus a screenshot on its right. Each skip consists of beginning and end times relative to the start of the video, with an arrow between them, and on the line below a category plus maybe a handling label (such as "video" or "audio").</li>
   <li>If you don't have a skip file for the film you're watching, chances are another user has made one, and has posted it in the VideoSkip Exchange. There's a button to load the Exchange on a separate tab. You don't have to register in order to browse and download skip files.</li>
   <li>The time shown on the first line of a loaded skip file is used for syncing the skips for different versions of the video. Click the "Go to time" button; if the video shows the same image as the screenshot, everything is in sync and you can go ahead and watch it, otherwise you need to sync the skips as explained in the section below.</li>
   <li>If you want to change something in the list of skips, go right ahead. There's a button to insert the current time on the video (the video itself has a scrub bar to get there), and a correctly formatted "arrow" if you feel lazy, plus another button to insert a silence over the word just pronounced. There is also a button for saving your edited skip list in the default folder for downloads.</li>
   <li>Click the play button on the video, and maybe the fullscreen button, sit back, and enjoy. Skips will take place when their time arrives.</li>
-  </ol>
+</ol>
 <p>How to sync the skips:</p>
 <ol>
   <li>If the video matches the screenshot when you click the "Go to time" button, everything is in sync and you're done with this phase. Scrub the video back to the beginning and start watching.</li>
-  <li>But if the video is from a source different from that used to make the sync file, there may be a mismatch. Use the arrow buttons to scrub the video until the screen matches the screenshot or description (frame by frame, if "Fine" is checked). The fast forward button toggles the speed, or resumes playing if paused. The "Superimpose" button puts the screenshot right on top of the video, so you can see the precise moment when they match.You can move the screenshot around with the arrow keys, and resize it if you hold the Alt key as well. Hold Shift also for fine corrections. VideoSkip has an automatic process for finding the screenshot time by clicking the &quot;Find shot&quot; button. Make sure you are within a second of the correct time before clicking it.</li>
+  <li>But if the video is from a source different from that used to make the sync file, there may be a mismatch. Use the arrow buttons to scrub the video until the screen matches the screenshot or description (frame by frame, if "Fine" is checked). The fast forward button toggles the speed, or resumes playing if paused. The "Superimpose" button puts the screenshot right on top of the video, so you can see the precise moment when they match. You can resize the screenshot with the arrow keys, and move it around if you hold the Alt key as well. Hold Shift also for fine corrections (checking &quot;Alt&quot; and &quot;Fine&quot; do the same things). VideoSkip has an automatic process for finding the screenshot time by clicking the &quot;Find shot&quot; button. Make sure you are within one second of the correct time before clicking it.</li>
   <li>Click the "Sync times" button when video and screenshot match. This will shift all the skips by the right amount, so they will happen at the correct times.</li>
 </ol>
 <p>Getting the video files:</p>
@@ -213,23 +235,24 @@ input[type=checkbox] {
   <li>If the video is in a DVD or BlueRay disc that your own, there are excellent programs that will extract the data into whatever format you choose. Currently my favorite is Handbrake, available for <a href="https://handbrake.en.softonic.com/" target="_blank">Windows</a> and for <a href="https://handbrake.en.softonic.com/mac" target="_blank">Mac</a>.</li>
   <li>Or you may have an old .avi, .mkv, or some other format. Handbrake can also convert the file from those formats into .mp4. A feature film may take an hour of processing. There are online converters as well, but they usually limit how much processing you can do in one day.</li>
   <li>Another way to get them is by sharing with others, via BitTorrent or similar protocol. Be advised that this is not always legal.</li>
-  <li>Of course, you can always view videos directly from a streaming service. In this case you will need the <strong>VideoSkip extension</strong> rather than this app. Here are links to get it <a href="https://chrome.google.com/webstore/detail/videoskip/mlmifkfgafheljfcjlgoiggcfjenjeed" target="_blank">for Chrome</a>, and <a href="https://addons.mozilla.org/en-US/firefox/addon/videoskip/" target="_blank">for Firefox</a>.</li>
+  <li>Of course, you can always view videos directly from a streaming service. In this case you will need the VideoSkip extension rather than this app. Here are links to get it <a href="https://chrome.google.com/webstore/detail/videoskip/mlmifkfgafheljfcjlgoiggcfjenjeed" target="_blank">for Chrome</a>, and <a href="https://addons.mozilla.org/en-US/firefox/addon/videoskip/" target="_blank">for Firefox</a>.</li>
   <li>Subtitles in .srt format are very easy to find online. This app will load them in this format, but if you want to convert them to .vtt there are easy online utilities like <a href="https://atelier.u-sub.net/srt2vtt/" target="_blank">this one</a>.</li>
 </ul>
 <p>Making your own skips:</p>
 <ul>
   <li>A well-constructed skip file will have a first entry with the timing of an event near the start of the video where the image is changing quickly, plus a description of it on the line below it, and a screenshot. This is to allow viewers to use the skips in the file even if they are watching a video obtained from a different source, which might have a different timing. To take a screenshot, just scrub the video to the desired time and click "Take screenshot"; the time will be added at the beginning of the skip list.</li>
   <li>Inserting skips is as easy as scrubbing to the point where the skip/mute/blank is supposed to begin, clicking the "Insert time" button on a new line, then the "Insert arrow" button, scrubbing to the point where the skip is to end, clicking the "Insert time" button once more, and then going to the next line and writing a content and (optionally) handling label. If you are initially unsure of where the skips should be inserted, there is a "Fast Forward" button that scrubs the video at high speed. Click it again to stop. The arrow buttons to its left also stop the video. There is also an &quot;Insert silence&quot; button that inserts a single-word muting for profanity; click it as soon as you hear the word while the video plays normally.</li>
-  <li>Content labels are case-insensitive. They consist of any word (actually, the first three letters are enough) of the IMDB categories, which are displayed next to the checkboxes, such as "sex", "nudity", "gore", "drugs", etc. Handling labels are these words: "audio", "sound", "video", "image" (or the first three letters of each, including "img") also case-insensitive.</li>
-  <li>The "audio" or "sound" keywords will cause the sound to be muted during the given interval while the video is still shown, rather than skipping the section entirely, which might be useful for removing profanity. The "video" and "image" keywords cause the image to blank out while the sound still plays, which might be useful for instances of nudity, etc. No handling keyword means that the section will be completely skipped. You can add explanatory text in parentheses, which won't trigger the filters.</li>
-  <li>Everything is editable in the box. Use this to fine-tune timings. For instance, words to be muted typically take a lot less than a second. You can review each timing by clicking it on the list andthen clicking "Go to time". If the time is selected, the arrows will shift the time as well as scrub the video.</li>
+  <li>Content labels are case-insensitive. They consist of any word (actually, the first three letters are enough) of the IMDB categories, which are displayed above the sliders, such as "sex", "nudity", "gore", "drugs", etc. Handling labels are these words: "audio", "sound", "video", "image" (or the first three letters of each, including "img") also case-insensitive.</li>
+  <li>The "audio" or "sound" keywords will cause the sound to be muted during the given interval while the video is still shown, rather than skipping the section entirely, which might be useful for removing profanity. The "video" and "image" keywords cause the image to blank out while the sound still plays, which might be useful for instances of nudity, etc. No handling keyword means that the section will be completely skipped.</li>
+  <li>Finally, adding a number from 1 (mild) to 3 (severe) will allow users to set the filtering level appropriately. A good standard is the following: 1 = problematic for children, 2 = problematic for teens, 3 = problematic for adults. You can add explanatory text in parentheses, which won't trigger the filters.</li>
+  <li>Everything is editable in the box. Use this to fine-tune timings. For instance, words to be muted typically take a lot less than a second. You can review each timing by clicking it on the list and then clicking "Go to time". If the time is selected, the arrows will shift the time as well as scrub the video.</li>
   <li>The "Insert" buttons put things always at the current cursor position.</li>
   <li>The "Save" button will save your list, plus screenshot, in .skp format in your default Download folder. You will have to move it from there to the folder where you want it. This format is text-based, so you can view the file in any text editor.</li>
   <li>The "VideoSkip Exchange" button will open a web page where you can share your skip file with other VideoSkip users.</li>
-  </ul>
-<p>Sample skip, which will cause the screen to blank out from 14 minutes, 8.27 seconds from the start of the movie until 14 minutes, 14 seconds, while the sound still plays, if &quot;Sex and Nudity&quot; is checked. It has additional explanations that won't affect the filter:</p>
+</ul>
+<p>Sample skip, which will cause the screen to blank out from 14 minutes, 8.27 seconds from the start of the movie until 14 minutes, 14 seconds, while the sound still plays, if &quot;Sex and Nudity&quot; is set at High level. It has additional explanations that won't affect the filter:</p>
 <p>0:14:08.27 --&gt; 0:14:14<br>
-  nude image (male, from behind)</p>
+  nude image 1 (male, from behind)</p>
 <p>Here are some videos that show how to make and use skip files:</p>
 <p>VideoSkip developer plays ukulele with a pick, Egad! (WARNING, this video might be offensive to sensitive ukulele players):<br>
   <a href="https://www.youtube.com/watch?v=uDZfW9SLb_4" target="_blank">https://www.youtube.com/watch?v=uDZfW9SLb_4</a></p>
@@ -361,7 +384,7 @@ function autoBeepGen(subs){
 	for(var i = 0; i < subObj.length; i++){
 		var word = subObj[i].text.toLowerCase().match(blockListExp);
 		if(word){	//word found in block list
-			writeIn(toHMS(subObj[i].startTime) + ' --> ' + toHMS(subObj[i].endTime) + '\nprofane word (' + word[0] + ')\n\n')
+			writeIn(toHMS(subObj[i].startTime) + ' --> ' + toHMS(subObj[i].endTime) + '\nprofane word 1 (' + word[0] + ')\n\n')
 		}
 	}
 	var	initialData = skipBox.value.trim().split('\n').slice(0,2);					//first two lines containing screenshot timing
@@ -369,7 +392,7 @@ function autoBeepGen(subs){
 	cuts.sort(function(a, b){return a.startTime - b.startTime;});
 	times2box();
 	skipBox.value = initialData.join('\n') + '\n\n' + skipBox.value;
-	curseMode.checked = true;
+	curseNum.value = 3;
 	return confirm("Cancel if don't really want to see subtitles, just scan for profanity")
 }
 
@@ -518,54 +541,78 @@ var	deltaT = 0.0417;				//seconds for each frame at 24 fps
 
 //called by forward button
 function fwdSkip(){
-  if(myVideo.paused){
-	if(skipBox.selectionStart != skipBox.selectionEnd){							//there is a selection
-		var index = getTimeIndex(),
-			tol = 0.02;
-		if(index != null){
-			skipBox.setSelectionRange(timeLabels[1][index],timeLabels[2][index]);
-			var selectedTime = fromHMS(timeLabels[0][index]);
-			if(Math.abs(myVideo.currentTime - selectedTime) > tol){				//first go there
-				myVideo.currentTime = selectedTime;
-			}else{
-				myVideo.currentTime += fineMode.checked ? deltaT : deltaT*10;		//now scrub by a small amount
-				writeIn(toHMS(myVideo.currentTime),true);							//and write it in
-			}			
-			skipBox.focus()
+	if(altMode.checked){										//special mode for shifting auto profanity skips, in case subtitle file was off
+		shiftProfSkips(true)
+
+	}else if(myVideo.paused){
+		if(skipBox.selectionStart != skipBox.selectionEnd){							//there is a selection
+			var index = getTimeIndex(),
+				tol = 0.02;
+			if(index != null){
+				skipBox.setSelectionRange(timeLabels[1][index],timeLabels[2][index]);
+				var selectedTime = fromHMS(timeLabels[0][index]);
+				if(Math.abs(myVideo.currentTime - selectedTime) > tol){				//first go there
+					myVideo.currentTime = selectedTime;
+				}else{
+					myVideo.currentTime += fineMode.checked ? deltaT : deltaT*10;	//now scrub by a small amount
+					writeIn(toHMS(myVideo.currentTime),true);						//and write it in
+				}			
+				skipBox.focus()
+			}
+		}else{											//scrub by one or ten frames
+			myVideo.currentTime += fineMode.checked ? deltaT : deltaT*10
 		}
-	}else{											//scrub by a small amount
-		myVideo.currentTime += fineMode.checked ? deltaT : deltaT*10
-	}
-  }else{
-	myVideo.pause();
-	speedMode = 0
-  }
+	}else{
+		myVideo.pause();
+		speedMode = 0
+  	}
 }
 
 //called by back button
 function backSkip(){
-  if(myVideo.paused){
-	if(skipBox.selectionStart != skipBox.selectionEnd){							//there is a selection
-		var index = getTimeIndex(),
-			tol = 0.02;
-		if(index != null){
-			skipBox.setSelectionRange(timeLabels[1][index],timeLabels[2][index]);
-			var selectedTime = fromHMS(timeLabels[0][index]);
-			if(Math.abs(myVideo.currentTime - selectedTime) > tol){				//first go there
-				myVideo.currentTime = selectedTime;
-			}else{
-				myVideo.currentTime -= fineMode.checked ? deltaT : deltaT*10;		//now scrub by a small amount
-				writeIn(toHMS(myVideo.currentTime),true)							//and write it in
+	if(altMode.checked){										//special mode for shifting auto profanity skips, in case subtitle file was off
+		shiftProfSkips(false)
+
+	}else if(myVideo.paused){
+		if(skipBox.selectionStart != skipBox.selectionEnd){							//there is a selection
+			var index = getTimeIndex(),
+				tol = 0.02;
+			if(index != null){
+				skipBox.setSelectionRange(timeLabels[1][index],timeLabels[2][index]);
+				var selectedTime = fromHMS(timeLabels[0][index]);
+				if(Math.abs(myVideo.currentTime - selectedTime) > tol){				//first go there
+					myVideo.currentTime = selectedTime;
+				}else{
+					myVideo.currentTime -= fineMode.checked ? deltaT : deltaT*10;	//now scrub by a small amount
+					writeIn(toHMS(myVideo.currentTime),true)							//and write it in
+				}
+				skipBox.focus()
 			}
-			skipBox.focus()
+		}else{											//scrub by one or ten frames
+			myVideo.currentTime -= fineMode.checked ? deltaT : deltaT*10
 		}
-	}else{											//scrub by a small amount
-		myVideo.currentTime -= fineMode.checked ? deltaT : deltaT*10
+	}else{
+		myVideo.pause();
+		speedMode = 0
 	}
-  }else{
-	myVideo.pause();
-	speedMode = 0
-  }
+}
+
+//called by the above, to shift auto-generated profanity skips
+function shiftProfSkips(isFwd){
+	var timeShift = 0,
+		isFine = fineMode.checked,
+		initialData = skipBox.value.trim().split('\n').slice(0,2);					//first two lines
+	for(var i = 0; i < cuts.length; i++){
+		if(cuts[i].text.match(/profane word 1 \(/)){								//do it only for auto-generated skips
+			timeShift = (isFine ? deltaT : deltaT*10)*(isFwd ? 1 : -1);
+			cuts[i].startTime += timeShift;
+			cuts[i].endTime += timeShift
+		}
+	}
+	times2box();
+	if(initialData){										//reconstruct initial data, if present
+		skipBox.value = initialData.join('\n') + '\n\n' + skipBox.value
+	}
 }
 
 var speedMode = 1;
@@ -717,31 +764,35 @@ document.onkeydown = checkKey;
 function checkKey(e) {
 	if(isSuper){							//this only works when a screenshot is superimposed on the video
     	e = e || window.event;
-    	if(e.altKey){						//alt combinations resize, regular moves, hold shift for fine movement
+    	if(altMode.checked != !!e.altKey){				//alt combinations moves, regular resizes, hold shift for fine movement
 			if(e.keyCode == '38'){
-				screenShot.height -= e.shiftKey ? 1 : 10
+				screenShot.style.top = parseInt(screenShot.style.top.slice(0,-2)) - (isFine ? 1 : 10) + 'px'
 			}else if(e.keyCode == '40'){
-				screenShot.height += e.shiftKey ? 1 : 10
+				screenShot.style.top = parseInt(screenShot.style.top.slice(0,-2)) + (isFine ? 1 : 10) + 'px'
 			}else if(e.keyCode == '37'){
-				screenShot.width -= e.shiftKey ? 1 : 10
+				screenShot.style.left = parseInt(screenShot.style.left.slice(0,-2)) - (isFine ? 1 : 10) + 'px'
 			}else if(e.keyCode == '39'){
-				screenShot.width += e.shiftKey ? 1 : 10
+				screenShot.style.left = parseInt(screenShot.style.left.slice(0,-2)) + (isFine ? 1 : 10) + 'px'
 			}
-		}else{							//move shot
+		}else{							//resize shot
 			if(e.keyCode == '38'){
-				screenShot.style.top = parseInt(screenShot.style.top.slice(0,-2)) - (e.shiftKey ? 1 : 10) + 'px'
+				screenShot.height += isFine ? 2 : 10;
+				screenShot.style.top = parseInt(screenShot.style.top.slice(0,-2)) - (isFine ? 1 : 5) + 'px'
 			}else if(e.keyCode == '40'){
-				screenShot.style.top = parseInt(screenShot.style.top.slice(0,-2)) + (e.shiftKey ? 1 : 10) + 'px'
+				screenShot.height -= isFine ? 2 : 10;
+				screenShot.style.top = parseInt(screenShot.style.top.slice(0,-2)) + (isFine ? 1 : 5) + 'px'
 			}else if(e.keyCode == '37'){
-				screenShot.style.left = parseInt(screenShot.style.left.slice(0,-2)) - (e.shiftKey ? 1 : 10) + 'px'
+				screenShot.width += isFine ? 2 : 10;
+				screenShot.style.left = parseInt(screenShot.style.left.slice(0,-2)) - (isFine ? 1 : 5) + 'px'
 			}else if(e.keyCode == '39'){
-				screenShot.style.left = parseInt(screenShot.style.left.slice(0,-2)) + (e.shiftKey ? 1 : 10) + 'px'
+				screenShot.width -= isFine ? 2 : 10;
+				screenShot.style.left = parseInt(screenShot.style.left.slice(0,-2)) + (isFine ? 1 : 5) + 'px'
 			}
 		}	
 	}
 }
 
-checkBoxes.addEventListener('change', setActions);
+filters.addEventListener('change', setActions);
 
 skipFile.addEventListener('change', loadFileAsURL);
 
@@ -801,20 +852,21 @@ function isContained(containerStr, regex){
 	return result
 }
 
-//to decide whether a particular content is to be skipped, according to check boxes. Allows alternative and incomplete keywords
+//to decide whether a particular content is to be skipped, according to 3-level sliders. Allows alternative and incomplete keywords
 function isSkipped(label){
-	if(isContained(label,/sex|nud/) && sexMode.checked){
-		return true
-	}else if(isContained(label,/vio|gor/) && violenceMode.checked){
-		return true
-	}else if(isContained(label,/pro|cur|hat/) && curseMode.checked){
-		return true
-	}else if(isContained(label,/alc|dru|smo/) && boozeMode.checked){
-		return true
-	}else if(isContained(label,/fri|sca|int/) && scareMode.checked){
-		return true
-	}else if(isContained(label,/oth|bor/) && otherMode.checked){
-		return true
+	var level = parseInt(label.match(/\d/) ? label.match(/\d/)[0] : 3)
+	if(isContained(label,/sex|nud/)){
+		return (parseInt(sexNum.value) + level) > 3
+	}else if(isContained(label,/vio|gor/)){
+		return (parseInt(violenceNum.value) + level) > 3
+	}else if(isContained(label,/pro|cur|hat/)){
+		return (parseInt(curseNum.value) + level) > 3
+	}else if(isContained(label,/alc|dru|smo/)){
+		return (parseInt(boozeNum.value) + level) > 3
+	}else if(isContained(label,/fri|sca|int/)){
+		return (parseInt(scareNum.value) + level) > 3
+	}else if(isContained(label,/oth|bor/)){
+		return (parseInt(otherNum.value) + level) > 3
 	}else{
 		return false
 	}
@@ -822,16 +874,16 @@ function isSkipped(label){
 
 //set switches for edits present in skip file; used only when a file is loaded
 function setSwitches(){
-	var boxes = checkBoxes.querySelectorAll('input');
-	for(var i = 0; i < 6; i++) boxes[i].checked = false;
+	var sliders = filters.querySelectorAll('input');
+	for(var i = 0; i < 6; i++) sliders[i].value = 0;
 	for(var i = 0; i < cuts.length; i++){
 		var label = cuts[i].text.toLowerCase().replace(/\(.*\)/g,'');						//ignore text in parentheses
-		sexMode.checked = sexMode.checked || isContained(label,/sex|nud/);
-		violenceMode.checked = violenceMode.checked || isContained(label,/vio|gor/);
-		curseMode.checked = curseMode.checked || isContained(label,/pro|cur|hat/);
-		boozeMode.checked = boozeMode.checked || isContained(label,/alc|dru|smo/);
-		scareMode.checked = scareMode.checked || isContained(label,/fri|sca|int/);
-		otherMode.checked = otherMode.checked || isContained(label,/oth|bor/)
+		if(isContained(label,/sex|nud/)) sexNum.value = 3;
+		if(isContained(label,/vio|gor/)) violenceNum.value = 3;
+		if(isContained(label,/pro|cur|hat/)) curseNum.value = 3;
+		if(isContained(label,/alc|dru|smo/)) boozeNum.value = 3;
+		if(isContained(label,/fri|sca|int/)) scareNum.value = 3;
+		if(isContained(label,/oth|bor/)) otherNum.value = 3
 	}
 }
 
