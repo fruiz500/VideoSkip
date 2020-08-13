@@ -149,12 +149,17 @@ td {
 <body>                    
 	<h2>VideoSkip Player Mobile</h2>
     <p>v 0.2.3 &nbsp;&#169; F. Ruiz 2020</p>
-<div id="videoMsg">Load video file with left button, .vtt or .srt subtitles with middle button</div>
+<div id="videoMsg">Load video file with left button, .vtt or .srt subtitles with middle button, skip file with the lower button</div>
 <label for="videoFile"><span class="cssbutton imptButton" id="videoFileBtn" title="load .mp4, .ogg, .webm video file">Load video</span></label>
 <input type="file" id="videoFile" accept="video/*"/>
 <label for="subFile"><span class="cssbutton small" id="subFileBtn" title="load .vtt, .srt subtitles; then enable them in the video">Load subtitles</span></label>
 <input type="file" id="subFile"/>
 <button id="help" class="cssbutton" title="toggle instructions">Help</button><br>
+<br>
+    <label for="skipFile"><span class="cssbutton imptButton" id="skipFileBtn" title="load .skp file">Load skip file</span></label>
+	<input type="file" id="skipFile"/>
+    <button id="exchangeBtn"class="cssbutton small" title="open the VideoSkip Exchange in a separate tab">VideoSkip Exchange</button>
+    <br>
 <video controls disablePictureInPicture id="myVideo"></video>
     <button id="backBtn"class="cssbutton" title="step rewind / go to previous time">&#9668;</button>
     &nbsp;
@@ -164,11 +169,12 @@ td {
     &nbsp;<span class="fineText">Alt.</span>
     <button id="fwdBtn"class="cssbutton" title="step advance / go to next time">&#9658;</button>
     <button id="fFwdBtn"class="cssbutton" title="toggle play / fast forward / stop">&#9658;&#9658;</button>
-    <br>
+    <button id="syncBtn"class="cssbutton imptButton" title="change all times when video and shot match">Sync</button>
+    <br><br>
+    <div id="boxMsg"><b>Load above the .skp file containing the skips</b></div><br>
     <button id="shotTimeBtn"class="cssbutton small" title="go to selected time / screenshot time">Go to time</button>
     <button id="autoBtn" class="cssbutton small" title="find shot in video">Find shot</button>
-    <button id="moveBtn" class="cssbutton small" title="overlay shot on video">Superimp.</button>
-    <button id="syncBtn"class="cssbutton imptButton small" title="change all times when video and shot match">Sync</button>
+    <button id="moveBtn" class="cssbutton small" title="overlay shot on video">Superimpose</button>
     <button id="shotBtn"class="cssbutton small" title="take screenshot">Screenshot</button>
     <br>
     <br>
@@ -177,15 +183,15 @@ td {
     <table id="filters">
     <tr>
     <td></td>
-    <th align="center">&nbsp;Sex and Nudity&nbsp;</th>
-    <th align="center">&nbsp;Violence and Gore&nbsp;</th>
-    <th align="center">&nbsp;Profanity and Hate&nbsp;</th>
-    <th align="center">&nbsp;Alcohol, Drugs, Smoking&nbsp;</th>
+    <th align="center">&nbsp;Sex, Nudity&nbsp;</th>
+    <th align="center">&nbsp;Violence, Gore&nbsp;</th>
+    <th align="center">&nbsp;Profanity, Hate&nbsp;</th>
+    <th align="center">&nbsp;Alcohol, Drugs, etc&nbsp;</th>
     <th align="center">&nbsp;Frightening, Intense&nbsp;</th>
     <th align="center">&nbsp;Other&nbsp;</th>
     </tr>
     <tr>
-    <td>High<br>Medium<br>Low<br>Off</td>
+    <td>High<br>Med.<br>Low<br>Off</td>
     <td align="center"><input id="sexNum" type="range" orient="vertical" min="0" max="3" step="1" value="0"></td>
     <td align="center"><input id="violenceNum" type="range" orient="vertical" min="0" max="3" step="1" value="0"></td>
     <td align="center"><input id="curseNum" type="range" orient="vertical" min="0" max="3" step="1" value="0"></td>
@@ -194,12 +200,7 @@ td {
     <td align="center"><input id="otherNum" type="range" orient="vertical" min="0" max="3" step="1" value="0"></td>
     </tr>
     </table>
-    <div id="boxMsg"><b>Load here the .skp file containing the skips:</b></div>
     <br>
-    <label for="skipFile"><span class="cssbutton imptButton" id="skipFileBtn" title="load .skp file">Load skip file</span></label>
-	<input type="file" id="skipFile"/>
-    <button id="exchangeBtn"class="cssbutton small" title="open the VideoSkip Exchange in a separate tab">VideoSkip Exchange</button>
-    <br><br>
     <b>Edit skips:</b>
     <br>
     <button id="timeBtn" class="cssbutton small" title="insert current time">Insert time</button>
@@ -216,18 +217,18 @@ td {
 <ol>
   <li>Load the video from a local file using the &quot;Load video&quot; button. Because the video must be playable in a browser, it can take .mp4, .ogg, and .webm formats. You can save videos from streaming sources in these formats, rip a disc using software, or convert video files into these formats from a different format (more information below).</li>
   <li>Optionally, load a file containing subtitles using the &quot;Load subtitles&quot;. Subtitles must be in .vtt or .srt format. They might show as &quot;English&quot; but never mind. You will be asked whether or not you want to generate skips for profanity automatically. If this is the case, it is best to load the subtitles after the skip file in step 4. You can display and edit the list of filtered words by clicking the Help button; the list is at the bottom. The overall timing of these skips can be adjusted with the arrow buttons, after checking &quot;Alt.&quot;</li>
-  <li>Set the category filters using the sliders according to the audience. The higher, the more stringent the filter (for instance, High = for children, Medium = for teens, Low = for adults). If a filter is Off, the flagged content will be shown.</li>
-  <li>If you have a .skp file containing the skips, you can load it now with the "Load skip file" button. Once loaded, its contents will appear in the box, plus a screenshot on its right. Each skip consists of beginning and end times relative to the start of the video, with an arrow between them, and on the line below a category plus maybe a handling label (such as "video" or "audio").</li>
   <li>If you don't have a skip file for the film you're watching, chances are another user has made one, and has posted it in the VideoSkip Exchange. There's a button to load the Exchange on a separate tab. You don't have to register in order to browse and download skip files.</li>
-  <li>The time shown on the first line of a loaded skip file is used for syncing the skips for different versions of the video. Click the "Go to time" button; if the video shows the same image as the screenshot, everything is in sync and you can go ahead and watch it, otherwise you need to sync the skips as explained in the section below.</li>
+  <li>Load the skip file now with the "Load skip file" button. Once loaded, its contents will appear in the box, plus a screenshot that starts superimposed on the video. Each skip consists of beginning and end times relative to the start of the video, with an arrow between them, and on the line below a category plus maybe a handling label (such as "video" or "audio").</li>
   <li>If you want to change something in the list of skips, go right ahead. There's a button to insert the current time on the video (the video itself has a scrub bar to get there), and a correctly formatted "arrow" if you feel lazy, plus another button to insert a silence over the word just pronounced. There is also a button for saving your edited skip list in the default folder for downloads.</li>
+  <li>Scrub the video with the arrow buttons (frame by frame, if "Fine" is checked) until it matches the screenshot, then click the &quot;Sync&quot; button. More detail on this process in the section below.</li>
+  <li>Set the category filters using the sliders according to the audience. The higher, the more stringent the filter (for instance, High = for children, Medium = for teens, Low = for adults). If a filter is Off, the flagged content will be shown.</li>
   <li>Click the play button on the video, and maybe the fullscreen button, sit back, and enjoy. Skips will take place when their time arrives.</li>
 </ol>
 <p>How to sync the skips:</p>
 <ol>
   <li>If the video matches the screenshot when you click the "Go to time" button, everything is in sync and you're done with this phase. Scrub the video back to the beginning and start watching.</li>
-  <li>But if the video is from a source different from that used to make the sync file, there may be a mismatch. Use the arrow buttons to scrub the video until the screen matches the screenshot or description (frame by frame, if "Fine" is checked). The fast forward button toggles the speed, or resumes playing if paused. The "Superimpose" button puts the screenshot right on top of the video, so you can see the precise moment when they match. You can resize the screenshot with the arrow keys, and move it around if you hold the Alt key as well. Hold Shift also for fine corrections (checking &quot;Alt&quot; and &quot;Fine&quot; do the same things). VideoSkip has an automatic process for finding the screenshot time by clicking the &quot;Find shot&quot; button. Make sure you are within one second of the correct time before clicking it.</li>
-  <li>Click the "Sync times" button when video and screenshot match. This will shift all the skips by the right amount, so they will happen at the correct times.</li>
+  <li>But if the video is from a source different from that used to make the skip file, there may be a mismatch. Use the arrow buttons to scrub the video until the screen matches the screenshot or description (frame by frame, if "Fine" is checked). The fast forward button toggles the speed, or resumes playing if paused. The "Superimpose" button puts the screenshot right on top of the video, so you can see the precise moment when they match. You can resize the screenshot with the arrow keys, and move it around if you hold the Alt key as well. Hold Shift also for fine corrections (checking &quot;Alt&quot; and &quot;Fine&quot; do the same things). VideoSkip has an automatic process for finding the screenshot time by clicking the &quot;Find shot&quot; button. Make sure you are within one second of the correct time before clicking it.</li>
+  <li>Click the "Sync" button when video and screenshot match. This will shift all the skips by the right amount, so they will happen at the correct times.</li>
 </ol>
 <p>Getting the video files:</p>
 <ul>
@@ -337,7 +338,7 @@ function loadFileAsURL(){
 	};
 	fileReader.readAsText(fileToLoad);
 	boxMsg.textContent = 'This is the content of file: ' + fileToLoad.name;
-	setTimeout(function(){cuts = PF_SRT.parse(skipBox.value); setSwitches(); setActions(); makeTimeLabels()},1000)				//give it a whole second to load before data is extracted to memory
+	setTimeout(function(){cuts = PF_SRT.parse(skipBox.value); setSwitches(); setActions(); makeTimeLabels();scrub2shot();moveShot()},1000)				//give it a whole second to load before data is extracted to memory
 }
 
 //similar, for loading subtitles
@@ -414,7 +415,7 @@ function download(data, filename, type) {
 //to parse the content of the skip box in something close to .srt format, from StackOverflow
 var PF_SRT = function() {
   //SRT format
-  var pattern = /([\d:,.]+)\s*-+\>\s*([\d:,.]+)\s*\n([\s\S]*?(?=\n{2}|=\n{2}))?/gm;		//no item number, can use decimal dot instead of comma, malformed arrows
+  var pattern = /([\d:,.]+)\s*-*\>\s*([\d:,.]+)\s*\n([\s\S]*?(?=\n+\s*\d|\n{2}))?/gm;		//no item number, can use decimal dot instead of comma, malformed arrows, no extra lines
   var _regExp;
 
   var init = function() {
@@ -854,7 +855,9 @@ function isContained(containerStr, regex){
 
 //to decide whether a particular content is to be skipped, according to 3-level sliders. Allows alternative and incomplete keywords
 function isSkipped(label){
-	var level = parseInt(label.match(/\d/) ? label.match(/\d/)[0] : 3)
+	var nuMatches = label.match(/\d/),
+		level = parseInt(nuMatches ? nuMatches[0] : 3);
+	level = level >= 3 ? 3 : level;
 	if(isContained(label,/sex|nud/)){
 		return (parseInt(sexNum.value) + level) > 3
 	}else if(isContained(label,/vio|gor/)){
