@@ -779,10 +779,14 @@ function checkKey(e) {
 		}else{							//resize shot
 			if(e.keyCode == '38'){
 				screenShot.height += isFine ? 2 : 10;
-				screenShot.style.top = parseInt(screenShot.style.top.slice(0,-2)) - (isFine ? 1 : 5) + 'px'
+				screenShot.style.top = parseInt(screenShot.style.top.slice(0,-2)) - (isFine ? 1 : 5) + 'px';
+				screenShot.width += isFine ? 2 : 10;			//also sideways
+				screenShot.style.left = parseInt(screenShot.style.left.slice(0,-2)) - (isFine ? 1 : 5) + 'px'
 			}else if(e.keyCode == '40'){
 				screenShot.height -= isFine ? 2 : 10;
-				screenShot.style.top = parseInt(screenShot.style.top.slice(0,-2)) + (isFine ? 1 : 5) + 'px'
+				screenShot.style.top = parseInt(screenShot.style.top.slice(0,-2)) + (isFine ? 1 : 5) + 'px';
+				screenShot.width -= isFine ? 2 : 10;
+				screenShot.style.left = parseInt(screenShot.style.left.slice(0,-2)) + (isFine ? 1 : 5) + 'px'
 			}else if(e.keyCode == '37'){
 				screenShot.width += isFine ? 2 : 10;
 				screenShot.style.left = parseInt(screenShot.style.left.slice(0,-2)) - (isFine ? 1 : 5) + 'px'
