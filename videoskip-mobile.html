@@ -776,22 +776,24 @@ function checkKey(e) {
 				screenShot.style.left = parseInt(screenShot.style.left.slice(0,-2)) + (isFine ? 1 : 10) + 'px'
 			}
 		}else{							//resize shot
-			if(e.keyCode == '38'){
-				screenShot.height += isFine ? 2 : 10;
-				screenShot.style.top = parseInt(screenShot.style.top.slice(0,-2)) - (isFine ? 1 : 5) + 'px';
-				screenShot.width += isFine ? 2 : 10;			//also sideways
-				screenShot.style.left = parseInt(screenShot.style.left.slice(0,-2)) - (isFine ? 1 : 5) + 'px'
+			var increment = isFine ? 1 : 5,
+				increment2 = increment*screenShot.width/screenShot.height;
+			if(e.keyCode == '38'){	
+				screenShot.height += increment * 2;
+				screenShot.style.top = parseInt(screenShot.style.top.slice(0,-2)) - increment + 'px';
+				screenShot.width += increment2 * 2;			//also sideways
+				screenShot.style.left = parseInt(screenShot.style.left.slice(0,-2)) - increment2 + 'px'
 			}else if(e.keyCode == '40'){
-				screenShot.height -= isFine ? 2 : 10;
-				screenShot.style.top = parseInt(screenShot.style.top.slice(0,-2)) + (isFine ? 1 : 5) + 'px';
-				screenShot.width -= isFine ? 2 : 10;
-				screenShot.style.left = parseInt(screenShot.style.left.slice(0,-2)) + (isFine ? 1 : 5) + 'px'
+				screenShot.height -= increment * 2;
+				screenShot.style.top = parseInt(screenShot.style.top.slice(0,-2)) + increment + 'px';
+				screenShot.width -= increment2 * 2;
+				screenShot.style.left = parseInt(screenShot.style.left.slice(0,-2)) +  increment2 + 'px'
 			}else if(e.keyCode == '37'){
-				screenShot.width += isFine ? 2 : 10;
-				screenShot.style.left = parseInt(screenShot.style.left.slice(0,-2)) - (isFine ? 1 : 5) + 'px'
+				screenShot.width += increment * 2;
+				screenShot.style.left = parseInt(screenShot.style.left.slice(0,-2)) - increment + 'px'
 			}else if(e.keyCode == '39'){
-				screenShot.width -= isFine ? 2 : 10;
-				screenShot.style.left = parseInt(screenShot.style.left.slice(0,-2)) + (isFine ? 1 : 5) + 'px'
+				screenShot.width -= increment * 2;
+				screenShot.style.left = parseInt(screenShot.style.left.slice(0,-2)) + increment + 'px'
 			}
 		}	
 	}
@@ -897,15 +899,17 @@ function setSwitches(){
 //fills the action field in object cuts, according to the position of the check boxes and the text at each time
 function setActions(){
 	for(var i = 0; i < cuts.length; i++){
-		var label = cuts[i].text.toLowerCase().replace(/\(.*\)/g,''),						//ignore text in parentheses
-			isAudio = isContained(label,/aud|sou|spe|wor/),
-			isVideo = isContained(label,/vid|ima|img/);
-		if(!isAudio && !isVideo){
-			cuts[i].action = isSkipped(label) ? 'skip' : ''	
-		}else if(isAudio){
-			cuts[i].action = isSkipped(label) ? 'mute' : ''
-		}else{
-			cuts[i].action = isSkipped(label) ? 'blank' : ''
+		if(cuts[i].text){
+			var label = cuts[i].text.toLowerCase().replace(/\(.*\)/g,''),						//ignore text in parentheses
+				isAudio = isContained(label,/aud|sou|spe|wor/),
+				isVideo = isContained(label,/vid|ima|img/);
+			if(!isAudio && !isVideo){
+				cuts[i].action = isSkipped(label) ? 'skip' : ''	
+			}else if(isAudio){
+				cuts[i].action = isSkipped(label) ? 'mute' : ''
+			}else{
+				cuts[i].action = isSkipped(label) ? 'blank' : ''
+			}
 		}
 	}
 }
