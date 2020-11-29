@@ -154,27 +154,27 @@ td {
 <input type="file" id="videoFile" accept="video/*"/>
 <label for="subFile"><span class="cssbutton small" id="subFileBtn" title="load .vtt, .srt subtitles; then enable them in the video">Load subtitles</span></label>
 <input type="file" id="subFile"/>
-<button id="help" class="cssbutton" title="toggle instructions">Help</button><br>
+<button id="help" class="cssbutton" title="toggle instructions (alt-h)" accesskey="h">Help</button><br>
 <br>
     <label for="skipFile"><span class="cssbutton imptButton" id="skipFileBtn" title="load .skp file">Load skip file</span></label>
 	<input type="file" id="skipFile"/>
     <button id="exchangeBtn"class="cssbutton small" title="open the VideoSkip Exchange in a separate tab">VideoSkip Exchange</button>
     <br>
 <video controls disablePictureInPicture id="myVideo"></video>
-    <button id="backBtn"class="cssbutton" title="step rewind / go to previous time">&#9668;</button>
+    <button id="backBtn"class="cssbutton" title="step rewind / stop (alt-,)" accesskey=",">&#9668;</button>
     &nbsp;
-    <input type="checkbox" id="fineMode"/ title="frame by frame">
+    <input type="checkbox" id="fineMode"/ title="frame by frame (alt-n)" accesskey="n">
     &nbsp;<span class="fineText">Fine</span>
-    <input type="checkbox" id="altMode" title="shift auto prof. skips / resize shot"/>
+    <input type="checkbox" id="altMode" title="shift auto prof. skips / resize shot (alt-m)" accesskey="m"/>
     &nbsp;<span class="fineText">Alt.</span>
-    <button id="fwdBtn"class="cssbutton" title="step advance / go to next time">&#9658;</button>
-    <button id="fFwdBtn"class="cssbutton" title="toggle play / fast forward / stop">&#9658;&#9658;</button>
-    <button id="syncBtn"class="cssbutton imptButton" title="change all times when video and shot match">Sync</button>
+    <button id="fwdBtn"class="cssbutton" title="step advance / stop (alt-.)" accesskey=".">&#9658;</button>
+    <button id="fFwdBtn"class="cssbutton" title="toggle play / fast forward / stop (alt-/)" accesskey="/">&#9658;&#9658;</button>
+    <button id="syncBtn"class="cssbutton imptButton" title="change all times when video and shot match (alt-y)" accesskey="y">Sync</button>
     <br><br>
     <div id="boxMsg"><b>Load above the .skp file containing the skips</b></div><br>
     <button id="shotTimeBtn"class="cssbutton small" title="go to selected time / screenshot time">Go to time</button>
     <button id="autoBtn" class="cssbutton small" title="find shot in video">Find shot</button>
-    <button id="moveBtn" class="cssbutton small" title="overlay shot on video">Superimpose</button>
+    <button id="moveBtn" class="cssbutton small" title="overlay shot on video (alt-b)" accesskey="b">Superimpose</button>
     <button id="shotBtn"class="cssbutton small" title="take screenshot">Screenshot</button>
     <br>
     <br>
@@ -203,10 +203,10 @@ td {
     <br>
     <b>Edit skips:</b>
     <br>
-    <button id="timeBtn" class="cssbutton small" title="insert current time">Insert time</button>
-    <button id="arrowBtn" class="cssbutton small" title="insert a correctly formatted arrow">Insert arrow</button>
-    <button id="beepBtn" class="cssbutton small" title="insert a quick word mute">Insert silence</button>
-    <button id="saveFile" class="cssbutton imptButton small" title="save .skp file to Downloads">Save</button>
+    <button id="timeBtn" class="cssbutton small" title="insert current time (alt-q)" accesskey="q">Insert time</button>
+    <button id="arrowBtn" class="cssbutton small" title="insert a correctly formatted arrow (alt-w)"  accesskey="w">Insert arrow</button>
+    <button id="beepBtn" class="cssbutton small" title="insert a quick word mute (alt-a)" accesskey="a">Insert silence</button>
+    <button id="saveFile" class="cssbutton imptButton small" title="save .skp file to Downloads (alt-s)" accesskey="s">Save</button>
           <textarea id="skipBox" rows="10" placeholder="Skips appear here"></textarea>
 	</p>
     <img id="screenShot">
@@ -229,7 +229,11 @@ td {
   <li>If the video matches the screenshot when you click the "Go to time" button, everything is in sync and you're done with this phase. Scrub the video back to the beginning and start watching.</li>
   <li>But if the video is from a source different from that used to make the skip file, there may be a mismatch. Use the arrow buttons to scrub the video until the screen matches the screenshot or description (frame by frame, if "Fine" is checked). The fast forward button toggles the speed, or resumes playing if paused. The "Superimpose" button puts the screenshot right on top of the video, so you can see the precise moment when they match. You can resize the screenshot with the arrow keys, and move it around if you hold the Alt key as well. Hold Shift also for fine corrections (checking &quot;Alt&quot; and &quot;Fine&quot; do the same things). VideoSkip has an automatic process for finding the screenshot time by clicking the &quot;Find shot&quot; button. Make sure you are within one second of the correct time before clicking it.</li>
   <li>Click the "Sync" button when video and screenshot match. This will shift all the skips by the right amount, so they will happen at the correct times.</li>
-</ol>
+  </ol>
+<p>Keyboard shortcuts</p>
+<ul>
+  <li>A number of buttons have keyboard shortcuts. Hover the mouse over each button to see what letter triggers the action. In Windows, you execute the shortcut by holding the Alt key at the same time as the letter key. In Mac OS, you must hold the Alt (Option) and Control keys at the same time as the letter key.</li>
+</ul>
 <p>Getting the video files:</p>
 <ul>
   <li>If you are using a streaming service, these often allow you to pre-download the complete video in order to avoid stuttering on low-bandwidth connections. YouTube and Vimeo videos are very easy to get this way (Google it), but other services may use copy-protection schemes that will need to be removed before you can use the file.</li>
@@ -695,7 +699,7 @@ function scrub2shot(){
 	myVideo.pause();
 	var index = getTimeIndex();
 	if(index != null){
-		skipBox.setSelectionRange(timeLabels[1][index],timeLabels[2][index]);
+		skipBox.setSelectionRange(timeLabels[2][index],timeLabels[2][index]);		//deselect if previously selected
 		myVideo.currentTime = fromHMS(timeLabels[0][index]);
 		skipBox.focus()
 	}else{											//scrub to 1st time
@@ -862,8 +866,8 @@ function isContained(containerStr, regex){
 //to decide whether a particular content is to be skipped, according to 3-level sliders. Allows alternative and incomplete keywords
 function isSkipped(label){
 	var nuMatches = label.match(/\d/),
-		level = parseInt(nuMatches ? nuMatches[0] : 3);
-	level = level >= 3 ? 3 : level;
+		level = parseInt(nuMatches ? nuMatches[0] : 1);			//if no level is found, make it level 1
+	level = level >= 3 ? 3 : level;								//highest level is 3
 	if(isContained(label,/sex|nud/)){
 		return (parseInt(sexNum.value) + level) > 3
 	}else if(isContained(label,/vio|gor/)){
@@ -886,13 +890,15 @@ function setSwitches(){
 	var sliders = filters.querySelectorAll('input');
 	for(var i = 0; i < 6; i++) sliders[i].value = 0;
 	for(var i = 0; i < cuts.length; i++){
-		var label = cuts[i].text.toLowerCase().replace(/\(.*\)/g,'');						//ignore text in parentheses
-		if(isContained(label,/sex|nud/)) sexNum.value = 3;
-		if(isContained(label,/vio|gor/)) violenceNum.value = 3;
-		if(isContained(label,/pro|cur|hat/)) curseNum.value = 3;
-		if(isContained(label,/alc|dru|smo/)) boozeNum.value = 3;
-		if(isContained(label,/fri|sca|int/)) scareNum.value = 3;
-		if(isContained(label,/oth|bor/)) otherNum.value = 3
+		if(cuts[i].text){
+			var label = cuts[i].text.toLowerCase().replace(/\(.*\)/g,'');			//ignore text in parentheses
+			if(isContained(label,/sex|nud/)) sexNum.value = 3;
+			if(isContained(label,/vio|gor/)) violenceNum.value = 3;
+			if(isContained(label,/pro|cur|hat/)) curseNum.value = 3;
+			if(isContained(label,/alc|dru|smo/)) boozeNum.value = 3;
+			if(isContained(label,/fri|sca|int/)) scareNum.value = 3;
+			if(isContained(label,/oth|bor/)) otherNum.value = 3
+		}
 	}
 }
 
