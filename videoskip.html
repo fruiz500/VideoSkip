@@ -580,9 +580,9 @@ function applyOffset(){
 			initialData[0] = toHMS(shotTime + offset);
 			skipBox.value = initialData.join('\n') + '\n\n' + skipBox.value
 		}
-		if(offset != 0){
-			boxMsg.textContent = "Skip times adjusted for this source. Please check that the screenshot matches the video and click 'Sync times'"
-		}
+
+		boxMsg.textContent = "Skip times adjusted for this source. Please check that the screenshot matches the video and click 'Sync times'"
+
 		for(var service in offsets){						//adjust offsets
 			offsets[service] -= offset
 		}
