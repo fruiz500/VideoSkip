@@ -330,7 +330,7 @@ td {
 		setActions();
 		makeTimeLabels();
 		videoRatio = myVideo.videoWidth/myVideo.videoHeight
-	},1000)
+	},100)
   }
   var inputNode = document.querySelector('input')
   inputNode.addEventListener('change', playSelectedFile, false)
@@ -345,7 +345,7 @@ var displayMessage = function (message, isError) {
 var name = '';		//global variable with name of skip file, minus extension
 var cuts = [];		//global variable containing the cuts, each array element is an object with this format {startTime,endTime,text,action}
 var shotData = [];
-var offsets = {};	//for automatic sync
+var offsets = {"local":0};		//for automatic sync. Initialized for a first save
 
 var ua = navigator.userAgent.toLowerCase(); 		//to add a fix for Safari and choose fastest filter method, per https://jsben.ch/5qRcU
 if (ua.indexOf('safari') != -1) { 
@@ -379,15 +379,13 @@ function loadFileAsURL(){
 	};
 	fileReader.readAsText(fileToLoad);
 	boxMsg.textContent = 'This is the content of file: ' + fileToLoad.name;
-	setTimeout(function(){		//give it a whole second to load before data is extracted to memory
+	setTimeout(function(){		//give it some time to load before data is extracted to memory
 		cuts = PF_SRT.parse(skipBox.value);
 		setSwitches();
 		setActions();
 		makeTimeLabels();
-		applyOffset();
-		scrub2shot();
-		moveShot()
-	},1000)
+		applyOffset()
+	},100)
 }
 
 //similar, for loading subtitles; includes option to generate skips for profanity
@@ -560,14 +558,14 @@ function syncTimes(){
 	setTimeout(function(){
 		makeTimeLabels();
 		if(isSuper)moveShot();
-		setTimeout(save2file,1000)
+		setTimeout(save2file,100)
 	},100)
 }
 
 //shift all times according to offset in loaded skip file
 function applyOffset(){
 	var offset = offsets['local'];
-	if(offset){						//there is a non-zero offset for 'local', so shift all times; otherwise do nothing
+	if(offset != undefined){						//there is an offset for 'local', so shift all times; otherwise do nothing
 		var	initialData = skipBox.value.trim().split('\n').slice(0,2),					//first two lines
 			shotTime = fromHMS(initialData[0]);
 		for(var i = 0; i < cuts.length; i++){
@@ -581,12 +579,16 @@ function applyOffset(){
 			skipBox.value = initialData.join('\n') + '\n\n' + skipBox.value
 		}
 
-		boxMsg.textContent = "Skip times adjusted for this source. Please check that the screenshot matches the video and click 'Sync times'"
+		boxMsg.textContent = "Skip times adjusted for this source"
 
 		for(var service in offsets){						//adjust offsets
 			offsets[service] -= offset
 		}
 		setTimeout(makeTimeLabels,100)
+	}else{									//no offset found, so scrub to shot time and superimpose
+		offsets['local'] = 0;								//create key it if it didn't exist
+		scrub2shot();
+		moveShot()
 	}
 }
 
@@ -981,17 +983,22 @@ function isSkipped(label){
 function setSwitches(){
 	var sliders = filters.querySelectorAll('input');
 	for(var i = 0; i < 6; i++) sliders[i].value = 0;
+	var noGrade = false;
 	for(var i = 0; i < cuts.length; i++){
 		if(cuts[i].text){
 			var label = cuts[i].text.toLowerCase().replace(/\(.*\)/g,'');			//ignore text in parentheses
-			if(isContained(label,/sex|nud/)) sexNum.value = 3;
-			if(isContained(label,/vio|gor/)) violenceNum.value = 3;
-			if(isContained(label,/pro|cur|hat/)) curseNum.value = 3;
-			if(isContained(label,/alc|dru|smo/)) boozeNum.value = 3;
-			if(isContained(label,/fri|sca|int/)) scareNum.value = 3;
-			if(isContained(label,/oth|bor/)) otherNum.value = 3
+			if(isContained(label,/sex|nud/)) sexNum.value = 2;
+			if(isContained(label,/vio|gor/)) violenceNum.value = 2;
+			if(isContained(label,/pro|cur|hat/)) curseNum.value = 2;
+			if(isContained(label,/alc|dru|smo/)) boozeNum.value = 2;
+			if(isContained(label,/fri|sca|int/)) scareNum.value = 2;
+			if(isContained(label,/oth|bor/)) otherNum.value = 2;
+			if(!label.match(/\d/)) noGrade = true									//raise flag for ungraded edit
 		}
 	}
+	if(noGrade) setTimeout(function(){
+		boxMsg.textContent = "WARNING: This file contains ungraded edits, which won't work unless its slider is set High"
+	},500)
 }
 
 //fills the action field in object cuts, according to the position of the check boxes and the text at each time
