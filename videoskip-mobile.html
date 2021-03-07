@@ -138,6 +138,11 @@ td {
 	font-size: small;
 	color: gray;
 }
+#rubricText {
+	min-height: 30px;
+	padding: 6px;
+	display: block;
+}
 </style>
 
 <script>
@@ -189,7 +194,11 @@ td {
 <br>
     <label for="skipFile"><span class="cssbutton imptButton" id="skipFileBtn" title="load .skp file">Load skip file</span></label>
 	<input type="file" id="skipFile"/>
-    <button id="exchangeBtn"class="cssbutton small" title="open the VideoSkip Exchange in a separate tab">VideoSkip Exchange</button>
+    <select class="cssbutton small" name="websites" id="websites">
+          <option value="" selected="selected">Select source</option>
+          <option value="0">VideoSkip Exchange</option>
+          <option value="1">Albatenia</option>
+    </select>
     <br>
 <video controls disablePictureInPicture id="myVideo"></video>
     <button id="backBtn"class="cssbutton" title="step rewind / stop (alt-,)" accesskey=",">&#9668;</button>
@@ -231,7 +240,7 @@ td {
     <td align="center"><input id="otherNum" type="range" min="0" max="3" step="1" value="0"></td>
     </tr>
     </table>
-    <br>
+    <span id="rubricText"></span>
     <b>Edit skips:</b>
     <br>
     <button id="timeBtn" class="cssbutton small" title="insert current time (alt-q)" accesskey="q">Insert time</button>
@@ -636,7 +645,7 @@ function getTimeIndex(){
 	}
 }
 
-var	deltaT = 0.0417;				//seconds for each frame at 24 fps
+const deltaT = 1/24;				//seconds for each frame at 24 fps
 
 //called by forward button
 function fwdSkip(){
@@ -653,13 +662,13 @@ function fwdSkip(){
 				if(Math.abs(myVideo.currentTime - selectedTime) > tol){				//first go there
 					myVideo.currentTime = selectedTime;
 				}else{
-					myVideo.currentTime += fineMode.checked ? deltaT : deltaT*10;	//now scrub by a small amount
+					myVideo.currentTime += fineMode.checked ? deltaT : deltaT*12;	//now scrub by a small amount
 					writeIn(toHMS(myVideo.currentTime),true);						//and write it in
 				}			
 				skipBox.focus()
 			}
-		}else{											//scrub by one or ten frames
-			myVideo.currentTime += fineMode.checked ? deltaT : deltaT*10
+		}else{											//scrub by one or twelve frames
+			myVideo.currentTime += fineMode.checked ? deltaT : deltaT*12
 		}
 	}else{
 		myVideo.pause();
@@ -682,13 +691,13 @@ function backSkip(){
 				if(Math.abs(myVideo.currentTime - selectedTime) > tol){				//first go there
 					myVideo.currentTime = selectedTime;
 				}else{
-					myVideo.currentTime -= fineMode.checked ? deltaT : deltaT*10;	//now scrub by a small amount
+					myVideo.currentTime -= fineMode.checked ? deltaT : deltaT*12;	//now scrub by a small amount
 					writeIn(toHMS(myVideo.currentTime),true)							//and write it in
 				}
 				skipBox.focus()
 			}
-		}else{											//scrub by one or ten frames
-			myVideo.currentTime -= fineMode.checked ? deltaT : deltaT*10
+		}else{											//scrub by one or twelve frames
+			myVideo.currentTime -= fineMode.checked ? deltaT : deltaT*12
 		}
 	}else{
 		myVideo.pause();
@@ -911,7 +920,13 @@ filters.addEventListener('change', setActions);
 
 skipFile.addEventListener('change', loadFileAsURL);
 
-exchangeBtn.addEventListener('click', function(){window.open('https://videoskip.org/exchange')});
+//loads other websites from a select option list
+function loadPage(){
+	const urls = ['https://videoskip.org/exchange', 'https://albatenia.com'];
+	if(this.value) window.open(urls[this.value])
+}
+
+websites.addEventListener('change', loadPage);
 
 subFile.addEventListener('change', loadSubs);
 
@@ -948,6 +963,45 @@ shotBtn.addEventListener('click',makeShot);
 skipBox.addEventListener('change', function(){
 	setTimeout(function(){cuts = PF_SRT.parse(skipBox.value); setActions(); makeTimeLabels()},100)
 })
+
+//to display as the mouse moves over the sliders
+const rubric = {
+sex: ["Content at Medium, plus: Heterosexual kissing. Conversation involving sex. Dorsal or distant nudity",
+"Content at Low, plus: Implicit sex. Homosexual situations. Passionate kissing. Frontal nudity",
+"Explicit sex. Sodomy. Bestiality. Rape. Pornography. Abuse of minors"],
+violence: ["Content at Medium, plus: Hitting. Belting. Distant shooting. Slapping. Corporal punishment",
+"Content at Low, plus: Suicide. Dismemberment. Close-range or cold-blooded shooting. Knifing",
+"Sadism. Masochism. Torture. Gore designed to shock"],
+curse: ["Content at Medium, plus: Dirty words in general. Cursing",
+"Content at Low, plus: Idiomatic blasphemy. Racial slurs",
+"Intentional blasphemy. Satanism"],
+booze: ["Content at Medium, plus: Substance use other than incidental. Addict behavior",
+"Content at Low, plus: Intravenous use. Preparation of drugs. Teen use",
+"Content designed to incite substance abuse"],
+scare: ["Spooky. Scary. Emotionally hard for children",
+"Shocking or emotionally hard for teens",
+"Shocking to adults"],
+other: ["Mild content",
+"Moderate content",
+"Intense content"]};
+
+const sliders = filters.querySelectorAll('input');
+
+for(var i = 0; i < sliders.length; i++){
+	sliders[i].addEventListener('mousemove',showRubric);
+	sliders[i].addEventListener('mouseleave',hideRubric)
+}
+
+function showRubric(){
+	var category = this.id.slice(0,-3),
+		level = 3 - this.value;
+	if(level >= 3){rubricText.textContent = '';return};
+	rubricText.textContent = rubric[category][level]
+}
+
+function hideRubric(){
+	rubricText.textContent = ''
+}
 
 //faster way to check for content depending on browser; returns a Boolean; regex and stringArray content should match
 function isContained(containerStr, regex){
@@ -1027,8 +1081,8 @@ function setActions(){
 	}
 }
 
-var	errorData = [[],[]],
-	accel = 2;				//determined experimentally;
+var	errorData = [[],[]];
+const accel = 2;				//determined experimentally;
 
 //process to get the error between the video and the screenshot as a double array of times and errors, starting 2 seconds before current video time, and move to best
 function findShot(){
