@@ -179,7 +179,7 @@ td {
 
 <body>                    
 	<h2>VideoSkip Player</h2>
-    <p>v 0.3 &nbsp;&#169; F. Ruiz 2021</p>
+    <p>v 0.4 &nbsp;&#169; F. Ruiz 2021</p>
 <div id="videoMsg">Load video file with left button, .vtt or .srt subtitles with right button</div>
 <br>
 <label for="videoFile"><span class="cssbutton imptButton" id="videoFileBtn" title="load .mp4, .ogg, .webm video file">Load video</span></label>
@@ -217,11 +217,12 @@ td {
     <br>
     <label for="skipFile"><span class="cssbutton imptButton" id="skipFileBtn" title="load .skp file">Load skip file</span></label>
 	<input type="file" id="skipFile"/>
-    <select class="cssbutton small" name="websites" id="websites">
+    <!--select class="cssbutton small" name="websites" id="websites">
           <option value="" selected="selected">Select source</option>
           <option value="0">VideoSkip Exchange</option>
           <option value="1">Albatenia</option>
-    </select>
+    </select-->
+    <button id="exchangeBtn"class="cssbutton small" title="open the VideoSkip Exchange in a separate tab">VideoSkip Exchange</button>
     <span class="hspacer"></span>
     <button id="backBtn"class="cssbutton small" title="step rewind / stop (alt-,)" accesskey=",">&#9668;</button>
     <input type="checkbox" id="fineMode"/ title="frame by frame (alt-n)" accesskey="n">&nbsp;<span class="fineText">Fine</span>
@@ -255,13 +256,13 @@ td {
   <li>If you don't have a skip file for the film you're watching, chances are another user has made one, and has posted it in the VideoSkip Exchange. There's a button to load the Exchange on a separate tab. You don't have to register in order to browse and download skip files.</li>
   <li>Load the skip file now with the "Load skip file" button. Once loaded, its contents will appear in the box, plus a screenshot that may start superimposed on the video. Each skip consists of beginning and end times relative to the start of the video, with an arrow between them, and on the line below a category plus maybe a handling label (such as "video" or "audio"), a number, and a description in parentheses.</li>
   <li>If you want to change something in the list of skips, go right ahead. There's a button to insert the current time on the video (the video itself has a scrub bar to get there), and a correctly formatted "arrow" if you feel lazy, plus another button to insert a silence over the word just pronounced. There is also a button for saving your edited skip list in the default folder for downloads. If you insert two slashes // in the second line of any skip, it will be ignored on playback.</li>
-  <li>If the screenshot is not superimposed on the video, you are in sync and can start playback. Otherwise, scrub the video with the arrow buttons (frame by frame, if "Fine" is checked) until it matches the screenshot, then click the &quot;Sync times&quot; button. More detail on this process in the section below.</li>
+  <li>If the screenshot matches the video, you are in sync and can start playback. Otherwise, scrub the video with the arrow buttons (frame by frame, if "Fine" is checked) until it matches the screenshot, then click the &quot;Sync times&quot; button. More detail on this process in the section below.</li>
   <li>Set the category filters using the sliders according to the audience. The higher, the more stringent the filter. High = for children, Medium = for teens, Low = for adults. If a filter is Off, the flagged content will be shown.</li>
   <li>Click the play button on the video, and maybe the fullscreen button, sit back, and enjoy. Skips will take place when their times arrive.</li>
   </ol>
 <p>How to sync the skips:</p>
 <ol>
-  <li>If the video matches the superimposed screenshot when you click the "Go to time" button, everything is in sync and you're done with this phase.</li>
+  <li>If the video matches the screenshot when you click the "Go to time" button, everything is in sync and you're done with this phase.</li>
   <li>But if the video is from a source different from that used to make the skip file, there may be a mismatch. Use the arrow buttons to scrub the video until the screen matches the screenshot or description (frame by frame, if "Fine" is checked). The fast forward button toggles the speed, or resumes playing if paused. The "Superimpose" button puts the screenshot right on top of the video, or removes it. You can resize the screenshot with the arrow keys, and move it around if you hold the Alt key as well. Hold Shift as well for fine corrections (checking &quot;Alt&quot; and &quot;Fine&quot; do the same things). VideoSkip has an automatic process for finding the screenshot time by clicking the &quot;Find shot&quot; button. Make sure you are within one second of the correct time before clicking it.</li>
   <li>Click the "Sync times" button when video and screenshot match. This will shift all the skips by the right amount, so they will happen at the correct times, and save a new version of the skip file so the people you share it with won't have to repeat the syncing process.</li>
   </ol>
@@ -275,15 +276,15 @@ td {
   <li>If the video is in a DVD or BlueRay disc that your own, there are excellent programs that will extract the data into whatever format you choose. Currently my favorite is Handbrake, available for <a href="https://handbrake.en.softonic.com/" target="_blank">Windows</a> and for <a href="https://handbrake.en.softonic.com/mac" target="_blank">Mac</a>.</li>
   <li>Or you may have an old .avi, or some other format. Handbrake can also convert the file from those formats into .mp4. A feature film may take an hour of processing. There are online converters as well, but they usually limit how much processing you can do in one day. As mentioned above, .mkv files only need to be renamed to .webm</li>
   <li>Another way to get them is by sharing with others, via BitTorrent or similar protocol. Be advised that this is not always legal.</li>
-  <li>Of course, you can always view videos directly from a streaming service. In this case you will need the VideoSkip extension rather than this app. Here are links to get it <a href="https://chrome.google.com/webstore/detail/videoskip/mlmifkfgafheljfcjlgoiggcfjenjeed" target="_blank">for Chrome</a>, and <a href="https://addons.mozilla.org/en-US/firefox/addon/videoskip/" target="_blank">for Firefox</a>.</li>
+  <li>Of course, you can always view videos directly from a streaming service. In this case you will need the VideoSkip extension rather than this app. Here are links to get it <a href="https://chrome.google.com/webstore/detail/videoskip/mlmifkfgafheljfcjlgoiggcfjenjeed" target="_blank">for Chrome</a>,  <a href="https://addons.mozilla.org/en-US/firefox/addon/videoskip/" target="_blank">for Firefox</a>, and <a href="https://microsoftedge.microsoft.com/addons/detail/videoskip/enikjnojafmkjadebkopndkognbebomf" target="_blank">for Edge</a>.</li>
   <li>Subtitles in .srt format are very easy to find online. This app will load them in this format, but if you want to convert them to .vtt there are easy online utilities like <a href="https://atelier.u-sub.net/srt2vtt/" target="_blank">this one</a>.</li>
 </ul>
 <p>Making your own skips:</p>
 <ul>
   <li>A well-constructed skip file will have a first entry with the timing of an event near the start of the video where the image is changing quickly, plus a description of it on the line below it, and a screenshot. This is to allow viewers to use the skips in the file even if they are watching a video obtained from a different source, which might have a different timing. To take a screenshot, just scrub the video to the desired time and click "Take screenshot"; the time will be added at the beginning of the skip list. For easiest syncing, get the screenshot from a point where the image is changing quickly.</li>
   <li>Inserting skips is as easy as scrubbing to the point where the skip/mute/blank is supposed to begin, clicking the "Insert time" button on a new line, then the "Insert arrow" button, scrubbing to the point where the skip is to end, clicking the "Insert time" button once more, and then going to the next line and writing a content, number rating, and (optional) handling label. If you are initially unsure of where the skips should be inserted, there is a "Fast Forward" button that scrubs the video at high speed. Click it again to stop. The arrow buttons to its left also stop the video. There is also an &quot;Insert silence&quot; button that inserts a retroactive single-word muting for profanity; click it as soon as you hear the word while the video plays normally.</li>
-  <li>Content labels are case-insensitive. They consist of any word (actually, the first three letters are enough) of the IMDB categories, which are displayed above the sliders, such as "sex", "nudity", "gore", "drugs", etc. Handling labels are these words: "audio", "sound", "video", "image" (or the first three letters of each, including "img") also case-insensitive.</li>
-  <li>The "audio" or "sound" keywords will cause the sound to be muted during the given interval while the video is still shown, rather than skipping the section entirely, which might be useful for removing profanity. The "video" and "image" keywords cause the image to blank out while the sound still plays, which might be useful for instances of nudity, etc. No handling keyword means that the section will be completely skipped.</li>
+  <li>Content labels are case-insensitive. They consist of any word (actually, the first three letters are enough) of the IMDB categories, which are displayed above the sliders, such as "sex", "nudity", "gore", "drugs", etc. Handling labels are these words: "audio", "sound", "video", "image", &quot;blur&quot;, &quot;fast&quot;  (or the first three letters of each, including "img") also case-insensitive.</li>
+  <li>The "audio" or "sound" keywords will cause the sound to be muted during the given interval while the video is still shown, rather than skipping the section entirely, which might be useful for removing profanity. The "video" and "image" keywords cause the image to blank out while the sound still plays, which might be useful for instances of nudity, etc. &quot;blur&quot; causes the image to be blurred instead. &quot;fast&quot; will pass the movie in fast forward rather than skip to the end of the marked interval. No handling keyword means that the section will be completely skipped.</li>
   <li>Finally, adding a number from 1 (mild) to 3 (severe) will allow users to set the filtering level appropriately. A good standard is the following: 1 = problematic for children, 2 = problematic for teens, 3 = problematic for adults. There's a detailed rubric for what this may mean at the Videoskip Exchange. You can add explanatory text in parentheses, which won't trigger the filters.</li>
   <li>Everything is editable in the box. Use this to fine-tune timings. For instance, words to be muted typically take a lot less than a second. You can review each timing by clicking it on the list and then clicking "Go to time". If the time is selected, the arrow buttons will shift the time as well as scrub the video. The "Insert" buttons put things always at the current cursor position.</li>
   <li>Make sure there is a blank line between skips, comprising a line with times and a line with labels below it.</li>
@@ -315,6 +316,15 @@ td {
 </div>
 </div>
 <script>
+//similar to jQuery ready(), from youmightnotneedjquery.com
+function ready(fn) {
+  if (document.readyState != 'loading'){
+    fn();
+  } else {
+    document.addEventListener('DOMContentLoaded', fn);
+  }
+}
+
 //to load video from local file, by Dimitar Bonev, as answered on StackOverflow. Also https://jsfiddle.net/dsbonev/cCCZ2/
 (function localFileVideoPlayer() {
   var URL = window.URL || window.webkitURL;
@@ -334,12 +344,11 @@ td {
 
     var fileURL = URL.createObjectURL(file)
     videoNode.src = fileURL;
-	setTimeout(function(){							//re-do skips in memory in case the video has changed
+	ready(function(){
 		cuts = PF_SRT.parse(skipBox.value);
 		setActions();
-		makeTimeLabels();
-		videoRatio = myVideo.videoWidth/myVideo.videoHeight
-	},100)
+		makeTimeLabels()
+	})
   }
   var inputNode = document.querySelector('input')
   inputNode.addEventListener('change', playSelectedFile, false)
@@ -377,24 +386,21 @@ function loadFileAsURL(){
 		if(extension == ".skp"){
 			var data = URLFromFileLoaded.split('data:image/jpeg;base64,');		//separate skips and offsets from screenshot
 			var data1 = data[0].split('{');										//separate skips from offsets
-			name = fileToLoad.name.slice(0,-4).replace(/ \[[a-z0-9\-]+\]/,'');	//remove extension and service list
+			name = fileToLoad.name.slice(0,-4).replace(/ \[[a-z0-9\-]*\]/,'');	//remove extension and service list
 			skipBox.value = data1[0].trim();
 			if(data1[1]) offsets = JSON.parse('{' + data1[1].trim());			//make offsets object
-			if(data[1]) screenShot.src = 'data:image/jpeg;base64,' + data[1];	//extract screenshot
-			if(isSuper) moveShot()
+			if(data[1]) screenShot.src = 'data:image/jpeg;base64,' + data[1]	//extract screenshot
 		}else{
 			boxMsg.textContent = "wrong file type"
 		}
 	};
 	fileReader.readAsText(fileToLoad);
 	boxMsg.textContent = 'This is the content of file: ' + fileToLoad.name;
-	setTimeout(function(){		//give it some time to load before data is extracted to memory
+	ready(function(){
 		cuts = PF_SRT.parse(skipBox.value);
-		setSwitches();
-		setActions();
-		makeTimeLabels();
-		applyOffset()
-	},100)
+		setSliders();
+		applyOffset()								//this includes setActions at the end
+	})
 }
 
 //similar, for loading subtitles; includes option to generate skips for profanity
@@ -437,11 +443,11 @@ function loadSubs(){
 function autoBeepGen(subs){
 	var blockListExp = new RegExp(blockList.textContent.replace(/, +/g,'|'),"g");
 	var subObj = PF_SRT.parse(subs);				//similar in structure to cuts, with keys: startTime, endTime, text, action (empty)
-	writeIn('\n\n');
+	writeIn('\n\n',false);
 	for(var i = 0; i < subObj.length; i++){
 		var word = subObj[i].text.toLowerCase().match(blockListExp);
 		if(word){	//word found in block list; add extra .3 s buffer in case there are two in a row
-			writeIn(toHMS(subObj[i].startTime - 0.15) + ' --> ' + toHMS(subObj[i].endTime + 0.15) + '\nprofane word 1 (' + word[0] + ')\n\n')
+			writeIn(toHMS(subObj[i].startTime - 0.15) + ' --> ' + toHMS(subObj[i].endTime + 0.15) + '\nprofane word 1 (' + word[0] + ')\n\n',false)
 		}
 	}
 	var	initialData = skipBox.value.trim().split('\n').slice(0,2);					//first two lines containing screenshot timing
@@ -450,6 +456,8 @@ function autoBeepGen(subs){
 	times2box();
 	skipBox.value = initialData.join('\n') + '\n\n' + skipBox.value;
 	curseNum.value = 3;
+	setActions();
+	makeTimeLabels();
 	return confirm("Cancel if don't really want to see subtitles, just scan for profanity")
 }
 
@@ -530,6 +538,8 @@ function fromHMS(timeString){
 	}
 }
 
+const syncFix = 1/24;							//use a time that is actually 1 frame earlier than reported when dealing with the screenshot
+
 //shift all times so the screenshot has correct timing in the video
 function syncTimes(){
 	if(timeLabels.length == 0){
@@ -542,6 +552,7 @@ function syncTimes(){
 	var	initialData = skipBox.value.trim().split('\n').slice(0,2),					//first two lines
 		shotTime = fromHMS(initialData[0]),
 		seconds = shotTime ? myVideo.currentTime - shotTime : 0;
+	seconds -= syncFix;
 	for(var i = 0; i < cuts.length; i++){
 		cuts[i].startTime += seconds;
 		cuts[i].endTime += seconds
@@ -559,16 +570,18 @@ function syncTimes(){
 	}
 
 	for(var service in offsets){						//adjust offsets
-		offsets[service] -= seconds
+		offsets[service] -= seconds;
+		if(Math.abs(offsets[service]) < deltaT) offsets[service] = 0
 	}
 
 	offsets['local'] = 0;									//local key set to zero regardless
-	
-	setTimeout(function(){
+
+	ready(function(){
+		setActions();
 		makeTimeLabels();
 		if(isSuper)moveShot();
-		setTimeout(save2file,100)
-	},100)
+		ready(save2file)
+	})
 }
 
 //shift all times according to offset in loaded skip file
@@ -581,6 +594,8 @@ function applyOffset(){
 			cuts[i].startTime += offset;
 			cuts[i].endTime += offset
 		}
+		setActions();
+		makeTimeLabels();
 		times2box();											//put shifted times in the box
 	
 		if(shotTime){										//reconstruct initial data, if present, shifting the shot time as well
@@ -593,11 +608,11 @@ function applyOffset(){
 		for(var service in offsets){						//adjust offsets
 			offsets[service] -= offset
 		}
-		setTimeout(makeTimeLabels,100)
-	}else{									//no offset found, so scrub to shot time and superimpose
-		offsets['local'] = 0;								//create key it if it didn't exist
-		scrub2shot();
-		moveShot()
+	}else{									//no offset found, so scrub to shot time
+		offsets['local'] = 0;						//create key it if it didn't exist
+		setActions();
+		makeTimeLabels();
+		scrub2shot()
 	}
 }
 
@@ -608,7 +623,7 @@ function times2box(){
 		text += toHMS(cuts[i].startTime) + ' --> ' + toHMS(cuts[i].endTime) + '\n' + cuts[i].text + '\n\n'
 	}
 	skipBox.value = text.trim();
-	setTimeout(makeTimeLabels,100)
+	ready(makeTimeLabels)
 }
 
 //insert string in box, at cursor or replacing selection
@@ -622,12 +637,12 @@ function writeIn(string,isScrub){
 	}else{
 		skipBox.setSelectionRange(newEnd,newEnd);
 	}
-	setTimeout(function(){							//update skips and other data in memory
+	skipBox.focus();
+	ready(function(){							//update skips and other data in memory
 		cuts = PF_SRT.parse(skipBox.value);
 		setActions();
 		makeTimeLabels()
-	},100);
-	skipBox.focus()
+	})
 }
 
 //gets index of a particular HMS time in the box, by location; returns null if the cursor is not on a time label
@@ -756,7 +771,7 @@ function makeShot(){
 		return
 	}
 	myVideo.pause();
-	writeIn(toHMS(myVideo.currentTime));							//insert time in box
+	writeIn(toHMS(myVideo.currentTime - syncFix),false);							//insert time in box
 		//draw image to canvas. scale to target dimensions
 	canvas.width = myVideo.videoWidth / myVideo.videoHeight * canvas.height;
 	ctx.drawImage(myVideo, 0, 0, canvas.width, canvas.height);
@@ -911,54 +926,6 @@ function checkKey(e) {
 	}
 }
 
-filters.addEventListener('change', setActions);
-
-skipFile.addEventListener('change', loadFileAsURL);
-
-//loads other websites from a select option list
-function loadPage(){
-	const urls = ['https://videoskip.org/exchange', 'https://albatenia.com'];
-	if(this.value) window.open(urls[this.value])
-}
-
-websites.addEventListener('change', loadPage);
-
-subFile.addEventListener('change', loadSubs);
-
-timeBtn.addEventListener('click', function(){writeIn(toHMS(myVideo.currentTime))});
-
-arrowBtn.addEventListener('click', function(){writeIn(' --> ')});
-
-beepBtn.addEventListener('click', function(){
-	var time  = myVideo.currentTime;
-	writeIn(toHMS(time - 0.7) + ' --> ' + toHMS(time) + '\nprofane word\n\n')
-});
-
-instructions.style.display = 'none';
-help.addEventListener('click', toggleHelp);
-
-saveFile.addEventListener('click', save2file);
-
-fwdBtn.addEventListener('click',fwdSkip);
-
-fFwdBtn.addEventListener('click',toggleFF);
-
-backBtn.addEventListener('click',backSkip);
-
-shotTimeBtn.addEventListener('click',scrub2shot);
-
-autoBtn.addEventListener('click',findShot);
-
-moveBtn.addEventListener('click',moveShot);
-
-syncBtn.addEventListener('click',syncTimes);
-
-shotBtn.addEventListener('click',makeShot);
-
-skipBox.addEventListener('change', function(){
-	setTimeout(function(){cuts = PF_SRT.parse(skipBox.value); setActions(); makeTimeLabels()},100)
-})
-
 //to display as the mouse moves over the sliders
 const rubric = {
 sex: ["Content at Medium, plus: Heterosexual kissing. Conversation involving sex. Dorsal or distant nudity",
@@ -1034,7 +1001,7 @@ function isSkipped(label){
 }
 
 //set switches for edits present in skip file; used only when a file is loaded
-function setSwitches(){
+function setSliders(){
 	for(var i = 0; i < 6; i++) sliders[i].value = 0;
 	var noGrade = false;
 	for(var i = 0; i < cuts.length; i++){
@@ -1055,9 +1022,9 @@ function setSwitches(){
 			if(isContained(label,/oth|bor/)) otherNum.value = Math.max( 4 - grade, otherNum.value)
 		}
 	}
-	if(noGrade) setTimeout(function(){
+	if(noGrade) ready(function(){
 		boxMsg.textContent = "WARNING: This file contains ungraded edits, which won't work unless its slider is set High"
-	},500)
+	})
 }
 
 //fills the action field in object cuts, according to the position of the check boxes and the text at each time
@@ -1068,14 +1035,20 @@ function setActions(){
 				label = cuts[i].text.toLowerCase().replace(/\(.*\)/g,''),				//ignore text in parentheses
 				isAudio = isContained(label,/aud|sou|spe|wor/),
 				isVideo = isContained(label,/vid|ima|img/);
+				isBlur = isContained(label,/blu/);
+				isFast = isContained(label,/fas/);
 			if(ignore){
 				cuts[i].action = ''
-			}else if(!isAudio && !isVideo){
+			}else if(!isAudio && !isVideo && !isBlur && !isFast){
 				cuts[i].action = isSkipped(label) ? 'skip' : ''	
 			}else if(isAudio){
 				cuts[i].action = isSkipped(label) ? 'mute' : ''
-			}else{
+			}else if(isVideo){
 				cuts[i].action = isSkipped(label) ? 'blank' : ''
+			}else if(isBlur){
+				cuts[i].action = isSkipped(label) ? 'blur' : ''
+			}else{
+				cuts[i].action = isSkipped(label) ? 'fast' : ''
 			}
 		}
 	}
@@ -1148,19 +1121,80 @@ myVideo.ontimeupdate = function(){
 	if(action == prevAction){					//apply action to the DOM if there's a change
 		return
 	}else if(action == 'skip'){
-		myVideo.currentTime = endTime
+		myVideo.currentTime = endTime;
+		myVideo.play()
 	}else if(action == 'blank'){
 		myVideo.style.opacity =  0
+	}else if(action == 'blur'){				//blur screeen
+		myVideo.style.filter =  'blur(30px)'
+	}else if(action == 'fast'){				//fast forward
+		myVideo.playbackRate = 16
 	}else if(action == 'mute'){
 		myVideo.muted = true;
 		if(myVideo.textTracks.length > 0) myVideo.textTracks[0].mode = 'disabled'
 	}else{
 		myVideo.style.opacity =  '';
+		myVideo.style.filter = '';
+		myVideo.playbackRate = 1;
 		myVideo.muted = false;
 		if(myVideo.textTracks.length > 0) myVideo.textTracks[0].mode = 'showing'
 	}
 	prevAction = action
 }
+
+//now connect functions to the buttons
+
+filters.addEventListener('change', setActions);
+
+skipFile.addEventListener('change', loadFileAsURL);
+/*
+//loads other websites from a select option list
+function loadPage(){
+	const urls = ['https://videoskip.org/exchange', 'https://albatenia.com'];
+	if(this.value) window.open(urls[this.value])
+}
+
+websites.addEventListener('change', loadPage);
+*/
+exchangeBtn.addEventListener('click', function(){window.open('https://videoskip.org/exchange')});
+
+subFile.addEventListener('change', loadSubs);
+
+timeBtn.addEventListener('click', function(){writeIn(toHMS(myVideo.currentTime),false)});
+
+arrowBtn.addEventListener('click', function(){writeIn(' --> ',false)});
+
+beepBtn.addEventListener('click', function(){
+	var time  = myVideo.currentTime;
+	writeIn(toHMS(time - 0.7) + ' --> ' + toHMS(time) + '\nprofane word\n\n',false)
+});
+
+instructions.style.display = 'none';
+help.addEventListener('click', toggleHelp);
+
+saveFile.addEventListener('click', save2file);
+
+fwdBtn.addEventListener('click',fwdSkip);
+
+fFwdBtn.addEventListener('click',toggleFF);
+
+backBtn.addEventListener('click',backSkip);
+
+shotTimeBtn.addEventListener('click',scrub2shot);
+
+autoBtn.addEventListener('click',findShot);
+
+moveBtn.addEventListener('click',moveShot);
+
+syncBtn.addEventListener('click',syncTimes);
+
+shotBtn.addEventListener('click',makeShot);
+
+skipBox.addEventListener('change', function(){
+	cuts = PF_SRT.parse(skipBox.value);
+	setActions();
+	makeTimeLabels()
+})
 </script>
 </body>
 </html>
