@@ -393,14 +393,14 @@ function loadFileAsURL(){
 		}else{
 			boxMsg.textContent = "wrong file type"
 		}
+		boxMsg.textContent = 'This is the content of file: ' + fileToLoad.name;
+		ready(function(){
+			cuts = PF_SRT.parse(skipBox.value);
+			setSliders();
+			applyOffset()								//this includes setActions at the end
+		})
 	};
-	fileReader.readAsText(fileToLoad);
-	boxMsg.textContent = 'This is the content of file: ' + fileToLoad.name;
-	ready(function(){
-		cuts = PF_SRT.parse(skipBox.value);
-		setSliders();
-		applyOffset()								//this includes setActions at the end
-	})
+	fileReader.readAsText(fileToLoad)
 }
 
 //similar, for loading subtitles; includes option to generate skips for profanity
@@ -454,7 +454,7 @@ function autoBeepGen(subs){
 	cuts = PF_SRT.parse(skipBox.value);
 	cuts.sort(function(a, b){return a.startTime - b.startTime;});
 	times2box();
-	skipBox.value = initialData.join('\n') + '\n\n' + skipBox.value;
+	if(initialData) skipBox.value = initialData.join('\n') + '\n\n' + skipBox.value;
 	curseNum.value = 3;
 	setActions();
 	makeTimeLabels();
@@ -586,22 +586,22 @@ function syncTimes(){
 
 //shift all times according to offset in loaded skip file
 function applyOffset(){
+	var	initialData = skipBox.value.trim().split('\n').slice(0,2),					//first two lines
+		shotTime = fromHMS(initialData[0]);
 	var offset = offsets['local'];
 	if(offset != undefined){						//there is an offset for 'local', so shift all times; otherwise do nothing
-		var	initialData = skipBox.value.trim().split('\n').slice(0,2),					//first two lines
-			shotTime = fromHMS(initialData[0]);
 		for(var i = 0; i < cuts.length; i++){
 			cuts[i].startTime += offset;
 			cuts[i].endTime += offset
 		}
-		setActions();
-		makeTimeLabels();
 		times2box();											//put shifted times in the box
 	
 		if(shotTime){										//reconstruct initial data, if present, shifting the shot time as well
 			initialData[0] = toHMS(shotTime + offset);
 			skipBox.value = initialData.join('\n') + '\n\n' + skipBox.value
 		}
+		setActions();
+		makeTimeLabels();
 
 		boxMsg.textContent = "Skip times adjusted for this source"
 
@@ -612,7 +612,7 @@ function applyOffset(){
 		offsets['local'] = 0;						//create key it if it didn't exist
 		setActions();
 		makeTimeLabels();
-		scrub2shot()
+		myVideo.currentTime = shotTime
 	}
 }
 
@@ -727,9 +727,7 @@ function shiftProfSkips(isFwd){
 		}
 	}
 	times2box();
-	if(initialData){										//reconstruct initial data, if present
-		skipBox.value = initialData.join('\n') + '\n\n' + skipBox.value
-	}
+	if(initialData) skipBox.value = initialData.join('\n') + '\n\n' + skipBox.value
 }
 
 var speedMode = 1;
@@ -1126,7 +1124,7 @@ myVideo.ontimeupdate = function(){
 		}else if(tempAction == 'blur'){
 			action = ((action == 'skip') || (action == 'fast') || (action == 'blank')) ? action : 'blur'	
 		}else if(tempAction == 'mute'){
-			action = ((action == 'skip') || (action == 'fast') || (action == 'blank') || (action == 'blur')) ? action : 'mute'
+			action = ((action == 'skip') || (action == 'fast')) ? action : (((action == 'blank') || (action == 'blur')) ? 'skip' : 'mute')
 		}
 	}
 	if(action == prevAction){					//apply action to the DOM if there's a change
