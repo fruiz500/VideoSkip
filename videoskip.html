@@ -138,6 +138,44 @@ td {
 	padding: 6px;
 	display: block;
 }
+#blurBox {
+	position: absolute;
+	z-index: 1;
+	border: none;
+	border-radius: 500px;
+	-webkit-backdrop-filter: blur(20px);
+	backdrop-filter: blur(20px);
+}
+#container {
+  width: 100%;
+  height: 100%;
+}
+.btn-fs {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 2px;
+  color: white;
+  border: 1px solid white;
+  border-radius: 5px;
+  z-index: 3;
+  cursor: pointer;
+}
+:-webkit-full-screen video {
+  width: 100%;
+  height: 100%;
+}
+video::-webkit-media-controls-fullscreen-button {
+  display: none !important;
+}
+#VSstatus {
+	position: absolute;
+	z-index: 2;
+	font-size: xx-large;
+	color: white;
+	font-family: sans-serif;
+	background-color: rgba(0, 0, 0, 0.33);
+}
 </style>
 
 <script>
@@ -179,7 +217,7 @@ td {
 
 <body>                    
 	<h2>VideoSkip Player</h2>
-    <p>v 0.4 &nbsp;&#169; F. Ruiz 2021</p>
+    <p>v 0.5 &nbsp;&#169; F. Ruiz 2021</p>
 <div id="videoMsg">Load video file with left button, .vtt or .srt subtitles with right button</div>
 <br>
 <label for="videoFile"><span class="cssbutton imptButton" id="videoFileBtn" title="load .mp4, .ogg, .webm video file">Load video</span></label>
@@ -188,18 +226,25 @@ td {
 <input type="file" id="subFile"/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button id="help" class="cssbutton" title="toggle instructions (alt-h)" accesskey="h">Help</button><br>
 <br>
+<div id="container">
+  <div class="btn-fs" id="btnFS">
+    &nbsp;&nbsp;<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAQMAAABJtOi3AAAABlBMVEUAAAD///+l2Z/dAAAAAXRSTlMAQObYZgAAAFFJREFUCNdjgAL2P0CC/x+MYAcRzCCCEcyFE/JgYh6QqOcBEnUgvTUgwgJEKMCM4wERciDCHiRcB1IAsqH2B0jnB5D4AxDrAIywB7MeIMlCAACH0hmMSGTNOAAAAABJRU5ErkJggg==" width="50%">
+  </div>
+  <span id="VSstatus"></span>
+  <div id='blurBox'></div>
 <video controls disablePictureInPicture id="myVideo"></video>
+</div>
     <br>
     Select the filters and their strength:
     <br>
     <table id="filters">
     <tr>
     <td></td>
-    <th align="center">&nbsp;Sex, Nudity&nbsp;</th>
-    <th align="center">&nbsp;Violence, Gore&nbsp;</th>
-    <th align="center">&nbsp;Profanity, Hate&nbsp;</th>
-    <th align="center">&nbsp;Alcohol, Drugs, etc.&nbsp;</th>
-    <th align="center">&nbsp;Frighten, Intense&nbsp;</th>
+    <th align="center">&nbsp;Sex&nbsp;</th>
+    <th align="center">&nbsp;Violence</th>
+    <th align="center">&nbsp;Profanity&nbsp;</th>
+    <th align="center">&nbsp;Substance</th>
+    <th align="center">&nbsp;Intense&nbsp;</th>
     <th align="center">&nbsp;Other&nbsp;</th>
     </tr>
     <tr>
@@ -232,38 +277,40 @@ td {
     <button id="syncBtn"class="cssbutton imptButton small" title="change all times when video and shot match (alt-y)"accesskey="y">Sync times</button>
     <br><br>
     Edit &nbsp;&nbsp;&nbsp;
-    <button id="timeBtn" class="cssbutton small" title="insert current time (alt-q)" accesskey="q">Insert time</button>
-    <button id="arrowBtn" class="cssbutton small" title="insert a correctly formatted arrow (alt-w)" accesskey="w">Insert arrow</button>
-    <button id="beepBtn" class="cssbutton small" title="insert a quick word mute (alt-a)" accesskey="a">Insert silence</button>
+    <button id="timeBtn" class="cssbutton small" title="insert current time (alt-q)" accesskey="q">Ins. Time</button>
+    <button id="arrowBtn" class="cssbutton small" title="insert a correctly formatted arrow (alt-w)" accesskey="w">Ins. Arrow</button>
+    <button id="beepBtn" class="cssbutton small" title="insert a quick word mute (alt-a)" accesskey="a">Silence</button>
+    <button id="posBtn" class="cssbutton small" title="insert blur box position (alt-d)" accesskey="d">Blur pos.</button>
     <button id="saveFile" class="cssbutton imptButton small" title="save .skp file to Downloads (alt-s)" accesskey="s">Save</button>
     &nbsp;&nbsp;
-    <button id="shotTimeBtn"class="cssbutton small" title="go to selected time / screenshot time">Go to time</button>
+    <button id="shotTimeBtn"class="cssbutton small" title="go to selected time / screenshot time (alt-z)" accesskey="z">Go to time</button>
     <button id="autoBtn" class="cssbutton small" title="find shot in video">Find shot</button>
-    <button id="moveBtn" class="cssbutton small" title="overlay shot on video (alt-b)" accesskey="b">Superimpose</button>
+    <button id="moveBtn" class="cssbutton small" title="overlay shot on video (alt-v)" accesskey="v">Superimpose</button>
+    <button id="blurBoxBtn" class="cssbutton small" title="toggle blur box (alt-c)" accesskey="c">Blur box</button>
     
-    <button id="shotBtn"class="cssbutton small" title="take screenshot">Take screenshot</button>
+    <button id="shotBtn"class="cssbutton small" title="take screenshot (alt-x)" accesskey="x">Take screenshot</button>
     <br>
 	<textarea id="skipBox" rows="10" placeholder="Skips appear here"></textarea>
     &nbsp;&nbsp;&nbsp;<img id="screenShot">
     <br>
 <div id="instructions">
   <h2>Instructions</h2>   
-<p> This little app allows you to filter out several types of objectionable content from downloaded video files. It uses the same categories as the &quot;Parents Guide&quot; section of IMDB.com. It can skip sections entirely, or simply mute the sound or blank the video, at your discretion. Skip files can be shared at the official VideoSkip Exchange at <a href="https://videoskip.org/exchange" target="_blank">https://videoskip.org/exchange</a>, or any way you want. There is also an exension version of this app, available from the Chrome and Firefox web stores, which works on streaming video from any source, and a mobile version that might be easier to use than this one at <a href="https://videoskip.org/mobile" target="_blank">https://videoskip.org/mobile</a></p>
+<p> This little app allows you to filter out several types of objectionable content from downloaded video files. It uses the same categories as the "Parents Guide" section of IMDB.com. It can skip sections entirely, or simply mute the sound or blank the video, at your discretion. Skip files can be shared at the official VideoSkip Exchange at <a href="https://videoskip.org/exchange" target="_blank">https://videoskip.org/exchange</a>, or any way you want. There is also an exension version of this app, available from the Chrome, Firefox, and Edge web stores, which works on streaming video from any source, and a mobile version that might be easier to use than this one at <a href="https://videoskip.org/mobile" target="_blank">https://videoskip.org/mobile</a></p>
 <p>Step by step:</p>
 <ol>
-  <li>Load the video from a local file using the &quot;Load video&quot; button. Because the video must be playable in a browser, it can take .mp4, .ogg, and .webm formats (rename .mkv files to .webm). You can save videos from streaming sources in these formats, rip a disc using software, or convert video files into these formats from a different format (more information below).</li>
-  <li>Optionally, load a file containing subtitles using the &quot;Load subtitles&quot;. Subtitles must be in .vtt or .srt format. You will be asked whether or not you want to generate skips for profanity automatically. If this is the case, it is best to load the subtitles after the skip file in step 4. You can display and edit the list of filtered words by clicking the Help button; the list is at the bottom. The overall timing of these skips can be adjusted with the arrow buttons, after checking &quot;Alt.&quot;</li>
+  <li>Load the video from a local file using the "Load video" button. Because the video must be playable in a browser, it can take .mp4, .ogg, and .webm formats (rename .mkv files to .webm). You can save videos from streaming sources in these formats, rip a disc using software, or convert video files into these formats from a different format (more information below).</li>
+  <li>Optionally, load a file containing subtitles using the "Load subtitles". Subtitles must be in .vtt or .srt format. You will be asked whether or not you want to generate skips for profanity automatically. If this is the case, it is best to load the subtitles after the skip file in step 4. You can display and edit the list of filtered words by clicking the Help button; the list is at the bottom. The overall timing of these skips can be adjusted with the arrow buttons, after checking "Alt."</li>
   <li>If you don't have a skip file for the film you're watching, chances are another user has made one, and has posted it in the VideoSkip Exchange. There's a button to load the Exchange on a separate tab. You don't have to register in order to browse and download skip files.</li>
   <li>Load the skip file now with the "Load skip file" button. Once loaded, its contents will appear in the box, plus a screenshot that may start superimposed on the video. Each skip consists of beginning and end times relative to the start of the video, with an arrow between them, and on the line below a category plus maybe a handling label (such as "video" or "audio"), a number, and a description in parentheses.</li>
   <li>If you want to change something in the list of skips, go right ahead. There's a button to insert the current time on the video (the video itself has a scrub bar to get there), and a correctly formatted "arrow" if you feel lazy, plus another button to insert a silence over the word just pronounced. There is also a button for saving your edited skip list in the default folder for downloads. If you insert two slashes // in the second line of any skip, it will be ignored on playback.</li>
-  <li>If the screenshot matches the video, you are in sync and can start playback. Otherwise, scrub the video with the arrow buttons (frame by frame, if "Fine" is checked) until it matches the screenshot, then click the &quot;Sync times&quot; button. More detail on this process in the section below.</li>
+  <li>If the screenshot matches the video, you are in sync and can start playback. Otherwise, scrub the video with the arrow buttons (frame by frame, if "Fine" is checked) until it matches the screenshot, then click the "Sync times" button. More detail on this process in the section below.</li>
   <li>Set the category filters using the sliders according to the audience. The higher, the more stringent the filter. High = for children, Medium = for teens, Low = for adults. If a filter is Off, the flagged content will be shown.</li>
   <li>Click the play button on the video, and maybe the fullscreen button, sit back, and enjoy. Skips will take place when their times arrive.</li>
   </ol>
 <p>How to sync the skips:</p>
 <ol>
   <li>If the video matches the screenshot when you click the "Go to time" button, everything is in sync and you're done with this phase.</li>
-  <li>But if the video is from a source different from that used to make the skip file, there may be a mismatch. Use the arrow buttons to scrub the video until the screen matches the screenshot or description (frame by frame, if "Fine" is checked). The fast forward button toggles the speed, or resumes playing if paused. The "Superimpose" button puts the screenshot right on top of the video, or removes it. You can resize the screenshot with the arrow keys, and move it around if you hold the Alt key as well. Hold Shift as well for fine corrections (checking &quot;Alt&quot; and &quot;Fine&quot; do the same things). VideoSkip has an automatic process for finding the screenshot time by clicking the &quot;Find shot&quot; button. Make sure you are within one second of the correct time before clicking it.</li>
+  <li>But if the video is from a source different from that used to make the skip file, there may be a mismatch. Use the arrow buttons to scrub the video until the screen matches the screenshot or description (frame by frame, if "Fine" is checked). The fast forward button toggles the speed, or resumes playing if paused. The "Superimpose" button puts the screenshot right on top of the video, or removes it. You can move the screenshot with the mouse, and resize it if you hold the Alt key or check "Alt" as well. VideoSkip has an automatic process for finding the screenshot time by clicking the "Find shot" button. Make sure you are within one second of the correct time before clicking it.</li>
   <li>Click the "Sync times" button when video and screenshot match. This will shift all the skips by the right amount, so they will happen at the correct times, and save a new version of the skip file so the people you share it with won't have to repeat the syncing process.</li>
   </ol>
 <p>Keyboard shortcuts</p>
@@ -282,16 +329,17 @@ td {
 <p>Making your own skips:</p>
 <ul>
   <li>A well-constructed skip file will have a first entry with the timing of an event near the start of the video where the image is changing quickly, plus a description of it on the line below it, and a screenshot. This is to allow viewers to use the skips in the file even if they are watching a video obtained from a different source, which might have a different timing. To take a screenshot, just scrub the video to the desired time and click "Take screenshot"; the time will be added at the beginning of the skip list. For easiest syncing, get the screenshot from a point where the image is changing quickly.</li>
-  <li>Inserting skips is as easy as scrubbing to the point where the skip/mute/blank is supposed to begin, clicking the "Insert time" button on a new line, then the "Insert arrow" button, scrubbing to the point where the skip is to end, clicking the "Insert time" button once more, and then going to the next line and writing a content, number rating, and (optional) handling label. If you are initially unsure of where the skips should be inserted, there is a "Fast Forward" button that scrubs the video at high speed. Click it again to stop. The arrow buttons to its left also stop the video. There is also an &quot;Insert silence&quot; button that inserts a retroactive single-word muting for profanity; click it as soon as you hear the word while the video plays normally.</li>
-  <li>Content labels are case-insensitive. They consist of any word (actually, the first three letters are enough) of the IMDB categories, which are displayed above the sliders, such as "sex", "nudity", "gore", "drugs", etc. Handling labels are these words: "audio", "sound", "video", "image", &quot;blur&quot;, &quot;fast&quot;  (or the first three letters of each, including "img") also case-insensitive.</li>
-  <li>The "audio" or "sound" keywords will cause the sound to be muted during the given interval while the video is still shown, rather than skipping the section entirely, which might be useful for removing profanity. The "video" and "image" keywords cause the image to blank out while the sound still plays, which might be useful for instances of nudity, etc. &quot;blur&quot; causes the image to be blurred instead. &quot;fast&quot; will pass the movie in fast forward rather than skip to the end of the marked interval. No handling keyword means that the section will be completely skipped.</li>
+  <li>Inserting skips is as easy as scrubbing to the point where the skip/mute/blank is supposed to begin, clicking the "Insert time" button on a new line, then the "Insert arrow" button, scrubbing to the point where the skip is to end, clicking the "Insert time" button once more, and then going to the next line and writing a content, number rating, and (optional) handling label. If you are initially unsure of where the skips should be inserted, there is a "Fast Forward" button that scrubs the video at high speed. Click it again to stop. The arrow buttons to its left also stop the video. There is also an "Insert silence" button that inserts a retroactive single-word muting for profanity; click it as soon as you hear the word while the video plays normally.</li>
+  <li>Content labels are case-insensitive. They consist of any word (actually, the first three letters are enough) of the IMDB categories, which are displayed above the sliders, such as "sex", "nudity", "gore", "drugs", etc. Handling labels are these words: "audio", "sound", "video", "image", "blank", "blur", "fast"  (or the first three letters of each, including "img") also case-insensitive.</li>
+  <li>The "audio" or "sound" keywords will cause the sound to be muted during the given interval while the video is still shown, rather than skipping the section entirely, which might be useful for removing profanity. The "video" and "image" keywords cause the image to blank out while the sound still plays, which might be useful for instances of nudity, etc. "blur" causes the image to be blurred instead. "fast" will pass the movie in fast forward rather than skip to the end of the marked interval. No handling keyword means that the section will be completely skipped.</li>
+  <li>The blanking keywords and "blur" can affect only a small portion of the screen if desired. To do this, click the "Blur box" button so make a blurred square appear on the video. Move it around with the mouse (resize by holding the Alt key also). When you are satisfied, click the "Blur pos." button to insert the exact position of the blur box into the skip, as a list of four numbers within square brackets. Bear in mind that on playback the blur box will not move during the time of that skip.</li>
   <li>Finally, adding a number from 1 (mild) to 3 (severe) will allow users to set the filtering level appropriately. A good standard is the following: 1 = problematic for children, 2 = problematic for teens, 3 = problematic for adults. There's a detailed rubric for what this may mean at the Videoskip Exchange. You can add explanatory text in parentheses, which won't trigger the filters.</li>
   <li>Everything is editable in the box. Use this to fine-tune timings. For instance, words to be muted typically take a lot less than a second. You can review each timing by clicking it on the list and then clicking "Go to time". If the time is selected, the arrow buttons will shift the time as well as scrub the video. The "Insert" buttons put things always at the current cursor position.</li>
   <li>Make sure there is a blank line between skips, comprising a line with times and a line with labels below it.</li>
   <li>The "Save" button will save your list, plus screenshot, in .skp format in your default Download folder. You will have to move it from there to the folder where you want it. This format is text-based, so you can view the file in any text editor.</li>
   <li>The "VideoSkip Exchange" button will open a web page where you can share your skip file with other VideoSkip users.</li>
   </ul>
-<p>Sample skip, which will cause the screen to blank out from 14 minutes, 8.27 seconds from the start of the movie until 14 minutes, 14 seconds, while the sound still plays, if &quot;Sex and Nudity&quot; is set at High level. It has additional explanations that won't affect the filter:</p>
+<p>Sample skip, which will cause the screen to blank out from 14 minutes, 8.27 seconds from the start of the movie until 14 minutes, 14 seconds, while the sound still plays, if "Sex and Nudity" is set at High level. It has additional explanations that won't affect the filter:</p>
 <p>0:14:08.27 --&gt; 0:14:14<br>
   nude image 1 (male, from behind)</p>
 <p>Here are some videos that show how to make and use skip files:</p>
@@ -309,7 +357,7 @@ td {
 <div>
   <p><strong>Credits:</strong></p>
   <p>VideoSkip.org domain kindly donated by <a href="https://jeremyplsek.com" target="_blank">Jeremy Plsek</a>. The successor of his VideoSkip is <a href="https://sponsor.ajay.app/" target="_blank">SponsorBlock</a>, which skips ads in YouTube</p>
-  <p>&quot;Find shot&quot; method by Alvaro Gericke</p>
+  <p>"Find shot" method by Alvaro Gericke</p>
   <p>Favicon made by <a href="https://www.flaticon.com/authors/smashicons" title="Smashicons">Smashicons</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></p>
   <p>Below is the block list used for automatically generating silences from a subtitle file, derived from a list courtesy of <a href="https://www.freewebheaders.com/full-list-of-bad-words-banned-by-google/" target="_blank">freewebheaders.com</a>. Edit as needed while maintaining the format. Use only smallcase:</p>
   <div id="blockList" contenteditable>anus, ass fuck, ass hole, assfuck, asshole, assshole, assbag, assbandit, assbang, assbanged, assbanger, assbangs, assbite, assclown, asscock, asscracker, assface, assfaces, assfuck, assfucker, ass-fucker, assfukka, assgoblin, assh0le, asshat, ass-hat, asshead, asshopper, ass-jabber, assjacker, asslick, asslicker, assmaster, assmonkey, assmucus, assmucus, assmunch, assmuncher, assnigger, asspirate, ass-pirate, assshit, asssucker, asswad, asswhole, asswipe, asswipes, auto erotic, bastard, beatch, bimbo, bitch, black cock, bloke, bloody hell, bollock, bollok, bollox, boong, bull shit, bullshit, butt, clit, cock, cockfucker, cocksuck, cocksucker, condom, coonnass, crap, cunt, cyberfuck, dago, damn, darn, dego, dick, dildo, dike, douche, dyke, ejaculate, erect, erection, erotic, escort, fag, faggot, fuck, fuck off, fuck you, fuckass, fuckhole, gay, god damn, goddam, gooch, gook, hard core, hardcore, homoerotic, honky, hooker, hoor, hootch, hore, horniest, horny, hussy, hymen, injun, intercourse, jack off, jackass, jackhole, jackoff, jack-off, jaggi, jagoff, jail bait, jailbait, jerk, jerk off, jerk0ff, jerkass, jerked, jerkoff, jerk-off, jigaboo, jiggaboo, jiggerboo, jism, jiz, jizm, jizz, jizzed, jock, juggs, jungle bunny, junglebunny, junkie, junky, kafir, kawk, kinbaku, kinkster, klan, knob end, knobbing, knobead, knobed, knobend, knobhead, knobjocky, knobjokey, kock, kondum, kondums, kooch, kooches, kootch, kum, kummer, kumming, kums, kunilingus, kunja, kunt, kwif, kike, kraut, kyke, lameass, lardass, lesbian, lezzie, masterbat, masturbat, motha, mother fucker, motherfuck, motherfucker, negro, nigger, nimrod, ninny, nipple, orgasim, orgasm, paedophil, paki, panooch, pansy, pantie, pants down, panty, pedophil, pee, penis, penisfucker, pikey, pillowbiter, pimp, pimpis, pinko, piss, piss off, polack, pollack, poop, porn, porno, pornography, pubi, pussy, puto, queaf, queef, queer, quim, raghead, retard, russkie, russky, sadist, schizo, schlong, scissoring, screw, screwed, screwing, scroat, scrog, scrot, sex, sexy, shit, skag, skank, skeet, slanteye, sleaze, sleazy, slut, smartass, smeg, smegma, smut, sodomi, sodomy, son of a bitch, souse, sperm, spick, splooge, spooge, suck, swastika, swinger, tampon, teat, tits, titt, towelhead, twat, twunt, upskirt, viagra, voyeur, wank, wazoo, wedgie, weenie, weewee, weiner, weirdo, wench, wet dream, wetback, whore, wiseass, wog, wop, xxx, yid, yiffy, yobbo, zibbi, zoophilia, zubb</div>
@@ -360,10 +408,12 @@ var displayMessage = function (message, isError) {
     element.className = isError ? 'error' : 'info'
   }
 
-var name = '';		//global variable with name of skip file, minus extension
-var cuts = [];		//global variable containing the cuts, each array element is an object with this format {startTime,endTime,text,action}
-var shotData = [];
-var offsets = {"local":0};		//for automatic sync. Initialized for a first save
+var name = '',		//global variable with name of skip file, minus extension
+	cuts = [],		//global variable containing the cuts, each array element is an object with this format {startTime,endTime,text,action}
+	shotData = [],
+	offsets = {"local":0},		//for automatic sync. Initialized for a first save
+	sliderValues = ['0','0','0','0','0','0'],
+	fadeTimer;
 
 const ua = navigator.userAgent.toLowerCase(); 		//to add a fix for Safari and choose fastest filter method, per https://jsben.ch/5qRcU
 if (ua.indexOf('safari') != -1) { 
@@ -374,7 +424,10 @@ if (ua.indexOf('safari') != -1) {
 }else if (document.documentMode || /Edge/.test(navigator.userAgent)){var isEdge = true
 }
 
-if(isSafari) videoFile.accept = 'video/mp4,video/x-m4v,video/*';		//file loading fix
+if(isSafari){
+	videoFile.accept = 'video/mp4,video/x-m4v,video/*';		//file loading fix
+	container.style.backgroundColor = 'black'
+}
 
 //loads the skip file
 function loadFileAsURL(){
@@ -828,19 +881,41 @@ function moveShot(){
 	if(isSuper){
 		isSuper = false;
 		screenShot.height = 240;
-		screenShot.width = myVideo.clientWidth / myVideo.clientHeight * 240;
+		screenShot.style.width = myVideo.clientWidth / myVideo.clientHeight * 240 + 'px';
+		screenShot.style.height = '240px';
+		screenShot.width = parseInt(screenShot.style.width.slice(0,-2));
 		screenShot.style.position = '';
 		screenShot.style.top = '';
 		screenShot.style.left = '';
 		screenShot.style.opacity = ''
 	}else{
 		isSuper = true;
-		screenShot.height = myVideo.clientHeight;				//rescales the picture
-		screenShot.width = myVideo.clientWidth;
+		screenShot.style.height = myVideo.clientHeight + 'px';				//rescales the picture
+		screenShot.style.width = myVideo.clientWidth + 'px';
+		screenShot.height = parseInt(screenShot.style.height.slice(0,-2));
+		screenShot.width = parseInt(screenShot.style.width.slice(0,-2));
 		screenShot.style.position = 'absolute';
 		screenShot.style.top = myVideo.offsetTop + 'px';
 		screenShot.style.left = myVideo.offsetLeft + 'px';
 		screenShot.style.opacity = "50%"
+	}
+}
+
+//similar to the previous, to put a blur box on the video
+var isBlur = false;
+
+function toggleBlurBox(){
+	if(isBlur){
+		isBlur = false;
+		blurBox.style.display = 'none'
+	}else{
+		isBlur = true;
+		blurBox.style.display = '';
+		blurBox.style.height = myVideo.clientHeight / 3 + 'px';
+		blurBox.style.width = blurBox.style.height;
+		blurBox.style.top = myVideo.offsetTop + myVideo.clientHeight / 3 + 'px';
+		blurBox.style.left = myVideo.offsetLeft + myVideo.clientWidth / 2 - parseInt(blurBox.style.width.slice(0,-2)) / 2 + 'px';
+		if(isFirefox) blurBox.style.backgroundColor = '#622e09'
 	}
 }
 
@@ -881,47 +956,6 @@ function save2file(){
 	if(!name) name = prompt('Enter the file name. Extension .skp wil be added');
 	download(skipBox.value + '\n\n' + JSON.stringify(offsets) + '\n\n' + screenShot.src, name + ' [' + sourceList.join('-') + '].skp', "text/plain");
 	boxMsg.textContent = 'File saved with name ' + name + ' [' + sourceList.join('-') + '].skp Please share with other users'
-}
-
-//to move and resize superimposed shot
-document.onkeydown = checkKey;
-
-function checkKey(e) {
-	if(isSuper){							//this only works when a screenshot is superimposed on the video
-    	e = e || window.event;
-		var isFine = fineMode.checked != !!e.shiftKey;	//XOR of the two things
-    	if(altMode.checked != !!e.altKey){				//alt combinations moves, regular resizes, hold shift for fine movement
-			if(e.keyCode == '38'){
-				screenShot.style.top = parseInt(screenShot.style.top.slice(0,-2)) - (isFine ? 1 : 10) + 'px'
-			}else if(e.keyCode == '40'){
-				screenShot.style.top = parseInt(screenShot.style.top.slice(0,-2)) + (isFine ? 1 : 10) + 'px'
-			}else if(e.keyCode == '37'){
-				screenShot.style.left = parseInt(screenShot.style.left.slice(0,-2)) - (isFine ? 1 : 10) + 'px'
-			}else if(e.keyCode == '39'){
-				screenShot.style.left = parseInt(screenShot.style.left.slice(0,-2)) + (isFine ? 1 : 10) + 'px'
-			}
-		}else{							//resize shot
-			var increment = isFine ? 1 : 5,
-				increment2 = increment*screenShot.width/screenShot.height;
-			if(e.keyCode == '38'){	
-				screenShot.height += increment * 2;
-				screenShot.style.top = parseInt(screenShot.style.top.slice(0,-2)) - increment + 'px';
-				screenShot.width += increment2 * 2;			//also sideways
-				screenShot.style.left = parseInt(screenShot.style.left.slice(0,-2)) - increment2 + 'px'
-			}else if(e.keyCode == '40'){
-				screenShot.height -= increment * 2;
-				screenShot.style.top = parseInt(screenShot.style.top.slice(0,-2)) + increment + 'px';
-				screenShot.width -= increment2 * 2;
-				screenShot.style.left = parseInt(screenShot.style.left.slice(0,-2)) +  increment2 + 'px'
-			}else if(e.keyCode == '37'){
-				screenShot.width += increment * 2;
-				screenShot.style.left = parseInt(screenShot.style.left.slice(0,-2)) - increment + 'px'
-			}else if(e.keyCode == '39'){
-				screenShot.width -= increment * 2;
-				screenShot.style.left = parseInt(screenShot.style.left.slice(0,-2)) + increment + 'px'
-			}
-		}	
-	}
 }
 
 //to display as the mouse moves over the sliders
@@ -1020,6 +1054,7 @@ function setSliders(){
 			if(isContained(label,/oth|bor/)) otherNum.value = Math.max( 4 - grade, otherNum.value)
 		}
 	}
+	for(var i = 0; i < 6; i++) sliderValues[i] = sliders[i].value;
 	if(noGrade) ready(function(){
 		boxMsg.textContent = "WARNING: This file contains ungraded edits, which won't work unless its slider is set High"
 	})
@@ -1032,19 +1067,28 @@ function setActions(){
 			var ignore = cuts[i].text.includes('//'),										//ignore skip containing // in text
 				label = cuts[i].text.toLowerCase().replace(/\(.*\)/g,''),				//ignore text in parentheses
 				isAudio = isContained(label,/aud|sou|spe|wor/),
-				isVideo = isContained(label,/vid|ima|img/);
-				isBlur = isContained(label,/blu/);
-				isFast = isContained(label,/fas/);
+				isVideo = isContained(label,/vid|ima|img|bla/),
+				isBlurred = isContained(label,/blu/),
+				isFast = isContained(label,/fas/),
+				position = label.match(/\[.*\]/);				//position formatted as array within square brackets
 			if(ignore){
 				cuts[i].action = ''
-			}else if(!isAudio && !isVideo && !isBlur && !isFast){
+			}else if(!isAudio && !isVideo && !isBlurred && !isFast){
 				cuts[i].action = isSkipped(label) ? 'skip' : ''	
 			}else if(isAudio){
 				cuts[i].action = isSkipped(label) ? 'mute' : ''
 			}else if(isVideo){
-				cuts[i].action = isSkipped(label) ? 'blank' : ''
-			}else if(isBlur){
-				cuts[i].action = isSkipped(label) ? 'blur' : ''
+				if(position){
+					cuts[i].action = isSkipped(label) ? 'blank ' + position[0]: ''		//localized blank
+				}else{
+					cuts[i].action = isSkipped(label) ? 'blank' : ''
+				}
+			}else if(isBlurred){
+				if(position){
+					cuts[i].action = isSkipped(label) ? 'blur ' + position[0]: ''		//localized blur
+				}else{
+					cuts[i].action = isSkipped(label) ? 'blur' : ''
+				}
 			}else{
 				cuts[i].action = isSkipped(label) ? 'fast' : ''
 			}
@@ -1119,10 +1163,10 @@ myVideo.ontimeupdate = function(){
 			break							//can't get any stronger, so stop looking for this time
 		}else if(tempAction == 'fast'){
 			action = (action == 'skip') ? 'skip' : 'fast'
-		}else if(tempAction == 'blank'){
-			action = ((action == 'skip') || (action == 'fast')) ? action : 'blank'
-		}else if(tempAction == 'blur'){
-			action = ((action == 'skip') || (action == 'fast') || (action == 'blank')) ? action : 'blur'	
+		}else if(tempAction.includes('blank')){
+			action = ((action == 'skip') || (action == 'fast')) ? action : tempAction
+		}else if(tempAction.includes('blur')){
+			action = ((action == 'skip') || (action == 'fast') || (action == 'blank')) ? action : tempAction			//may include position for local blur	
 		}else if(tempAction == 'mute'){
 			action = ((action == 'skip') || (action == 'fast')) ? action : (((action == 'blank') || (action == 'blur')) ? 'skip' : 'mute')
 		}
@@ -1132,10 +1176,22 @@ myVideo.ontimeupdate = function(){
 	}else if(action == 'skip'){
 		myVideo.currentTime = endTime;
 		myVideo.play()
-	}else if(action == 'blank'){
+	}else if(action == 'blank'){				//blank whole screeen
 		myVideo.style.opacity =  0
-	}else if(action == 'blur'){				//blur screeen
-		myVideo.style.filter =  'blur(30px)'
+	}else if(action.includes('blank')){								//localized blank
+			var position = action.match(/\[.*\]/);
+			if(position) moveBlurBox(JSON.parse(position[0]));
+			blurBox.style.backgroundColor = 'black'
+	}else if(action == 'blur'){				//blur whole screeen
+		myVideo.style.filter = 'blur(20px)'
+	}else if(action.includes('blur')){								//localized blur
+		if(isSafari){
+			myVideo.style.filter = 'blur(20px)'			//blur location unreliable in Safari, so blur whole screen
+		}else{
+			var position = action.match(/\[.*\]/);
+			if(position) moveBlurBox(JSON.parse(position[0]));
+			if(isFirefox) blurBox.style.backgroundColor = '#622e09'
+		}
 	}else if(action == 'fast'){				//fast forward
 		myVideo.playbackRate = 16
 	}else if(action == 'mute'){
@@ -1146,10 +1202,163 @@ myVideo.ontimeupdate = function(){
 		myVideo.style.filter = '';
 		myVideo.playbackRate = 1;
 		myVideo.muted = false;
-		if(myVideo.textTracks.length > 0) myVideo.textTracks[0].mode = 'showing'
+		if(myVideo.textTracks.length > 0) myVideo.textTracks[0].mode = 'showing';
+		blurBox.style.display = 'none';
+		blurBox.style.backgroundColor = ''
 	}
 	prevAction = action
 }
+
+var videoX1, videoX2, videoY1, videoY2;									//coordinates of the actual video corners without black bars
+
+//get real video position, excluding black bars
+function getVideoPos(){
+	var	frameRatio = myVideo.clientWidth / myVideo.clientHeight,					//includes the bars
+		trueRatio = myVideo.videoWidth / myVideo.videoHeight;						//without black bars
+	if(frameRatio <= trueRatio){			//possible black bars at top and bottom
+		videoX1 = myVideo.offsetLeft;
+		videoX2 = videoX1 + myVideo.clientWidth;
+		videoY1 = myVideo.offsetTop + myVideo.clientHeight / 2 - (myVideo.clientWidth / trueRatio) / 2;
+		videoY2 = videoY1 + myVideo.clientWidth / trueRatio;
+	}else{									//possible black bars at left and right
+		videoY1 = myVideo.offsetTop;
+		videoY2 = videoY1 + myVideo.clientHeight;
+		videoX1 = myVideo.offsetLeft + myVideo.clientWidth / 2 - (myVideo.clientHeight * trueRatio) / 2;
+		videoX2 = videoX1 + myVideo.clientHeight * trueRatio;
+	}
+}
+
+//move blur box to position given by array
+function moveBlurBox(position){
+	getVideoPos();							//first get the true position of the video, minus black bars			
+	blurBox.style.display = '';
+	blurBox.style.height = (videoY2 - videoY1) * (position[3] - position[1]) / 100 + 'px';			//resize and move the box
+	blurBox.style.width = (videoX2 - videoX1) * (position[2] - position[0]) / 100 + 'px';
+	blurBox.style.top = videoY1 + (videoY2 - videoY1) * position[1] / 100 + 'px';
+	blurBox.style.left = videoX1 + (videoX2 - videoX1) * position[0] / 100 + 'px'
+}
+
+//to do full screen from container
+btnFS.addEventListener('click', goFullScreen);
+
+var blurPos;			//array containing blur box position, so it stays when going back and forth from full screen
+
+//gets position of blur box as percent of video dimensions
+function getBlurPos(){
+	getVideoPos();
+	var x1 = parseInt(blurBox.style.left.slice(0,-2) - videoX1) / (videoX2 - videoX1) * 100,
+		y1 = parseInt(blurBox.style.top.slice(0,-2) - videoY1) / (videoY2 - videoY1) * 100,
+		x2 = x1 + parseInt(blurBox.style.width.slice(0,-2)) / (videoX2 - videoX1) * 100,
+		y2 = y1 + parseInt(blurBox.style.height.slice(0,-2)) / (videoY2 - videoY1) * 100;
+	return [x1,y1,x2,y2]
+}
+
+function goFullScreen() {
+	if(isBlur) blurPos = getBlurPos();
+	var fullscreenElement = document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
+	if(fullscreenElement){
+  		exitFullscreen();
+  	}else {
+  		launchIntoFullscreen(document.getElementById('container'));
+  	}
+}
+
+// From https://davidwalsh.name/fullscreen
+// Find the right method, call on correct element
+function launchIntoFullscreen(element) {
+  if (element.requestFullscreen) {
+    element.requestFullscreen();
+  } else if (element.mozRequestFullScreen) {
+    element.mozRequestFullScreen();
+  } else if (element.webkitRequestFullscreen) {
+    element.webkitRequestFullscreen();
+  } else if (element.msRequestFullscreen) {
+    element.msRequestFullscreen();
+  }
+}
+
+// Whack fullscreen
+function exitFullscreen() {
+  if (document.exitFullscreen) {
+    document.exitFullscreen();
+  } else if (document.mozCancelFullScreen) {
+    document.mozCancelFullScreen();
+  } else if (document.webkitExitFullscreen) {
+    document.webkitExitFullscreen();
+  }
+}
+
+var isFull = false;			//for a Safari fix
+
+//show filter settings as soon as the video goes full screen, and when the mouse is moved on fullscreen
+window.onresize = function(){
+	if(((screen.availWidth || screen.width-30) <= window.outerWidth) && VSstatus){		//it's fullscreen now
+		showSettings();
+		fadeTimer = setTimeout(function(){
+			VSstatus.style.display = 'none';
+			btnFS.style.display = 'none';
+			myVideo.style.cursor = 'none'
+		},3300);
+		myVideo.style.width = '100vw';	//needed by Firefox
+		myVideo.style.height = '100vh';
+		isFull = true
+	}else{									//no longer fullscreen
+		VSstatus.style.display = 'none'
+		myVideo.style.width = '';
+		myVideo.style.height = '';
+		isFull = false
+	}
+	if(isBlur && blurPos) moveBlurBox(blurPos)
+}
+
+window.onmousemove = function(){
+	if(((screen.availWidth || screen.width-30) <= window.outerWidth) && VSstatus){		//display selected filters in fullscreen
+		clearTimeout(fadeTimer);
+		fadeTimer = null;
+		showSettings();
+		if(btnFS.style.display == 'none'){
+			btnFS.style.display = 'block';
+			myVideo.style.cursor = ''
+		}
+		if(!fadeTimer) fadeTimer = setTimeout(function(){
+			VSstatus.style.display = 'none';
+			btnFS.style.display = 'none';
+			myVideo.style.cursor = 'none'
+		},4000)
+	}else if(btnFS.style.display == 'none'){							//display full screen button
+		clearTimeout(fadeTimer);
+		fadeTimer = null;
+		btnFS.style.display = 'block';
+		myVideo.style.cursor = '';
+		if(!fadeTimer) fadeTimer = setTimeout(function(){
+			btnFS.style.display = 'none';
+			myVideo.style.cursor = 'none'
+		},4000)
+	}
+}
+
+//this displays the filter settings on the full screen video
+function showSettings(){
+	VSstatus.textContent = '';
+	if(cuts.length == 0){
+		VSstatus.textContent = "  VideoSkip: no edits loaded  "
+	}else{
+		var	keyWords = ['sex','violence','profanity','substance','intense','other'],
+			output = [];
+		for(var i = 0; i < keyWords.length; i++){
+			if(sliderValues[i] != '0') output.push(keyWords[i])
+		}
+		if(output.length == 0){
+			VSstatus.textContent = "  VideoSkip: no filters engaged  "
+		}else{
+			VSstatus.textContent = "  VideoSkip on: " + output.join(', ') + "  "
+		}
+	}
+	VSstatus.style.display = ''
+};
+
+//move full screen button to corner
+btnFS.style.top = myVideo.offsetTop + 10 + 'px';
 
 //now connect functions to the buttons
 
@@ -1178,7 +1387,16 @@ beepBtn.addEventListener('click', function(){
 	writeIn(toHMS(time - 0.7) + ' --> ' + toHMS(time) + '\nprofane word\n\n',false)
 });
 
+posBtn.addEventListener('click', function(){						//write relative position of blur box, 2 decimals
+	if(isBlur){
+		var x = getBlurPos();
+		for(var i = 0; i < 4; i++) x[i] = x[i].toPrecision(4);
+		writeIn('[' + x[0] + ',' + x[1] + ',' + x[2] + ',' + x[3] + ']',false)
+	}
+});
+
 instructions.style.display = 'none';
+
 help.addEventListener('click', toggleHelp);
 
 saveFile.addEventListener('click', save2file);
@@ -1195,6 +1413,8 @@ autoBtn.addEventListener('click',findShot);
 
 moveBtn.addEventListener('click',moveShot);
 
+blurBoxBtn.addEventListener('click',toggleBlurBox);
+
 syncBtn.addEventListener('click',syncTimes);
 
 shotBtn.addEventListener('click',makeShot);
@@ -1203,7 +1423,91 @@ skipBox.addEventListener('change', function(){
 	cuts = PF_SRT.parse(skipBox.value);
 	setActions();
 	makeTimeLabels()
-})
+});
+
+for(var i = 0; i < sliders.length; i++){
+	sliders[i].addEventListener('change',function(){
+		for(var j = 0; j < sliders.length; j++) sliderValues[j] = sliders[j].value;
+		setActions()
+	})
+}
+
+//to make blur box draggable, from W3schools
+function dragElement(elmnt) {
+  var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+    elmnt.onmousedown = dragMouseDown;
+
+  function dragMouseDown(e) {
+    e = e || window.event;
+    e.preventDefault();
+    // get the mouse cursor position at startup:
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    document.onmouseup = closeDragElement;
+    // call a function whenever the cursor moves:
+	if(altMode.checked != !!e.altKey){				//alt combinations resizes, regular moves
+		document.onmousemove = elementResize
+	}else{
+    	document.onmousemove = elementDrag
+	}
+  }
+
+  function elementDrag(e) {
+    e = e || window.event;
+    e.preventDefault();
+    // calculate the new cursor position:
+    pos1 = pos3 - e.clientX;
+    pos2 = pos4 - e.clientY;
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    // set the element's new position:
+    elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+    elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+  }
+  
+  function elementResize(e) {
+    e = e || window.event;
+    e.preventDefault();
+    // calculate the new cursor position:
+    pos1 = pos3 - e.clientX;
+    pos2 = pos4 - e.clientY;
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+	//get the element center
+	var centerX = elmnt.offsetLeft + elmnt.clientWidth / 2,
+		centerY = elmnt.offsetTop + elmnt.clientHeight / 2;
+    // set the element's new size, four cases depending of where the mouse is:
+	if(pos3 >= centerX && pos4 >= centerY){							//lower right
+    	elmnt.style.height = (elmnt.clientHeight - pos2) + "px";
+    	elmnt.style.width = (elmnt.clientWidth - pos1) + "px";
+	}else if(pos3 < centerX && pos4 >= centerY){						//lower left
+		elmnt.style.height = (elmnt.clientHeight - pos2) + "px";
+    	elmnt.style.width = (elmnt.clientWidth + pos1) + "px";
+		elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+	}else if(pos3 >= centerX && pos4 < centerY){						//upper right
+		elmnt.style.height = (elmnt.clientHeight + pos2) + "px";
+    	elmnt.style.width = (elmnt.clientWidth - pos1) + "px";
+		elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+	}else{																//upper left
+		elmnt.style.height = (elmnt.clientHeight + pos2) + "px";
+    	elmnt.style.width = (elmnt.clientWidth + pos1) + "px";
+		elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+		elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+	}
+  }
+
+  function closeDragElement() {
+    // stop moving when mouse button is released:
+    document.onmouseup = null;
+    document.onmousemove = null;
+  }
+}
+
+//apply the above to the box and the screenshot
+dragElement(blurBox);
+dragElement(screenShot);
+
+blurBox.style.display = 'none'
 </script>
 </body>
 </html>
