@@ -389,18 +389,19 @@ function ready(fn) {
     if (isError) {
       return
     }
-
-    var fileURL = URL.createObjectURL(file)
-    videoNode.src = fileURL;
-	ready(function(){
-		cuts = PF_SRT.parse(skipBox.value);
-		setActions();
-		makeTimeLabels()
-	})
+    loadVideoURL(URL.createObjectURL(file));
   }
   var inputNode = document.getElementById('videoFile')
   inputNode.addEventListener('change', playSelectedFile, false)
 })();
+
+function loadVideoURL(url){
+    var videoNode = document.querySelector('video')
+    videoNode.src = url;
+    cuts = PF_SRT.parse(skipBox.value);
+    setActions();
+    makeTimeLabels()
+}
 
 var displayMessage = function (message, isError) {
     var element = document.querySelector('#videoMsg')
