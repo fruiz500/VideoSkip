@@ -446,6 +446,12 @@ function loadSkipsFromFile(){
 	fileReader.readAsText(fileToLoad)
 }
 
+function loadSkipsFromURL(url){
+    fetch(url)
+        .then(response => response.text())
+        .then(loadSkipsData);
+}
+
 function loadSkipsData(skips_data){
     var data, screenshot;
     [data, screenshot] = skips_data.split('data:image/jpeg;base64,');		//separate skips and offsets from screenshot
