@@ -1521,6 +1521,20 @@ dragElement(blurBox);
 dragElement(screenShot);
 
 blurBox.style.display = 'none'
+
+ready(function(){
+    // Automatically load the video and skips files from the URL parameters if
+    // they were provided.
+    const params = new URLSearchParams(window.location.search);
+    const video = params.get("video");
+    if (video !== null ) {
+      loadVideoURL(video);
+    }
+    const skips = params.get("skips");
+    if (skips !== null ) {
+      loadSkipsFromURL(skips);
+    }
+});
 </script>
 </body>
 </html>
