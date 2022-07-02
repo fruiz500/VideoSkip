@@ -449,7 +449,10 @@ function loadSkipsFromFile(){
 function loadSkipsFromURL(url){
     fetch(url)
         .then(response => response.text())
-        .then(loadSkipsData);
+        .then(loadSkipsData)
+        .catch(error => {
+            alert(`Failed to load skips from ${url}: "${error}"`);
+        });
 }
 
 function loadSkipsData(skips_data){
