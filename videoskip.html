@@ -389,18 +389,19 @@ function ready(fn) {
     if (isError) {
       return
     }
-
-    var fileURL = URL.createObjectURL(file)
-    videoNode.src = fileURL;
-	ready(function(){
-		cuts = PF_SRT.parse(skipBox.value);
-		setActions();
-		makeTimeLabels()
-	})
+    loadVideoURL(URL.createObjectURL(file));
   }
-  var inputNode = document.querySelector('input')
+  var inputNode = document.getElementById('videoFile')
   inputNode.addEventListener('change', playSelectedFile, false)
 })();
+
+function loadVideoURL(url){
+    var videoNode = document.querySelector('video')
+    videoNode.src = url;
+    cuts = PF_SRT.parse(skipBox.value);
+    setActions();
+    makeTimeLabels()
+}
 
 var displayMessage = function (message, isError) {
     var element = document.querySelector('#videoMsg')
@@ -430,30 +431,45 @@ if(isSafari){
 }
 
 //loads the skip file
-function loadFileAsURL(){
+function loadSkipsFromFile(){
 	var fileToLoad = skipFile.files[0],
 		fileReader = new FileReader();
 	fileReader.onload = function(fileLoadedEvent){
-		var URLFromFileLoaded = fileLoadedEvent.target.result;
 		var extension = fileToLoad.name.slice(-4);
 		if(extension == ".skp"){
-			var data = URLFromFileLoaded.split('data:image/jpeg;base64,');		//separate skips and offsets from screenshot
-			var data1 = data[0].split('{');										//separate skips from offsets
-			name = fileToLoad.name.slice(0,-4).replace(/ \[[a-z0-9\-]*\]/,'');	//remove extension and service list
-			skipBox.value = data1[0].trim();
-			if(data1[1]) offsets = JSON.parse('{' + data1[1].trim());			//make offsets object
-			if(data[1]) screenShot.src = 'data:image/jpeg;base64,' + data[1]	//extract screenshot
+            loadSkipsData(fileLoadedEvent.target.result);
 		}else{
 			boxMsg.textContent = "wrong file type"
 		}
 		boxMsg.textContent = 'This is the content of file: ' + fileToLoad.name;
-		ready(function(){
-			cuts = PF_SRT.parse(skipBox.value);
-			setSliders();
-			applyOffset()								//this includes setActions at the end
-		})
 	};
 	fileReader.readAsText(fileToLoad)
+}
+
+function loadSkipsFromURL(url){
+    fetch(url)
+        .then(response => response.text())
+        .then(loadSkipsData)
+        .catch(error => {
+            alert(`Failed to load skips from ${url}: "${error}"`);
+        });
+}
+
+function loadSkipsData(skips_data){
+    var data, screenshot;
+    [data, screenshot] = skips_data.split('data:image/jpeg;base64,');		//separate skips and offsets from screenshot
+    var skips, offsets_json;
+    [skips, offsets_json] = data.split('{');								//separate skips from offsets
+    skipBox.value = skips.trim();
+    if(offsets) offsets = JSON.parse('{' + offsets_json.trim());			//make offsets object
+    if(screenshot){
+        screenShot.src = 'data:image/jpeg;base64,' + screenshot;	//extract screenshot
+    } else {
+        screenShot.src = '';	//clear any previous screenshot
+    }
+    cuts = PF_SRT.parse(skipBox.value);
+    setSliders();
+    applyOffset()								//this includes setActions at the end
 }
 
 //similar, for loading subtitles; includes option to generate skips for profanity
@@ -1364,7 +1380,7 @@ btnFS.style.top = myVideo.offsetTop + 10 + 'px';
 
 filters.addEventListener('change', setActions);
 
-skipFile.addEventListener('change', loadFileAsURL);
+skipFile.addEventListener('change', loadSkipsFromFile);
 /*
 //loads other websites from a select option list
 function loadPage(){
@@ -1508,6 +1524,20 @@ dragElement(blurBox);
 dragElement(screenShot);
 
 blurBox.style.display = 'none'
+
+ready(function(){
+    // Automatically load the video and skips files from the URL parameters if
+    // they were provided.
+    const params = new URLSearchParams(window.location.search);
+    const video = params.get("video");
+    if (video !== null ) {
+      loadVideoURL(video);
+    }
+    const skips = params.get("skips");
+    if (skips !== null ) {
+      loadSkipsFromURL(skips);
+    }
+});
 </script>
 </body>
 </html>
