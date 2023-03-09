@@ -150,6 +150,7 @@ td {
 	border-radius: 500px;
 	-webkit-backdrop-filter: blur(20px);
 	backdrop-filter: blur(20px);
+	overflow: overlay;
 }
 #container {
   width: 100%;
@@ -190,7 +191,7 @@ video::-webkit-media-controls-fullscreen-button {
         @licstart  The following is the entire license notice for the
         JavaScript code in this page.
 
-        Copyright (C) 2021  Francisco Ruiz
+        Copyright (C) 2023  Francisco Ruiz
 
         The JavaScript code in this page is free software: you can
         redistribute it and/or modify it under the terms of the GNU
@@ -222,7 +223,7 @@ video::-webkit-media-controls-fullscreen-button {
 
 <body>                    
 	<h2>VideoSkip Player Mobile</h2>
-    <p>v 0.5 &nbsp;&#169; F. Ruiz 2021</p>
+    <p>v 0.5 &nbsp;&#169; F. Ruiz 2023</p>
 <div id="videoMsg">Load video file with left button, .vtt or .srt subtitles with middle button, skip file with the lower button</div>
 <label for="videoFile"><span class="cssbutton imptButton" id="videoFileBtn" title="load .mp4, .ogg, .webm video file">Load video</span></label>
 <input type="file" id="videoFile" accept="video/*"/>
@@ -316,7 +317,7 @@ video::-webkit-media-controls-fullscreen-button {
 <p>How to sync the skips:</p>
 <ol>
   <li>If the video matches the screenshot when you click the "Go to time" button, everything is in sync and you're done with this phase.</li>
-  <li>But if the video is from a source different from that used to make the skip file, there may be a mismatch. Use the arrow buttons to scrub the video until the screen matches the screenshot or description (frame by frame, if "Fine" is checked). The fast forward button toggles the speed, or resumes playing if paused. The "Superimpose" button puts the screenshot right on top of the video, or removes it. You can move the screenshot with the mouse, and resize it if you hold the Alt key or check &quot;Alt&quot; as well. VideoSkip has an automatic process for finding the screenshot time by clicking the "Find shot" button. Make sure you are within one second of the correct time before clicking it.</li>
+  <li>But if the video is from a source different from that used to make the skip file, there may be a mismatch. Use the arrow buttons to scrub the video until the screen matches the screenshot or description (frame by frame, if "Fine" is checked). The fast forward button toggles the speed, or resumes playing if paused. The "Superimpose" button puts the screenshot right on top of the video, or removes it. You can move the screenshot with the mouse, and resize it if you hold the Alt key or the right mouse button, or check "Alt" as well. VideoSkip has an automatic process for finding the screenshot time by clicking the "Find shot" button. Make sure you are within one second of the correct time before clicking it.</li>
   <li>Click the "Sync times" button when video and screenshot match. This will shift all the skips by the right amount, so they will happen at the correct times, and save a new version of the skip file so the people you share it with won't have to repeat the syncing process.</li>
   </ol>
 <p>Keyboard shortcuts</p>
@@ -338,7 +339,7 @@ video::-webkit-media-controls-fullscreen-button {
   <li>Inserting skips is as easy as scrubbing to the point where the skip/mute/blank is supposed to begin, clicking the "Insert time" button on a new line, then the "Insert arrow" button, scrubbing to the point where the skip is to end, clicking the "Insert time" button once more, and then going to the next line and writing a content, number rating, and (optional) handling label. If you are initially unsure of where the skips should be inserted, there is a "Fast Forward" button that scrubs the video at high speed. Click it again to stop. The arrow buttons to its left also stop the video. There is also an "Insert silence" button that inserts a retroactive single-word muting for profanity; click it as soon as you hear the word while the video plays normally.</li>
   <li>Content labels are case-insensitive. They consist of any word (actually, the first three letters are enough) of the IMDB categories, which are displayed above the sliders, such as "sex", "nudity", "gore", "drugs", etc. Handling labels are these words: "audio", "sound", "video", "image", "blank", "blur", "fast"  (or the first three letters of each, including "img") also case-insensitive.</li>
   <li>The "audio" or "sound" keywords will cause the sound to be muted during the given interval while the video is still shown, rather than skipping the section entirely, which might be useful for removing profanity. The "video" and "image" keywords cause the image to blank out while the sound still plays, which might be useful for instances of nudity, etc. "blur" causes the image to be blurred instead. "fast" will pass the movie in fast forward rather than skip to the end of the marked interval. No handling keyword means that the section will be completely skipped.</li>
-  <li>The blanking keywords and &quot;blur&quot; can affect only a small portion of the screen if desired. To do this, click the &quot;Blur box&quot; button so make a blurred square appear on the video. Move it around with the mouse (resize by holding the Alt key also). When you are satisfied, click the &quot;Blur pos.&quot; button to insert the exact position of the blur box into the skip, as a list of four numbers within square brackets. Bear in mind that on playback the blur box will not move during the time of that skip.</li>
+  <li>The blanking keywords and "blur" can affect only a small portion of the screen if desired. To do this, click the "Blur box" button so make a blurred square appear on the video. Move it around with the mouse (resize by holding the Alt key or the right mouse button also). When you are satisfied, click the "Blur pos." button to insert the exact position of the blur box into the skip, as a list of four numbers within square brackets. Bear in mind that on playback the blur box will not move during the time of that skip.</li>
   <li>Finally, adding a number from 1 (mild) to 3 (severe) will allow users to set the filtering level appropriately. A good standard is the following: 1 = problematic for children, 2 = problematic for teens, 3 = problematic for adults. There's a detailed rubric for what this may mean at the Videoskip Exchange. You can add explanatory text in parentheses, which won't trigger the filters.</li>
   <li>Everything is editable in the box. Use this to fine-tune timings. For instance, words to be muted typically take a lot less than a second. You can review each timing by clicking it on the list and then clicking "Go to time". If the time is selected, the arrow buttons will shift the time as well as scrub the video. The "Insert" buttons put things always at the current cursor position.</li>
   <li>Make sure there is a blank line between skips, comprising a line with times and a line with labels below it.</li>
@@ -402,7 +403,9 @@ function ready(fn) {
 		cuts = PF_SRT.parse(skipBox.value);
 		setActions();
 		makeTimeLabels()
-	})
+	});
+	this.type = '';
+  	this.type = 'file';								//resets file input
   }
   var inputNode = document.querySelector('input')
   inputNode.addEventListener('change', playSelectedFile, false)
@@ -457,7 +460,9 @@ function loadFileAsURL(){
 			cuts = PF_SRT.parse(skipBox.value);
 			setSliders();
 			applyOffset()								//this includes setActions at the end
-		})
+		});
+		skipFile.type = '';
+		skipFile.type = 'file';								//resets file input
 	};
 	fileReader.readAsText(fileToLoad)
 }
@@ -494,6 +499,8 @@ function loadSubs(){
 		}else{
 			displayMessage("Only .vtt  and .srt subs are supported",true)
 		}
+		subFile.type = '';
+		subFile.type = 'file';								//resets file input
 	};
 	fileReader.readAsText(fileToLoad)
 }
@@ -920,8 +927,7 @@ function toggleBlurBox(){
 		blurBox.style.height = myVideo.clientHeight / 3 + 'px';
 		blurBox.style.width = blurBox.style.height;
 		blurBox.style.top = myVideo.offsetTop + myVideo.clientHeight / 3 + 'px';
-		blurBox.style.left = myVideo.offsetLeft + myVideo.clientWidth / 2 - parseInt(blurBox.style.width.slice(0,-2)) / 2 + 'px';
-		if(isFirefox) blurBox.style.backgroundColor = '#622e09'
+		blurBox.style.left = myVideo.offsetLeft + myVideo.clientWidth / 2 - parseInt(blurBox.style.width.slice(0,-2)) / 2 + 'px'
 	}
 }
 
@@ -1072,7 +1078,7 @@ function setActions(){
 		if(cuts[i].text){
 			var ignore = cuts[i].text.includes('//'),										//ignore skip containing // in text
 				label = cuts[i].text.toLowerCase().replace(/\(.*\)/g,''),				//ignore text in parentheses
-				isAudio = isContained(label,/aud|sou|spe|wor/),
+				isAudio = isContained(label,/aud|sou|spe|wor|mut/),
 				isVideo = isContained(label,/vid|ima|img|bla/),
 				isBlurred = isContained(label,/blu/),
 				isFast = isContained(label,/fas/),
@@ -1196,7 +1202,7 @@ myVideo.ontimeupdate = function(){
 		}else{
 			var position = action.match(/\[.*\]/);
 			if(position) moveBlurBox(JSON.parse(position[0]));
-			if(isFirefox) blurBox.style.backgroundColor = '#622e09'
+			isBlur = true
 		}
 	}else if(action == 'fast'){				//fast forward
 		myVideo.playbackRate = 16
@@ -1210,7 +1216,7 @@ myVideo.ontimeupdate = function(){
 		myVideo.muted = false;
 		if(myVideo.textTracks.length > 0) myVideo.textTracks[0].mode = 'showing';
 		blurBox.style.display = 'none';
-		blurBox.style.backgroundColor = ''
+		isBlur = false
 	}
 	prevAction = action
 }
@@ -1416,6 +1422,11 @@ for(var i = 0; i < sliders.length; i++){
 function dragElement(elmnt) {
   var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
     elmnt.onmousedown = dragMouseDown;
+	
+  elmnt.addEventListener('contextmenu', function(e) {					//disable right-click menu
+		e.preventDefault();
+    	return false;
+  }, false);
 
   function dragMouseDown(e) {
     e = e || window.event;
@@ -1425,7 +1436,7 @@ function dragElement(elmnt) {
     pos4 = e.clientY;
     document.onmouseup = closeDragElement;
     // call a function whenever the cursor moves:
-	if(altMode.checked != !!e.altKey){				//alt combinations resizes, regular moves
+	if(altMode.checked != (!!e.altKey || e.button == 2)){				//alt combinations or right-click resizes, regular moves
 		document.onmousemove = elementResize
 	}else{
     	document.onmousemove = elementDrag
@@ -1453,27 +1464,9 @@ function dragElement(elmnt) {
     pos2 = pos4 - e.clientY;
     pos3 = e.clientX;
     pos4 = e.clientY;
-	//get the element center
-	var centerX = elmnt.offsetLeft + elmnt.clientWidth / 2,
-		centerY = elmnt.offsetTop + elmnt.clientHeight / 2;
-    // set the element's new size, four cases depending of where the mouse is:
-	if(pos3 >= centerX && pos4 >= centerY){							//lower right
-    	elmnt.style.height = (elmnt.clientHeight - pos2) + "px";
-    	elmnt.style.width = (elmnt.clientWidth - pos1) + "px";
-	}else if(pos3 < centerX && pos4 >= centerY){						//lower left
-		elmnt.style.height = (elmnt.clientHeight - pos2) + "px";
-    	elmnt.style.width = (elmnt.clientWidth + pos1) + "px";
-		elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
-	}else if(pos3 >= centerX && pos4 < centerY){						//upper right
-		elmnt.style.height = (elmnt.clientHeight + pos2) + "px";
-    	elmnt.style.width = (elmnt.clientWidth - pos1) + "px";
-		elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
-	}else{																//upper left
-		elmnt.style.height = (elmnt.clientHeight + pos2) + "px";
-    	elmnt.style.width = (elmnt.clientWidth + pos1) + "px";
-		elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
-		elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
-	}
+	//resize element:
+    elmnt.style.height = (elmnt.clientHeight - pos2) + "px";
+    elmnt.style.width = (elmnt.clientWidth - pos1) + "px";
   }
 
   function closeDragElement() {
