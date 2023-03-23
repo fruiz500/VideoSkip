@@ -27,6 +27,7 @@ input[type=checkbox] {
 	-moz-transform: scale(1.7); /* FF */
 	-webkit-transform: scale(1.7); /* Safari and Chrome */
 	-o-transform: scale(1.7); /* Opera */
+	transform: scale(1.7);
 	padding: 0px;
 	cursor: pointer;
 	border: 1px solid #dedede;
@@ -35,7 +36,9 @@ input[type=range]{
     width: 70px;
     height: 8px;
 	-webkit-appearance: none;
+	appearance: none;
     -webkit-transform:rotate(-90deg);
+	transform:rotate(-90deg);
 	background-color: #ddd;
 }
 input[type=range]::-webkit-slider-runnable-track {
@@ -105,6 +108,9 @@ td {
 }
 #screenShot {
 	z-index: 1;
+}
+.centered {
+	text-align: center;
 }
 .cssbutton {
 	-webkit-border-radius: 10px;
@@ -272,21 +278,21 @@ video::-webkit-media-controls-fullscreen-button {
     <table id="filters">
     <tr>
     <td></td>
-    <th align="center">&nbsp;Sex&nbsp;</th>
-    <th align="center">&nbsp;Violence</th>
-    <th align="center">&nbsp;Profanity&nbsp;</th>
-    <th align="center">&nbsp;Substance</th>
-    <th align="center">&nbsp;Intense&nbsp;</th>
-    <th align="center">&nbsp;Other&nbsp;</th>
+    <th class="centered">&nbsp;Sex&nbsp;</th>
+    <th class="centered">&nbsp;Violence</th>
+    <th class="centered">&nbsp;Profanity&nbsp;</th>
+    <th class="centered">&nbsp;Substance</th>
+    <th class="centered">&nbsp;Intense&nbsp;</th>
+    <th class="centered">&nbsp;Other&nbsp;</th>
     </tr>
     <tr>
     <td>High<br>Medium<br>Low<br>Off</td>
-    <td align="center"><input id="sexNum" type="range" min="0" max="3" step="1" value="0"></td>
-    <td align="center"><input id="violenceNum" type="range" min="0" max="3" step="1" value="0"></td>
-    <td align="center"><input id="curseNum" type="range" min="0" max="3" step="1" value="0"></td>
-    <td align="center"><input id="boozeNum" type="range" min="0" max="3" step="1" value="0"></td>
-    <td align="center"><input id="scareNum" type="range" min="0" max="3" step="1" value="0"></td>
-    <td align="center"><input id="otherNum" type="range" min="0" max="3" step="1" value="0"></td>
+    <td class="centered"><input id="sexNum" type="range" min="0" max="3" step="1" value="0"></td>
+    <td class="centered"><input id="violenceNum" type="range" min="0" max="3" step="1" value="0"></td>
+    <td class="centered"><input id="curseNum" type="range" min="0" max="3" step="1" value="0"></td>
+    <td class="centered"><input id="boozeNum" type="range" min="0" max="3" step="1" value="0"></td>
+    <td class="centered"><input id="scareNum" type="range" min="0" max="3" step="1" value="0"></td>
+    <td class="centered"><input id="otherNum" type="range" min="0" max="3" step="1" value="0"></td>
     </tr>
     </table>
     <span id="rubricText"></span>
@@ -935,10 +941,10 @@ var timeLabels = [];
 
 //remakes array timeLabels containing HMS times, plus their positions in the box [HMS time, start, end]
 function makeTimeLabels(){
-	timeLabels = [[],[],[]];						//string, startPosition, endPosition
+	timeLabels = [[],[],[]];							//string, startPosition, endPosition
 	var	text = skipBox.value,
 		string, start, end = 0;
-	var matches = text.match(/\d+[\d:.]+/g);
+	var matches = text.replace(/\[.*\]/g,'').match(/\d+[\d:.]+/g);		//remove local blur positions
 	if(matches){
 		for(var i = 0; i < matches.length; i++){
 			string = matches[i];
@@ -962,6 +968,13 @@ function toggleHelp(){
 
 //save skips to file
 function save2file(){
+	//first check that all skips have a category
+	for(var i = 0; i < cuts.length; i++){
+		if(!isContained(cuts[i].text.toLowerCase().replace(/\(.*\)/g,''),/sex|nud|vio|gor|pro|cur|hat|alc|dru|smo|fri|sca|int|oth|bor/)){
+			boxMsg.textContent = "Skip number " + (i+1) + " is missing its category";
+			return
+		}
+	}
 	if(screenShot.src == '' && timeLabels.length == 0) return;
 	var sourceList = Object.keys(offsets);
 	sourceList.sort(function(a,b){return b.length - a.length;});		//sort alphabetically
