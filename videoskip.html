@@ -1,1521 +1,1875 @@
 <!doctype html>
 <html lang="en" xml:lang="en" xmlns="http://www.w3.org/1999/xhtml" manifest="videoskip.appcache">
+
 <head>
-<meta charset="UTF-8">
-<title>VideoSkip player</title>
-<meta name="Description" content="VideoSkip player">
-<meta name="author" content="F. Ruiz">
-<meta name="robots" content="index">
-<link rel="shortcut icon" type="image/x-icon" href="favicon.png">
+	<meta charset="UTF-8">
+	<title>VideoSkip player</title>
+	<meta name="Description" content="VideoSkip player">
+	<meta name="author" content="F. Ruiz">
+	<meta name="robots" content="index">
+	<link rel="shortcut icon" type="image/x-icon" href="favicon.png">
 
-<style>
-video {
-    display: block;
-	z-index: 0;
-}
-video:focus {
-	outline: none;
-}
-input[type=checkbox] {
-	/* Larger checkboxes */
-	-ms-transform: scale(1.7); /* IE */
-	-moz-transform: scale(1.7); /* FF */
-	-webkit-transform: scale(1.7); /* Safari and Chrome */
-	-o-transform: scale(1.7); /* Opera */
-	transform: scale(1.7);
-	padding: 0px;
-	cursor: pointer;
-	border: 1px solid #dedede;
-}
-input[type=range]{
-    width: 70px;
-    height: 8px;
-	-webkit-appearance: none;
-	appearance: none;
-    -webkit-transform:rotate(-90deg);
-	transform:rotate(-90deg);
-	background-color: #ddd;
-}
-input[type=range]::-webkit-slider-runnable-track {
-    width: 70px;
-    height: 8px;
-    border: none;
-    border-radius: 3px;
-}
-input[type=range]::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    height: 36px;
-    width: 16px;
-    border-radius: 3px;
-    background: goldenrod;
-    margin-top: -15px;
-	cursor: pointer;
-}
-input[type=range]::-moz-range-track {
-    width: 70px;
-    height: 8px;
-    border: none;
-    border-radius: 3px;
-}
-input[type=range]::-moz-range-thumb {
-    height: 36px;
-    width: 16px;
-    border-radius: 3px;
-    background: goldenrod;
-	cursor: pointer;
-}
-input[type=range]:focus {
-    outline: none;
-}
-td {
-	align-content: center;
-}
-.info {
-    background-color: palegreen;            
-}
-.error {
-    background-color: red;
-    color: white;
-}
-.hspacer {
-	width: 150px;
-	height: auto;
-	display:inline-block;
-}
-#skipBox {
-	height: 250px;
-	width: 356px;
-	background: #fffffc;
-	z-index: 2;
-}
-#boxMsg {
-	color: blue;
-	z-index: 2;
-}
-#videoFile {
-	display: none;
-}
-#subFile {
-	display: none;
-}
-#skipFile {
-	display: none;
-}
-#screenShot {
-	z-index: 1;
-}
-.centered {
-	text-align: center;
-}
-.cssbutton {
-	-webkit-border-radius: 10px;
-	-moz-border-radius: 10px;
-	border-radius: 10px;
-	font-family: Arial;
-	font-size: 18px;
-	padding: 12px;
-	text-decoration: none;
-	border: 0px;
-	color: #555555;
-	background: #e6e6e6;
-	z-index: 2;
-}
-.cssbutton:hover {
-	text-decoration: none;
-	cursor: pointer;
-	background: #cfcfcf;
-}
-.imptButton {
-	background: #e8eef3;
-}
-.imptButton:hover {
-	background: #c1dfff;
-}
-.small {
-	font-size: 12px;
-	padding: 9px;
-}
-.fineText {
-	font-size: small;
-	color: gray;
-}
-#rubricText {
-	min-height: 30px;
-	padding: 6px;
-	display: block;
-}
-#blurBox {
-	position: absolute;
-	z-index: 1;
-	border: none;
-	border-radius: 500px;
-	-webkit-backdrop-filter: blur(20px);
-	backdrop-filter: blur(20px);
-	overflow: overlay;
-}
-#container {
-  width: 100%;
-  height: 100%;
-}
-.btn-fs {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  padding: 2px;
-  color: white;
-  border: 1px solid white;
-  border-radius: 5px;
-  z-index: 3;
-  cursor: pointer;
-}
-:-webkit-full-screen video {
-  width: 100%;
-  height: 100%;
-}
-video::-webkit-media-controls-fullscreen-button {
-  display: none !important;
-}
-#VSstatus {
-	position: absolute;
-	z-index: 2;
-	font-size: xx-large;
-	color: white;
-	font-family: sans-serif;
-	background-color: rgba(0, 0, 0, 0.33);
-}
-</style>
+	<style>
+		:root {
+			--bg-color: #f8fafc;
+			--panel-bg: #ffffff;
+			--border-color: #cbd5e1;
+			--text-main: #0f172a;
+			--text-muted: #64748b;
+			--accent-gold: #d97706;
+			--accent-hover: #b45309;
+			--btn-bg: #f1f5f9;
+			--btn-hover: #e2e8f0;
+			--impt-bg: #2563eb;
+			--impt-hover: #1d4ed8;
+		}
 
-<script>
-        /*
+		body {
+			background-color: var(--bg-color);
+			color: var(--text-main);
+			font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+			margin: 0;
+			padding: 15px;
+			line-height: 1.5;
+		}
+
+		h2,
+		h3 {
+			color: var(--text-main);
+			font-weight: 600;
+		}
+
+		p,
+		div,
+		label,
+		span {
+			color: var(--text-main);
+		}
+
+		.fineText {
+			font-size: small;
+			color: var(--text-muted);
+		}
+
+		video {
+			display: block;
+			width: 100%;
+			max-width: 100%;
+			height: auto;
+			z-index: 0;
+			border-radius: 8px;
+			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+		}
+
+		video:focus {
+			outline: none;
+		}
+
+		input[type=checkbox] {
+			-ms-transform: scale(1.8);
+			-moz-transform: scale(1.8);
+			-webkit-transform: scale(1.8);
+			-o-transform: scale(1.8);
+			transform: scale(1.8);
+			margin: 8px;
+			cursor: pointer;
+			accent-color: var(--accent-gold);
+		}
+
+		input[type=range] {
+			width: 80px;
+			height: 8px;
+			-webkit-appearance: none;
+			appearance: none;
+			-webkit-transform: rotate(-90deg);
+			transform: rotate(-90deg);
+			background-color: var(--border-color);
+			border-radius: 4px;
+			margin: 25px auto;
+			display: block;
+		}
+
+		input[type=range]::-webkit-slider-runnable-track {
+			width: 80px;
+			height: 8px;
+			border: none;
+			border-radius: 4px;
+		}
+
+		input[type=range]::-webkit-slider-thumb {
+			-webkit-appearance: none;
+			height: 28px;
+			width: 14px;
+			border-radius: 4px;
+			background: var(--accent-gold);
+			margin-top: -10px;
+			cursor: pointer;
+		}
+
+		input[type=range]:focus {
+			outline: none;
+		}
+
+		td {
+			vertical-align: middle;
+			text-align: center;
+			padding: 4px;
+		}
+
+		td:first-child {
+			text-align: right;
+			padding-right: 12px;
+			font-size: 13px;
+			color: var(--text-muted);
+			line-height: 1.8;
+		}
+
+		.info {
+			background-color: #d1fae5;
+			color: #065f46;
+			padding: 8px 12px;
+			border-radius: 6px;
+			font-weight: 500;
+		}
+
+		.error {
+			background-color: #fee2e2;
+			color: #991b1b;
+			padding: 8px 12px;
+			border-radius: 6px;
+			font-weight: 500;
+		}
+
+		.hspacer {
+			width: 20px;
+			height: auto;
+			display: inline-block;
+		}
+
+		#skipBox {
+			height: 220px;
+			width: 100%;
+			max-width: 100%;
+			background: var(--panel-bg);
+			color: var(--text-main);
+			border: 1px solid var(--border-color);
+			border-radius: 6px;
+			padding: 10px;
+			font-family: monospace;
+			font-size: 15px;
+			z-index: 2;
+			resize: vertical;
+			box-sizing: border-box;
+		}
+
+		#boxMsg {
+			color: #2563eb;
+			z-index: 2;
+			font-weight: 500;
+			margin-top: 8px;
+		}
+
+		#videoFile,
+		#subFile,
+		#skipFile {
+			display: none;
+		}
+
+		#screenShot {
+			z-index: 1;
+			border-radius: 6px;
+			border: 1px solid var(--border-color);
+			width: 100%;
+			max-width: 320px;
+			height: auto;
+			margin-top: 10px;
+		}
+
+		.centered {
+			text-align: center;
+		}
+
+		.cssbutton {
+			border-radius: 8px;
+			font-family: system-ui, sans-serif;
+			font-size: 15px;
+			font-weight: 500;
+			padding: 10px 16px;
+			text-decoration: none;
+			border: 1px solid var(--border-color);
+			color: var(--text-main);
+			background: var(--btn-bg);
+			z-index: 2;
+			display: inline-block;
+			margin: 4px 2px;
+			transition: background 0.2s, border-color 0.2s;
+		}
+
+		.cssbutton:hover {
+			text-decoration: none;
+			cursor: pointer;
+			background: var(--btn-hover);
+			border-color: var(--text-muted);
+		}
+
+		.imptButton {
+			background: var(--impt-bg);
+			border-color: #1d4ed8;
+			color: white;
+		}
+
+		.imptButton:hover {
+			background: var(--impt-hover);
+		}
+
+		.small {
+			font-size: 14px;
+			padding: 10px 14px;
+		}
+
+		#rubricText {
+			min-height: 35px;
+			padding: 8px;
+			display: block;
+			color: var(--text-muted);
+			font-style: italic;
+		}
+
+		#blurBox {
+			position: absolute;
+			z-index: 1;
+			border: none;
+			border-radius: 500px;
+			-webkit-backdrop-filter: blur(20px);
+			backdrop-filter: blur(20px);
+			overflow: overlay;
+			border: 2px dashed rgba(0, 0, 0, 0.4);
+		}
+
+		#container {
+			width: 100%;
+			position: relative;
+		}
+
+		.btn-fs {
+			position: absolute;
+			top: 10px;
+			left: 10px;
+			padding: 8px;
+			color: white;
+			background: rgba(0, 0, 0, 0.6);
+			border: 1px solid rgba(255, 255, 255, 0.2);
+			border-radius: 6px;
+			z-index: 3;
+			cursor: pointer;
+			backdrop-filter: blur(4px);
+		}
+
+		:-webkit-full-screen video {
+			width: 100%;
+			height: 100%;
+		}
+
+		video::-webkit-media-controls-fullscreen-button {
+			display: none !important;
+		}
+
+		#VSstatus {
+			position: absolute;
+			left: 100px;
+			z-index: 2;
+			font-size: x-large;
+			color: white;
+			font-family: sans-serif;
+			background-color: rgba(15, 23, 42, 0.8);
+			padding: 10px 20px;
+			border-radius: 8px;
+			backdrop-filter: blur(8px);
+		}
+
+		#instructions {
+			background: var(--panel-bg);
+			border: 1px solid var(--border-color);
+			padding: 20px;
+			border-radius: 8px;
+			margin-top: 20px;
+			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+		}
+
+		#blockList {
+			background: var(--bg-color);
+			padding: 10px;
+			border-radius: 6px;
+			border: 1px solid var(--border-color);
+			max-height: 150px;
+			overflow-y: auto;
+			font-size: 13px;
+			color: var(--text-muted);
+		}
+
+		table#filters {
+			background: var(--panel-bg);
+			border: 1px solid var(--border-color);
+			border-radius: 8px;
+			padding: 10px;
+			width: 100%;
+			max-width: 600px;
+			border-collapse: separate;
+			border-spacing: 0;
+			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+		}
+
+		/* Mobile & Portrait Small Screen Adjustments */
+		@media screen and (max-width: 768px) {
+			body {
+				padding: 10px;
+			}
+
+			.cssbutton,
+			.small {
+				width: 100%;
+				display: block;
+				margin: 6px 0;
+				text-align: center;
+				box-sizing: border-box;
+			}
+
+			#websites {
+				width: 100%;
+				display: block;
+				margin: 6px 0;
+				padding: 12px;
+				box-sizing: border-box;
+			}
+
+			.hspacer {
+				display: none;
+			}
+
+			table#filters {
+				width: 100%;
+			}
+
+			/* Force "Go to time" and subsequent action buttons onto fresh rows on mobile */
+			#shotTimeBtn,
+			#autoBtn,
+			#moveBtn,
+			#blurBoxBtn,
+			#shotBtn {
+				clear: both;
+				display: block;
+				width: 100%;
+				margin-top: 8px;
+			}
+		}
+	</style>
+
+	<script>
+		/*
 		@source: https://github.com/fruiz500/VideoSkip
 
-        @licstart  The following is the entire license notice for the
-        JavaScript code in this page.
+		@licstart  The following is the entire license notice for the
+		JavaScript code in this page.
 
-        Copyright (C) 2024  Francisco Ruiz
+		Copyright (C) 2026  Francisco Ruiz
 
-        The JavaScript code in this page is free software: you can
-        redistribute it and/or modify it under the terms of the GNU
-        General Public License (GNU GPL) as published by the Free Software
-        Foundation, either version 3 of the License, or (at your option)
-        any later version.  The code is distributed WITHOUT ANY WARRANTY;
-        without even the implied warranty of MERCHANTABILITY or FITNESS
-        FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+		The JavaScript code in this page is free software: you can
+		redistribute it and/or modify it under the terms of the GNU
+		General Public License (GNU GPL) as published by the Free Software
+		Foundation, either version 3 of the License, or (at your option)
+		any later version.  The code is distributed WITHOUT ANY WARRANTY;
+		without even the implied warranty of MERCHANTABILITY or FITNESS
+		FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
 
-        As additional permission under GNU GPL version 3 section 7, you
-        may distribute non-source (e.g., minimized or compacted) forms of
-        that code without the copy of the GNU GPL normally required by
-        section 4, provided you include this license notice and a URL
-        through which recipients can access the Corresponding Source.
+		As additional permission under GNU GPL version 3 section 7, you
+		may distribute non-source (e.g., minimized or compacted) forms of
+		that code without the copy of the GNU GPL normally required by
+		section 4, provided you include this license notice and a URL
+		through which recipients can access the Corresponding Source.
 
 
-        @licend  The above is the entire license notice
-        for the JavaScript code in this page.
-        */
-
-    if (window.location.protocol == "http:") {				//force SSL/TLS
-
-        var restOfUrl = window.location.href.substr(5);
-        window.location = "https:" + restOfUrl;
-    }
-</script>
+		@licend  The above is the entire license notice
+		for the JavaScript code in this page.
+		*/
+	</script>
 
 </head>
 
-<body>                    
+<body>
 	<h2>VideoSkip Player</h2>
-    <p>v 0.5 &nbsp;&#169; F. Ruiz 2024</p>
-<div id="videoMsg">Load video file with left button, .vtt or .srt subtitles with right button</div>
-<br>
-<label for="videoFile"><span class="cssbutton imptButton" id="videoFileBtn" title="load .mp4, .ogg, .webm video file">Load video</span></label>
-<input type="file" id="videoFile" accept="video/*"/>
-<label for="subFile"><span class="cssbutton" id="subFileBtn" title="load .vtt, .srt subtitles; then enable them in the video">Load subtitles</span></label>
-<input type="file" id="subFile"/>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button id="help" class="cssbutton" title="toggle instructions (alt-h)" accesskey="h">Help</button><br>
-<br>
-<div id="container">
-  <div class="btn-fs" id="btnFS">
-    &nbsp;&nbsp;<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAQMAAABJtOi3AAAABlBMVEUAAAD///+l2Z/dAAAAAXRSTlMAQObYZgAAAFFJREFUCNdjgAL2P0CC/x+MYAcRzCCCEcyFE/JgYh6QqOcBEnUgvTUgwgJEKMCM4wERciDCHiRcB1IAsqH2B0jnB5D4AxDrAIywB7MeIMlCAACH0hmMSGTNOAAAAABJRU5ErkJggg==" width="50%">
-  </div>
-  <span id="VSstatus"></span>
-  <div id='blurBox'></div>
-<video controls disablePictureInPicture id="myVideo"></video>
-</div>
-    <br>
-    Select the filters and their strength:
-    <br>
-    <table id="filters">
-    <tr>
-    <td></td>
-    <th class="centered">&nbsp;Sex&nbsp;</th>
-    <th class="centered">&nbsp;Violence</th>
-    <th class="centered">&nbsp;Profanity&nbsp;</th>
-    <th class="centered">&nbsp;Substance</th>
-    <th class="centered">&nbsp;Intense&nbsp;</th>
-    <th class="centered">&nbsp;Other&nbsp;</th>
-    </tr>
-    <tr>
-    <td>High<br>Medium<br>Low<br>Off</td>
-    <td class="centered"><input id="sexNum" type="range" min="0" max="3" step="1" value="0"></td>
-    <td class="centered"><input id="violenceNum" type="range" min="0" max="3" step="1" value="0"></td>
-    <td class="centered"><input id="curseNum" type="range" min="0" max="3" step="1" value="0"></td>
-    <td class="centered"><input id="boozeNum" type="range" min="0" max="3" step="1" value="0"></td>
-    <td class="centered"><input id="scareNum" type="range" min="0" max="3" step="1" value="0"></td>
-    <td class="centered"><input id="otherNum" type="range" min="0" max="3" step="1" value="0"></td>
-    </tr>
-    </table>
-    <span id="rubricText"></span>
-    <div id="boxMsg">Load here the .skp file containing the skips:</div>
-    <br>
-    <label for="skipFile"><span class="cssbutton imptButton" id="skipFileBtn" title="load .skp file">Load skip file</span></label>
-	<input type="file" id="skipFile"/>
-    <select class="cssbutton small" name="websites" id="websites">
-          <option value="" selected="selected">Select source</option>
-          <option value="0">VideoSkip Exchange</option>
-          <option value="1">Albatenia</option>
-    </select>
-    <!--button id="exchangeBtn"class="cssbutton small" title="open the VideoSkip Exchange in a separate tab">VideoSkip Exchange</button-->
-    <span class="hspacer"></span>
-    <button id="backBtn"class="cssbutton small" title="step rewind / stop (alt-,)" accesskey=",">&#9668;</button>
-    <input type="checkbox" id="fineMode"/ title="frame by frame (alt-n)" accesskey="n">&nbsp;<span class="fineText">Fine</span>
-    <input type="checkbox" id="altMode" title="shift auto prof. skips / resize shot (alt-m)" accesskey="m"/>&nbsp;<span class="fineText">Alt.</span>
-    <button id="fwdBtn"class="cssbutton small" title="step advance / stop (alt-.)" accesskey=".">&#9658;</button>
-    <button id="fFwdBtn"class="cssbutton small" title="toggle play / fast forward / stop (alt-/)"accesskey="/">&#9658;&#9658;</button>
-    <button id="syncBtn"class="cssbutton imptButton small" title="change all times when video and shot match (alt-y)"accesskey="y">Sync times</button>
-    <br><br>
-    Edit &nbsp;&nbsp;&nbsp;
-    <button id="timeBtn" class="cssbutton small" title="insert current time (alt-q)" accesskey="q">Ins. Time</button>
-    <button id="arrowBtn" class="cssbutton small" title="insert a correctly formatted arrow (alt-w)" accesskey="w">Ins. Arrow</button>
-    <button id="beepBtn" class="cssbutton small" title="insert a quick word mute (alt-a)" accesskey="a">Silence</button>
-    <button id="posBtn" class="cssbutton small" title="insert blur spot position (alt-d)" accesskey="d">Blur pos.</button>
-    <button id="saveFile" class="cssbutton imptButton small" title="save .skp file to Downloads (alt-s)" accesskey="s">Save</button>
-    &nbsp;&nbsp;
-    <button id="shotTimeBtn"class="cssbutton small" title="go to selected time / screenshot time (alt-z)" accesskey="z">Go to time</button>
-    <button id="autoBtn" class="cssbutton small" title="find shot in video">Find shot</button>
-    <button id="moveBtn" class="cssbutton small" title="overlay shot on video (alt-v)" accesskey="v">Superimpose</button>
-    <button id="blurBoxBtn" class="cssbutton small" title="toggle blur spot (alt-c)" accesskey="c">Blur spot</button>
-    
-    <button id="shotBtn"class="cssbutton small" title="take screenshot (alt-x)" accesskey="x">Take screenshot</button>
-    <br>
+	<p>v 0.6 &nbsp;&#169; F. Ruiz 2026</p>
+	<div id="videoMsg">Load video file with left button, .vtt or .srt subtitles with right button</div>
+	<br>
+	<label for="videoFile"><span class="cssbutton imptButton" id="videoFileBtn"
+			title="load .mp4, .ogg, .webm video file">Load video</span></label>
+	<input type="file" id="videoFile" accept="video/*" />
+	<label for="subFile"><span class="cssbutton" id="subFileBtn"
+			title="load .vtt, .srt subtitles; then enable them in the video">Load subtitles</span></label>
+	<input type="file" id="subFile" />
+	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button id="help" class="cssbutton" title="toggle instructions (alt-h)"
+		accesskey="h">Help</button><br>
+	<br>
+	<div id="container">
+		<div class="btn-fs" id="btnFS">
+			&nbsp;&nbsp;<img
+				src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAQMAAABJtOi3AAAABlBMVEUAAAD///+l2Z/dAAAAAXRSTlMAQObYZgAAAFFJREFUCNdjgAL2P0CC/x+MYAcRzCCCEcyFE/JgYh6QqOcBEnUgvTUgwgJEKMCM4wERciDCHiRcB1IAsqH2B0jnB5D4AxDrAIywB7MeIMlCAACH0hmMSGTNOAAAAABJRU5ErkJggg=="
+				width="50%">
+		</div>
+		<span id="VSstatus"></span>
+		<div id='blurBox'></div>
+		<video controls disablePictureInPicture id="myVideo"></video>
+	</div>
+	<br>
+	Select the filters and their strength:
+	<br>
+	<table id="filters">
+		<tr>
+			<td></td>
+			<th class="centered">&nbsp;Sex&nbsp;</th>
+			<th class="centered">&nbsp;Violence</th>
+			<th class="centered">&nbsp;Profanity&nbsp;</th>
+			<th class="centered">&nbsp;Substance</th>
+			<th class="centered">&nbsp;Intense&nbsp;</th>
+			<th class="centered">&nbsp;Other&nbsp;</th>
+		</tr>
+		<tr>
+			<td>High<br>Medium<br>Low<br>Off</td>
+			<td class="centered"><input id="sexNum" type="range" min="0" max="3" step="1" value="0"></td>
+			<td class="centered"><input id="violenceNum" type="range" min="0" max="3" step="1" value="0"></td>
+			<td class="centered"><input id="curseNum" type="range" min="0" max="3" step="1" value="0"></td>
+			<td class="centered"><input id="boozeNum" type="range" min="0" max="3" step="1" value="0"></td>
+			<td class="centered"><input id="scareNum" type="range" min="0" max="3" step="1" value="0"></td>
+			<td class="centered"><input id="otherNum" type="range" min="0" max="3" step="1" value="0"></td>
+		</tr>
+	</table>
+	<span id="rubricText"></span>
+	<div id="boxMsg">Load here the .skp file containing the skips:</div>
+	<br>
+	<label for="skipFile"><span class="cssbutton imptButton" id="skipFileBtn" title="load .skp file">Load skip
+			file</span></label>
+	<input type="file" id="skipFile" />
+	<select class="cssbutton small" name="websites" id="websites">
+		<option value="" selected="selected">Select source</option>
+		<option value="0">VideoSkip Exchange</option>
+		<option value="1">Albatenia</option>
+	</select>
+	<!--button id="exchangeBtn"class="cssbutton small" title="open the VideoSkip Exchange in a separate tab">VideoSkip Exchange</button-->
+	<span class="hspacer"></span>
+	<button id="backBtn" class="cssbutton small" title="step rewind / stop (alt-,)" accesskey=",">&#9668;</button>
+	<input type="checkbox" id="fineMode" / title="frame by frame (alt-n)" accesskey="n">&nbsp;<span
+		class="fineText">Fine</span>
+	<input type="checkbox" id="altMode" title="shift auto prof. skips / resize shot (alt-m)" accesskey="m" />&nbsp;<span
+		class="fineText">Alt.</span>
+	<button id="fwdBtn" class="cssbutton small" title="step advance / stop (alt-.)" accesskey=".">&#9658;</button>
+	<button id="fFwdBtn" class="cssbutton small" title="toggle play / fast forward / stop (alt-/)"
+		accesskey="/">&#9658;&#9658;</button>
+	<button id="syncBtn" class="cssbutton imptButton small" title="change all times when video and shot match (alt-y)"
+		accesskey="y">Sync times</button>
+	<br><br>
+	Edit &nbsp;&nbsp;&nbsp;
+	<button id="timeBtn" class="cssbutton small" title="insert current time (alt-q)" accesskey="q">Ins. Time</button>
+	<button id="arrowBtn" class="cssbutton small" title="insert a correctly formatted arrow (alt-w)" accesskey="w">Ins.
+		Arrow</button>
+	<button id="beepBtn" class="cssbutton small" title="insert a quick word mute (alt-a)" accesskey="a">Silence</button>
+	<button id="posBtn" class="cssbutton small" title="insert blur spot position (alt-d)" accesskey="d">Blur
+		pos.</button>
+	<button id="saveFile" class="cssbutton imptButton small" title="save .skp file to Downloads (alt-s)"
+		accesskey="s">Save</button>
+	&nbsp;&nbsp;
+	<button id="shotTimeBtn" class="cssbutton small" title="go to selected time / screenshot time (alt-z)"
+		accesskey="z">Go to time</button>
+	<button id="autoBtn" class="cssbutton small" title="find shot in video">Find shot</button>
+	<button id="moveBtn" class="cssbutton small" title="overlay shot on video (alt-v)"
+		accesskey="v">Superimpose</button>
+	<button id="blurBoxBtn" class="cssbutton small" title="toggle blur spot (alt-c)" accesskey="c">Blur spot</button>
+
+	<button id="shotBtn" class="cssbutton small" title="take screenshot (alt-x)" accesskey="x">Take screenshot</button>
+	<br>
 	<textarea id="skipBox" rows="10" placeholder="Skips appear here"></textarea>
-    &nbsp;&nbsp;&nbsp;<img id="screenShot">
-    <br>
-<div id="instructions">
-  <h2>Instructions</h2>   
-<p> This little app allows you to filter out several types of objectionable content from downloaded video files. It uses the same categories as the "Parents Guide" section of IMDB.com. It can skip sections entirely, or simply mute the sound or blank the video, at your discretion. Skip files can be shared at the official VideoSkip Exchange at <a href="https://videoskip.herokuapp.com/exchange" target="_blank">https://videoskip.org</a>, or any way you want. There is also an exension version of this app, available from the Chrome, Firefox, and Edge web stores, which works on streaming video from any source, and a mobile version that might be easier to use than this one at <a href="https://videoskip.org/mobile" target="_blank">https://videoskip.org/mobile</a></p>
-<p>Step by step:</p>
-<ol>
-  <li>Load the video from a local file using the "Load video" button. Because the video must be playable in a browser, it can take .mp4, .ogg, and .webm formats (rename .mkv files to .webm). You can save videos from streaming sources in these formats, rip a disc using software, or convert video files into these formats from a different format (more information below).</li>
-  <li>Optionally, load a file containing subtitles using the "Load subtitles". Subtitles must be in .vtt or .srt format. You will be asked whether or not you want to generate skips for profanity automatically. If this is the case, it is best to load the subtitles after the skip file in step 4. You can display and edit the list of filtered words by clicking the Help button; the list is at the bottom. The overall timing of these skips can be adjusted with the arrow buttons, after checking "Alt."</li>
-  <li>If you don't have a skip file for the film you're watching, chances are another user has made one, and has posted it in the VideoSkip Exchange. There's a button to load the Exchange on a separate tab. You don't have to register in order to browse and download skip files.</li>
-  <li>Load the skip file now with the "Load skip file" button. Once loaded, its contents will appear in the box, plus a screenshot that may start superimposed on the video. Each skip consists of beginning and end times relative to the start of the video, with an arrow between them, and on the line below a category plus maybe a handling label (such as "video" or "audio"), a number, and a description in parentheses.</li>
-  <li>If you want to change something in the list of skips, go right ahead. There's a button to insert the current time on the video (the video itself has a scrub bar to get there), and a correctly formatted "arrow" if you feel lazy, plus another button to insert a silence over the word just pronounced. There is also a button for saving your edited skip list in the default folder for downloads. If you insert two slashes // in the second line of any skip, it will be ignored on playback.</li>
-  <li>If the screenshot matches the video, you are in sync and can start playback. Otherwise, scrub the video with the arrow buttons (frame by frame, if "Fine" is checked) until it matches the screenshot, then click the "Sync times" button. More detail on this process in the section below.</li>
-  <li>Set the category filters using the sliders according to the audience. The higher, the more stringent the filter. High = for children, Medium = for teens, Low = for adults. If a filter is Off, the flagged content will be shown.</li>
-  <li>Click the play button on the video, and maybe the fullscreen button, sit back, and enjoy. Skips will take place when their times arrive.</li>
-  </ol>
-<p>How to sync the skips:</p>
-<ol>
-  <li>If the video matches the screenshot when you click the "Go to time" button, everything is in sync and you're done with this phase.</li>
-  <li>But if the video is from a source different from that used to make the skip file, there may be a mismatch. Use the arrow buttons to scrub the video until the screen matches the screenshot or description (frame by frame, if "Fine" is checked). The fast forward button toggles the speed, or resumes playing if paused. The "Superimpose" button puts the screenshot right on top of the video, or removes it. You can move the screenshot with the mouse, and resize it if you hold the Alt key or the right mouse button, or check "Alt" as well. VideoSkip has an automatic process for finding the screenshot time by clicking the "Find shot" button. Make sure you are within one second of the correct time before clicking it.</li>
-  <li>Click the "Sync times" button when video and screenshot match. This will shift all the skips by the right amount, so they will happen at the correct times, and save a new version of the skip file so the people you share it with won't have to repeat the syncing process.</li>
-  </ol>
-<p>Keyboard shortcuts</p>
-<ul>
-  <li>A number of buttons have keyboard shortcuts. Hover the mouse over each button to see what letter triggers the action. In Windows, you execute the shortcut by holding the Alt key at the same time as the letter key. In Mac OS, you must hold the Alt (Option) and Control keys at the same time as the letter key.</li>
-</ul>
-<p>Getting the video files:</p>
-<ul>
-  <li>If you are using a streaming service, these often allow you to pre-download the complete video in order to avoid stuttering on low-bandwidth connections. YouTube and Vimeo videos are very easy to get this way (Google it), but other services may use copy-protection schemes that will need to be removed before you can use the file.</li>
-  <li>If the video is in a DVD or BlueRay disc that your own, there are excellent programs that will extract the data into whatever format you choose. Currently my favorite is Handbrake, available for <a href="https://handbrake.en.softonic.com/" target="_blank">Windows</a> and for <a href="https://handbrake.en.softonic.com/mac" target="_blank">Mac</a>.</li>
-  <li>Or you may have an old .avi, or some other format. Handbrake can also convert the file from those formats into .mp4. A feature film may take an hour of processing. There are online converters as well, but they usually limit how much processing you can do in one day. As mentioned above, .mkv files only need to be renamed to .webm</li>
-  <li>Another way to get them is by sharing with others, via BitTorrent or similar protocol. Be advised that this is not always legal.</li>
-  <li>Of course, you can always view videos directly from a streaming service. In this case you will need the VideoSkip extension rather than this app. Here are links to get it <a href="https://chrome.google.com/webstore/detail/videoskip/mlmifkfgafheljfcjlgoiggcfjenjeed" target="_blank">for Chrome</a>,  <a href="https://addons.mozilla.org/en-US/firefox/addon/videoskip/" target="_blank">for Firefox</a>, and <a href="https://microsoftedge.microsoft.com/addons/detail/videoskip/enikjnojafmkjadebkopndkognbebomf" target="_blank">for Edge</a>.</li>
-  <li>Subtitles in .srt format are very easy to find online. This app will load them in this format, but if you want to convert them to .vtt there are easy online utilities like <a href="https://atelier.u-sub.net/srt2vtt/" target="_blank">this one</a>.</li>
-</ul>
-<p>Making your own skips:</p>
-<ul>
-  <li>A well-constructed skip file will have a first entry with the timing of an event near the start of the video where the image is changing quickly, plus a description of it on the line below it, and a screenshot. This is to allow viewers to use the skips in the file even if they are watching a video obtained from a different source, which might have a different timing. To take a screenshot, just scrub the video to the desired time and click "Take screenshot"; the time will be added at the beginning of the skip list. For easiest syncing, get the screenshot from a point where the image is changing quickly.</li>
-  <li>Inserting skips is as easy as scrubbing to the point where the skip/mute/blank is supposed to begin, clicking the "Insert time" button on a new line, then the "Insert arrow" button, scrubbing to the point where the skip is to end, clicking the "Insert time" button once more, and then going to the next line and writing a content, number rating, and (optional) handling label. If you are initially unsure of where the skips should be inserted, there is a "Fast Forward" button that scrubs the video at high speed. Click it again to stop. The arrow buttons to its left also stop the video. There is also an "Insert silence" button that inserts a retroactive single-word muting for profanity; click it as soon as you hear the word while the video plays normally.</li>
-  <li>Content labels are case-insensitive. They consist of any word (actually, the first three letters are enough) of the IMDB categories, which are displayed above the sliders, such as "sex", "nudity", "gore", "drugs", etc. Handling labels are these words: "audio", "sound", "video", "image", "blank", "blur", "fast"  (or the first three letters of each, including "img") also case-insensitive.</li>
-  <li>The "audio" or "sound" keywords will cause the sound to be muted during the given interval while the video is still shown, rather than skipping the section entirely, which might be useful for removing profanity. The "video" and "image" keywords cause the image to blank out while the sound still plays, which might be useful for instances of nudity, etc. "blur" causes the image to be blurred instead. "fast" will pass the movie in fast forward rather than skip to the end of the marked interval. No handling keyword means that the section will be completely skipped.</li>
-  <li>The blanking keywords and "blur" can affect only a small portion of the screen if desired. To do this, click the "Blur spot" button so make a blurred square appear on the video. Move it around with the mouse (resize by holding the Alt key or the right mouse button also). When you are satisfied, click the "Blur pos." button to insert the exact position of the blur spot into the skip, as a list of four numbers within square brackets. Bear in mind that on playback the blur spot will not move during the time of that skip.</li>
-  <li>Finally, adding a number from 1 (mild) to 3 (severe) will allow users to set the filtering level appropriately. A good standard is the following: 1 = problematic for children, 2 = problematic for teens, 3 = problematic for adults. There's a detailed rubric for what this may mean at the Videoskip Exchange. You can add explanatory text in parentheses, which won't trigger the filters.</li>
-  <li>Everything is editable in the box. Use this to fine-tune timings. For instance, words to be muted typically take a lot less than a second. You can review each timing by clicking it on the list and then clicking "Go to time". If the time is selected, the arrow buttons will shift the time as well as scrub the video. The "Insert" buttons put things always at the current cursor position.</li>
-  <li>Make sure there is a blank line between skips, comprising a line with times and a line with labels below it.</li>
-  <li>The "Save" button will save your list, plus screenshot, in .skp format in your default Download folder. You will have to move it from there to the folder where you want it. This format is text-based, so you can view the file in any text editor.</li>
-  <li>The "Select source" button will open a web page where you can share your skip file with other VideoSkip users.</li>
-  </ul>
-<p>Sample skip, which will cause the screen to blank out from 14 minutes, 8.27 seconds from the start of the movie until 14 minutes, 14 seconds, while the sound still plays, if "Sex and Nudity" is set at High level. It has additional explanations that won't affect the filter:</p>
-<p>0:14:08.27 --&gt; 0:14:14<br>
-  nude image 1 (male, from behind)</p>
-<p>Here are some videos that show how to make and use skip files:</p>
-<p>VideoSkip developer plays ukulele with a pick, Egad! (WARNING, this video might be offensive to sensitive ukulele players):<br>
-  <a href="https://www.youtube.com/watch?v=uDZfW9SLb_4" target="_blank">https://www.youtube.com/watch?v=uDZfW9SLb_4</a></p>
-<p>Obtaining the skip file for the uke video from the VideoSkip Exchange:<br>
-  <a href="https://www.youtube.com/watch?v=vyQKZVHa898" target="_blank">https://www.youtube.com/watch?v=vyQKZVHa898</a></p>
-<p>Using VideoSkip to edit the playback of the uke video:<br>
-  <a href="https://www.youtube.com/watch?v=QhYIXEbYfnY" target="_blank">https://www.youtube.com/watch?v=QhYIXEbYfnY</a></p>
-<p>Making a VideoSkip file for the uke video:<br>
-  <a href="https://www.youtube.com/watch?v=Fx04SVgUKO0" target="_blank">https://www.youtube.com/watch?v=Fx04SVgUKO0</a></p>
-<p>Posting a skip file to the VideoSkip Exchange:<br>
-  <a href="https://www.youtube.com/watch?v=Tv5wXTkXhcs" target="_blank">https://www.youtube.com/watch?v=Tv5wXTkXhcs</a></p>
-<p><strong>Legal Notice:</strong> Content copyright owners and distributors are hereby informed that users and developers of this software are exercising their right of free speech, guaranteed by law in many nations, by voluntarily refraining from seeing or hearing content without modifying said content in any way. Legal action that ignores this notice will be considered harassment and infringement of basic rights, and prosecuted according to the law.</p>
-<div>
-  <p><strong>Credits:</strong></p>
-  <p>VideoSkip.org domain kindly donated by <a href="https://jeremyplsek.com" target="_blank">Jeremy Plsek</a>. The successor of his VideoSkip is <a href="https://sponsor.ajay.app/" target="_blank">SponsorBlock</a>, which skips ads in YouTube</p>
-  <p>"Find shot" method by Alvaro Gericke</p>
-  <p>Favicon made by <a href="https://www.flaticon.com/authors/smashicons" title="Smashicons">Smashicons</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></p>
-  <p>Below is the block list used for automatically generating silences from a subtitle file, derived from a list courtesy of <a href="https://www.freewebheaders.com/full-list-of-bad-words-banned-by-google/" target="_blank">freewebheaders.com</a>. Edit as needed while maintaining the format. Use only smallcase:</p>
-  <div id="blockList" contenteditable>anus, ass fuck, ass hole, assfuck, asshole, assshole, assbag, assbandit, assbang, assbanged, assbanger, assbangs, assbite, assclown, asscock, asscracker, assface, assfaces, assfuck, assfucker, ass-fucker, assfukka, assgoblin, assh0le, asshat, ass-hat, asshead, asshopper, ass-jabber, assjacker, asslick, asslicker, assmaster, assmonkey, assmucus, assmucus, assmunch, assmuncher, assnigger, asspirate, ass-pirate, assshit, asssucker, asswad, asswhole, asswipe, asswipes, auto erotic, bastard, beatch, bimbo, bitch, black cock, bloke, bloody hell, bollock, bollok, bollox, boong, bull shit, bullshit, butt, clit, cock, cockfucker, cocksuck, cocksucker, condom, coonnass, crap, cunt, cyberfuck, dago, damn, darn, dego, dick, dildo, dike, douche, dyke, ejaculate, erect, erection, erotic, escort, fag, faggot, fuck, fuck off, fuck you, fuckass, fuckhole, gay, god damn, goddam, gooch, gook, hard core, hardcore, homoerotic, honky, hooker, hoor, hootch, hore, horniest, horny, hussy, hymen, injun, intercourse, jack off, jackass, jackhole, jackoff, jack-off, jaggi, jagoff, jail bait, jailbait, jerk, jerk off, jerk0ff, jerkass, jerked, jerkoff, jerk-off, jigaboo, jiggaboo, jiggerboo, jism, jiz, jizm, jizz, jizzed, jock, juggs, jungle bunny, junglebunny, junkie, junky, kafir, kawk, kinbaku, kinkster, klan, knob end, knobbing, knobead, knobed, knobend, knobhead, knobjocky, knobjokey, kock, kondum, kondums, kooch, kooches, kootch, kum, kummer, kumming, kums, kunilingus, kunja, kunt, kwif, kike, kraut, kyke, lameass, lardass, lesbian, lezzie, masterbat, masturbat, motha, mother fucker, motherfuck, motherfucker, negro, nigger, nimrod, ninny, nipple, orgasim, orgasm, paedophil, paki, panooch, pansy, pantie, pants down, panty, pedophil, pee, penis, penisfucker, pikey, pillowbiter, pimp, pimpis, pinko, piss, piss off, polack, pollack, poop, porn, porno, pornography, pubi, pussy, puto, queaf, queef, queer, quim, raghead, retard, russkie, russky, sadist, schizo, schlong, scissoring, screw, screwed, screwing, scroat, scrog, scrot, sex, sexy, shit, skag, skank, skeet, slanteye, sleaze, sleazy, slut, smartass, smeg, smegma, smut, sodomi, sodomy, son of a bitch, souse, sperm, spick, splooge, spooge, suck, swastika, swinger, tampon, teat, tits, titt, towelhead, twat, twunt, upskirt, viagra, voyeur, wank, wazoo, wedgie, weenie, weewee, weiner, weirdo, wench, wet dream, wetback, whore, wiseass, wog, wop, xxx, yid, yiffy, yobbo, zibbi, zoophilia, zubb</div>
-</div>
-</div>
-<script>
-//similar to jQuery ready(), from youmightnotneedjquery.com
-function ready(fn) {
-  if (document.readyState != 'loading'){
-    fn();
-  } else {
-    document.addEventListener('DOMContentLoaded', fn);
-  }
-}
+	&nbsp;&nbsp;&nbsp;<img id="screenShot">
+	<br>
+	<div id="instructions">
+		<h2>Instructions <span
+				style="font-size: 0.6em; font-weight: normal; color: var(--text-muted); vertical-align: middle; float: right;">v0.6</span>
+		</h2>
+		<p>This application allows you to filter out several types of objectionable content from downloaded video files.
+			It uses the same categories as the "Parents Guide" section of IMDb.com. It can skip sections entirely, or
+			simply mute the sound or blank the video, at your discretion. Skip files can be shared at the official
+			VideoSkip Exchange at <a href="https://videoskip.herokuapp.com/exchange"
+				target="_blank">https://videoskip.org</a>, or any way you want.</p>
+		<p>Step by step:</p>
+		<ol>
+			<li>Load the video from a local file using the "Load video" button. Because the video must be playable in a
+				browser, it accepts .mp4, .ogg, .mkv, and .webm formats. You can save videos
+				from streaming sources in these formats, rip a disc using software, or convert video files into these
+				formats from a different format (more information below).</li>
+			<li>Optionally, load a file containing subtitles using "Load subtitles". Subtitles must be in .vtt or
+				.srt format. You will be asked whether or not you want to generate skips for profanity automatically. If
+				this is the case, it is best to load the subtitles after the skip file in step 4. You can display and
+				edit the list of filtered words by clicking the Help button; the list is at the bottom. The overall
+				timing of these skips can be adjusted with the arrow buttons, after checking "Alt."</li>
+			<li>If you don't have a skip file for the film you're watching, chances are another user has made one and
+				posted it in the VideoSkip Exchange. There's a button to load the Exchange on a separate tab. You
+				don't have to register in order to browse and download skip files.</li>
+			<li>Load the skip file now with the "Load skip file" button. Once loaded, its contents will appear in the
+				box, plus a screenshot that may start superimposed on the video. Each skip consists of beginning and end
+				times relative to the start of the video, with an arrow between them, and on the line below a category
+				plus maybe a handling label (such as "video" or "audio"), a number, and a description in parentheses.
+			</li>
+			<li>If you want to change something in the list of skips, go right ahead. There's a button to insert the
+				current time on the video (the video itself has a scrub bar to get there), and a correctly formatted
+				"arrow" if you feel lazy, plus another button to insert a silence over the word just pronounced. There
+				is also a button for saving your edited skip list in the default folder for downloads. If you insert two
+				slashes // in the second line of any skip, it will be ignored on playback.</li>
+			<li>If the screenshot matches the video, you are in sync and can start playback. Otherwise, scrub the video
+				with the arrow buttons (frame by frame, if "Fine" is checked) until it matches the screenshot, then
+				click the "Sync times" button. More detail on this process in the section below.</li>
+			<li>Set the category filters using the sliders according to the audience. The higher, the more stringent the
+				filter. High = for children, Medium = for teens, Low = for adults. If a filter is Off, the flagged
+				content will be shown.</li>
+			<li>Click the play button on the video, and maybe the fullscreen button, sit back, and enjoy. Skips will
+				take place when their times arrive.</li>
+		</ol>
+		<p>How to sync the skips:</p>
+		<ol>
+			<li>If the video matches the screenshot when you click the "Go to time" button, everything is in sync and
+				you're done with this phase.</li>
+			<li>But if the video is from a source different from that used to make the skip file, there may be a
+				mismatch. Use the arrow buttons to scrub the video until the screen matches the screenshot or
+				description (frame by frame, if "Fine" is checked). The fast forward button toggles the speed, or
+				resumes playing if paused. The "Superimpose" button puts the screenshot right on top of the video, or
+				removes it. You can move the screenshot with the mouse, and resize it if you hold the Alt key or the
+				right mouse button, or check "Alt" as well. VideoSkip has an automatic process for finding the
+				screenshot time by clicking the "Find shot" button. Make sure you are within one second of the correct
+				time before clicking it.</li>
+			<li>Click the "Sync times" button when video and screenshot match. This will shift all the skips by the
+				right amount, so they will happen at the correct times, and save a new version of the skip file so the
+				people you share it with won't have to repeat the syncing process.</li>
+		</ol>
+		<p>Keyboard shortcuts</p>
+		<ul>
+			<li>A number of buttons have keyboard shortcuts. Hover the mouse over each button to see what letter
+				triggers the action. In Windows, you execute the shortcut by holding the Alt key at the same time as the
+				letter key. In Mac OS, you must hold the Alt (Option) and Control keys at the same time as the
+				letter key.</li>
+		</ul>
+		<p>Getting the video files:</p>
+		<ul>
+			<li>If you are using a streaming service, these often allow you to pre-download the complete video in order
+				to avoid stuttering on low-bandwidth connections. YouTube and Vimeo videos are very easy to get this way
+				(Google it), but other services may use copy-protection schemes that will need to be removed before you
+				can use the file.</li>
+			<li>If the video is in a DVD or Blu-ray disc that you own, there are excellent programs that will extract
+				the data into whatever format you choose. Currently my favorite is Handbrake, available for <a
+					href="https://handbrake.en.softonic.com/" target="_blank">Windows</a> and for <a
+					href="https://handbrake.en.softonic.com/mac" target="_blank">Mac</a>.</li>
+			<li>Or you may have an old .avi or some other format. Handbrake can also convert the file from those
+				formats into .mp4. A feature film may take an hour of processing. There are online converters as well,
+				but they usually limit how much processing you can do in one day.</li>
+			<li>Another way to get them is by sharing with others via BitTorrent or similar protocol. Be advised that
+				this is not always legal.</li>
+			<li>Of course, you can always view videos directly from a streaming service. In this case you will need the
+				VideoSkip extension rather than this app. Here are links to get it <a
+					href="https://chrome.google.com/webstore/detail/videoskip/mlmifkfgafheljfcjlgoiggcfjenjeed"
+					target="_blank">for Chrome</a>, <a href="https://addons.mozilla.org/en-US/firefox/addon/videoskip/"
+					target="_blank">for Firefox</a>, and <a
+					href="https://microsoftedge.microsoft.com/addons/detail/videoskip/enikjnojafmkjadebkopndkognbebomf"
+					target="_blank">for Edge</a>.</li>
+			<li>Subtitles in .srt format are very easy to find online. This app will load them in this format, but if
+				you want to convert them to .vtt there are easy online utilities like <a
+					href="https://atelier.u-sub.net/srt2vtt/" target="_blank">this one</a>.</li>
+		</ul>
+		<p>Making your own skips:</p>
+		<ul>
+			<li>A well-constructed skip file will have a first entry with the timing of an event near the start of the
+				video where the image is changing quickly, plus a description of it on the line below it, and a
+				screenshot. This is to allow viewers to use the skips in the file even if they are watching a video
+				obtained from a different source, which might have a different timing. To take a screenshot, just scrub
+				the video to the desired time and click "Take screenshot"; the time will be added at the beginning of
+				the skip list. For easiest syncing, get the screenshot from a point where the image is changing quickly.
+			</li>
+			<li>Inserting skips is as easy as scrubbing to the point where the skip/mute/blank is supposed to begin,
+				clicking the "Insert time" button on a new line, then the "Insert arrow" button, scrubbing to the point
+				where the skip is to end, clicking the "Insert time" button once more, and then going to the next line
+				and writing a content, number rating, and (optional) handling label. If you are initially unsure of
+				where the skips should be inserted, there is a "Fast Forward" button that scrubs the video at high
+				speed. Click it again to stop. The arrow buttons to its left also stop the video. There is also an
+				"Insert silence" button that inserts a retroactive single-word muting for profanity; click it as soon as
+				you hear the word while the video plays normally.</li>
+			<li>Content labels are case-insensitive. They consist of any word (actually, the first three letters are
+				enough) of the IMDb categories, which are displayed above the sliders, such as "sex", "nudity", "gore",
+				"drugs", etc. Handling labels are these words: "audio", "sound", "video", "image", "blank", "blur",
+				"fast" (or the first three letters of each, including "img"), also case-insensitive.</li>
+			<li>The "audio" or "sound" keywords will cause the sound to be muted during the given interval while the
+				video is still shown, rather than skipping the section entirely, which might be useful for removing
+				profanity. The "video" and "image" keywords cause the image to blank out while the sound still plays,
+				which might be useful for instances of nudity, etc. "blur" causes the image to be blurred instead.
+				"fast" will pass the movie in fast forward rather than skip to the end of the marked interval. No
+				handling keyword means that the section will be completely skipped.</li>
+			<li>The blanking keywords and "blur" can affect only a small portion of the screen if desired. To do this,
+				click the "Blur spot" button to make a blurred square appear on the video. Move it around with the mouse
+				(resize by holding the Alt key or the right mouse button). When you are satisfied, click the "Blur
+				pos." button to insert the exact position of the blur spot into the skip, as a list of four numbers
+				within square brackets. Bear in mind that on playback the blur spot will not move during the time of
+				that skip.</li>
+			<li>Finally, adding a number from 1 (mild) to 3 (severe) will allow users to set the filtering level
+				appropriately. A good standard is the following: 1 = problematic for children, 2 = problematic for
+				teens, 3 = problematic for adults. There's a detailed rubric for what this may mean at the VideoSkip
+				Exchange. You can add explanatory text in parentheses, which won't trigger the filters.</li>
+			<li>Everything is editable in the box. Use this to fine-tune timings. For instance, words to be muted
+				typically take a lot less than a second. You can review each timing by clicking it on the list and then
+				clicking "Go to time". If the time is selected, the arrow buttons will shift the time as well as scrub
+				the video. The "Insert" buttons put things always at the current cursor position.</li>
+			<li>Make sure there is a blank line between skips, comprising a line with times and a line with labels below
+				it.</li>
+			<li>The "Save" button will save your list, plus screenshot, in .skp format in your default Download folder.
+				You will have to move it from there to the folder where you want it. This format is text-based, so you
+				can view the file in any text editor.</li>
+			<li>The "Select source" button will open a web page where you can share your skip file with other VideoSkip
+				users.</li>
+		</ul>
+		<p>Sample skip, which will cause the screen to blank out from 14 minutes, 8.27 seconds from the start of the
+			movie until 14 minutes, 14 seconds, while the sound still plays, if "Sex and Nudity" is set at High level.
+			It has additional explanations that won't affect the filter:</p>
+		<p>0:14:08.27 --&gt; 0:14:14<br>
+			nude image 1 (male, from behind)</p>
+		<p>Here are some videos that show how to make and use skip files:</p>
+		<p>VideoSkip developer plays ukulele with a pick, Egad! (WARNING, this video might be offensive to sensitive
+			ukulele players):<br>
+			<a href="https://www.youtube.com/watch?v=uDZfW9SLb_4"
+				target="_blank">https://www.youtube.com/watch?v=uDZfW9SLb_4</a>
+		</p>
+		<p>Obtaining the skip file for the uke video from the VideoSkip Exchange:<br>
+			<a href="https://www.youtube.com/watch?v=vyQKZVHa898"
+				target="_blank">https://www.youtube.com/watch?v=vyQKZVHa898</a>
+		</p>
+		<p>Using VideoSkip to edit the playback of the uke video:<br>
+			<a href="https://www.youtube.com/watch?v=QhYIXEbYfnY"
+				target="_blank">https://www.youtube.com/watch?v=QhYIXEbYfnY</a>
+		</p>
+		<p>Making a VideoSkip file for the uke video:<br>
+			<a href="https://www.youtube.com/watch?v=Fx04SVgUKO0"
+				target="_blank">https://www.youtube.com/watch?v=Fx04SVgUKO0</a>
+		</p>
+		<p>Posting a skip file to the VideoSkip Exchange:<br>
+			<a href="https://www.youtube.com/watch?v=Tv5wXTkXhcs"
+				target="_blank">https://www.youtube.com/watch?v=Tv5wXTkXhcs</a>
+		</p>
+		<p><strong>Legal Notice:</strong> Content copyright owners and distributors are hereby informed that users and
+			developers of this software are exercising their right of free speech, guaranteed by law in many nations, by
+			voluntarily refraining from seeing or hearing content without modifying said content in any way. Legal
+			action that ignores this notice will be considered harassment and infringement of basic rights, and
+			prosecuted according to the law.</p>
+		<div>
+			<p><strong>Credits:</strong></p>
+			<p>VideoSkip.org domain kindly donated by <a href="https://jeremyplsek.com" target="_blank">Jeremy
+					Plsek</a>. The successor of his VideoSkip is <a href="https://sponsor.ajay.app/"
+					target="_blank">SponsorBlock</a>, which skips ads in YouTube.</p>
+			<p>"Find shot" method by Alvaro Gericke.</p>
+			<p>Favicon made by <a href="https://www.flaticon.com/authors/smashicons" title="Smashicons">Smashicons</a>
+				from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a>.</p>
+			<p>Below is the block list used for automatically generating silences from a subtitle file, derived from a
+				list courtesy of <a href="https://www.freewebheaders.com/full-list-of-bad-words-banned-by-google/"
+					target="_blank">freewebheaders.com</a>. Edit as needed while maintaining the format. Use only
+				lowercase:</p>
+			<div id="blockList" contenteditable>anus, ass fuck, ass hole, assfuck, asshole, assshole, assbag, assbandit,
+				assbang, assbanged, assbanger, assbangs, assbite, assclown, asscock, asscracker, assface, assfaces,
+				assfuck, assfucker, ass-fucker, assfukka, assgoblin, assh0le, asshat, ass-hat, asshead, asshopper,
+				ass-jabber, assjacker, asslick, asslicker, assmaster, assmonkey, assmucus, assmucus, assmunch,
+				assmuncher, assnigger, asspirate, ass-pirate, assshit, asssucker, asswad, asswhole, asswipe, asswipes,
+				auto erotic, bastard, beatch, bimbo, bitch, black cock, bloke, bloody hell, bollock, bollok, bollox,
+				boong, bull shit, bullshit, butt, clit, cock, cockfucker, cocksuck, cocksucker, condom, coonnass, crap,
+				cunt, cyberfuck, dago, damn, darn, dego, dick, dildo, dike, douche, dyke, ejaculate, erect, erection,
+				erotic, escort, fag, faggot, fuck, fuck off, fuck you, fuckass, fuckhole, gay, god damn, goddam, gooch,
+				gook, hard core, hardcore, homoerotic, honky, hooker, hoor, hootch, hore, horniest, horny, hussy, hymen,
+				injun, intercourse, jack off, jackass, jackhole, jackoff, jack-off, jaggi, jagoff, jail bait, jailbait,
+				jerk, jerk off, jerk0ff, jerkass, jerked, jerkoff, jerk-off, jigaboo, jiggaboo, jiggerboo, jism, jiz,
+				jizm, jizz, jizzed, jock, juggs, jungle bunny, junglebunny, junkie, junky, kafir, kawk, kinbaku,
+				kinkster, klan, knob end, knobbing, knobead, knobed, knobend, knobhead, knobjocky, knobjokey, kock,
+				kondum, kondums, kooch, kooches, kootch, kum, kummer, kumming, kums, kunilingus, kunja, kunt, kwif,
+				kike, kraut, kyke, lameass, lardass, lesbian, lezzie, masterbat, masturbat, motha, mother fucker,
+				motherfuck, motherfucker, negro, nigger, nimrod, ninny, nipple, orgasim, orgasm, paedophil, paki,
+				panooch, pansy, pantie, pants down, panty, pedophil, pee, penis, penisfucker, pikey, pillowbiter, pimp,
+				pimpis, pinko, piss, piss off, polack, pollack, poop, porn, porno, pornography, pubi, pussy, puto,
+				queaf, queef, queer, quim, raghead, retard, russkie, russky, sadist, schizo, schlong, scissoring, screw,
+				screwed, screwing, scroat, scrog, scrot, sex, sexy, shit, skag, skank, skeet, slanteye, sleaze, sleazy,
+				slut, smartass, smeg, smegma, smut, sodomi, sodomy, son of a bitch, souse, sperm, spick, splooge,
+				spooge, suck, swastika, swinger, tampon, teat, tits, titt, towelhead, twat, twunt, upskirt, viagra,
+				voyeur, wank, wazoo, wedgie, weenie, weewee, weiner, weirdo, wench, wet dream, wetback, whore, wiseass,
+				wog, wop, xxx, yid, yiffy, yobbo, zibbi, zoophilia, zubb</div>
+		</div>
+	</div>
 
-//to load video from local file, by Dimitar Bonev, as answered on StackOverflow. Also https://jsfiddle.net/dsbonev/cCCZ2/
-(function localFileVideoPlayer() {
-  var URL = window.URL || window.webkitURL;
-  var playSelectedFile = function (event) {
-    var file = this.files[0]
-    var type = file.type
-    var videoNode = document.querySelector('video')
-    var canPlay = videoNode.canPlayType(type)
-    if (canPlay === '') canPlay = 'no'
-    var message = 'Can play type "' + type + '": ' + canPlay
-    var isError = canPlay === 'no'
-    displayMessage(message, isError)
+	<script>
+		// ==========================================
+		// VideoSkip Standalone - Modernized Core
+		// ==========================================
 
-    if (isError) {
-      return
-    }
+		// 1. Explicit DOM Caching
+		const myVideo = document.getElementById('myVideo');
+		const skipBox = document.getElementById('skipBox');
+		const boxMsg = document.getElementById('boxMsg');
+		const videoFile = document.getElementById('videoFile');
+		const videoFileBtn = document.getElementById('videoFileBtn');
+		const subFile = document.getElementById('subFile');
+		const subFileBtn = document.getElementById('subFileBtn');
+		const container = document.getElementById('container');
+		const btnFS = document.getElementById('btnFS');
+		const VSstatus = document.getElementById('VSstatus');
+		const blurBox = document.getElementById('blurBox');
+		const filters = document.getElementById('filters');
+		const rubricText = document.getElementById('rubricText');
+		const skipFile = document.getElementById('skipFile');
+		const skipFileBtn = document.getElementById('skipFileBtn');
+		const websites = document.getElementById('websites');
+		const backBtn = document.getElementById('backBtn');
+		const fineMode = document.getElementById('fineMode');
+		const altMode = document.getElementById('altMode');
+		const fwdBtn = document.getElementById('fwdBtn');
+		const fFwdBtn = document.getElementById('fFwdBtn');
+		const syncBtn = document.getElementById('syncBtn');
+		const timeBtn = document.getElementById('timeBtn');
+		const arrowBtn = document.getElementById('arrowBtn');
+		const beepBtn = document.getElementById('beepBtn');
+		const posBtn = document.getElementById('posBtn');
+		const saveFile = document.getElementById('saveFile');
+		const shotTimeBtn = document.getElementById('shotTimeBtn');
+		const autoBtn = document.getElementById('autoBtn');
+		const moveBtn = document.getElementById('moveBtn');
+		const blurBoxBtn = document.getElementById('blurBoxBtn');
+		const shotBtn = document.getElementById('shotBtn');
+		const screenShot = document.getElementById('screenShot');
+		const instructions = document.getElementById('instructions');
+		const help = document.getElementById('help');
+		const blockList = document.getElementById('blockList');
+		const sliders = filters.querySelectorAll('input');
+		const videoMsg = document.getElementById('videoMsg');
 
-    var fileURL = URL.createObjectURL(file)
-    videoNode.src = fileURL;
-	ready(function(){
-		cuts = PF_SRT.parse(skipBox.value);
-		setActions();
-		makeTimeLabels()
-	});
-	this.type = '';
-  	this.type = 'file';								//resets file input
-  }
-  var inputNode = document.querySelector('input')
-  inputNode.addEventListener('change', playSelectedFile, false);
-})();
+		// 2. Global State Variables
+		let skipFileName = '';
+		let cuts = [];
+		let shotData = [];
+		let offsets = { "local": 0 };
+		let sliderValues = ['0', '0', '0', '0', '0', '0'];
+		let fadeTimer = null;
+		let speedMode = 1;
+		let isSuper = false;
+		let isBlur = false;
+		let timeLabels = [];
+		let prevAction = '';
+		let videoX1, videoX2, videoY1, videoY2;
+		let blurPos;
+		let isFull = false;
+		let errorData = [[], []];
 
-var displayMessage = function (message, isError) {
-    var element = document.querySelector('#videoMsg')
-    element.innerHTML = message
-    element.className = isError ? 'error' : 'info'
-  }
+		const syncFix = 1 / 24;
+		const deltaT = 1 / 24;
+		const accel = 2;
 
-var name = '',		//global variable with name of skip file, minus extension
-	cuts = [],		//global variable containing the cuts, each array element is an object with this format {startTime,endTime,text,action}
-	shotData = [],
-	offsets = {"local":0},		//for automatic sync. Initialized for a first save
-	sliderValues = ['0','0','0','0','0','0'],
-	fadeTimer;
+		const canvas = document.createElement('canvas');
+		canvas.width = 320;
+		canvas.height = 240;
+		const ctx = canvas.getContext('2d', { willReadFrequently: true });
 
-const ua = navigator.userAgent.toLowerCase(); 		//to add a fix for Safari and choose fastest filter method, per https://jsben.ch/5qRcU
-if (ua.indexOf('safari') != -1) { 
-  if (ua.indexOf('chrome') == -1){ var isSafari = true
-  }else{ var isChrome = true
-  }
-}else if(typeof InstallTrigger !== 'undefined'){var isFirefox = true
-}else if (document.documentMode || /Edge/.test(navigator.userAgent)){var isEdge = true
-}
+		// 3. Browser Detection
+		const ua = navigator.userAgent.toLowerCase();
+		let isSafari = false;
+		let isChrome = false;
+		let isFirefox = false;
+		let isEdge = false;
 
-if(isSafari){
-	videoFile.accept = 'video/mp4,video/x-m4v,video/*';		//file loading fix
-	container.style.backgroundColor = 'black'
-}
-
-//loads the skip file
-function loadFileAsURL(){
-	var fileToLoad = skipFile.files[0],
-		fileReader = new FileReader();
-	fileReader.onload = function(fileLoadedEvent){
-		var URLFromFileLoaded = fileLoadedEvent.target.result;
-		var extension = fileToLoad.name.slice(-4);
-		if(extension == ".skp"){
-			var data = URLFromFileLoaded.split('data:image/jpeg;base64,');		//separate skips and offsets from screenshot
-			var data1 = data[0].split('{');										//separate skips from offsets
-			name = fileToLoad.name.slice(0,-4).replace(/ \[[a-z0-9\-]*\]/,'');	//remove extension and service list
-			skipBox.value = data1[0].trim();
-			if(data1[1]) offsets = JSON.parse('{' + data1[1].trim());			//make offsets object
-			if(data[1]) screenShot.src = 'data:image/jpeg;base64,' + data[1]	//extract screenshot
-		}else{
-			boxMsg.textContent = "wrong file type"
+		if (ua.indexOf('safari') !== -1) {
+			if (ua.indexOf('chrome') === -1) {
+				isSafari = true;
+			} else {
+				isChrome = true;
+			}
+		} else if (typeof InstallTrigger !== 'undefined') {
+			isFirefox = true;
+		} else if (document.documentMode || /Edge/.test(navigator.userAgent)) {
+			isEdge = true;
 		}
-		boxMsg.textContent = 'This is the content of file: ' + fileToLoad.name;
-		ready(function(){
-			cuts = PF_SRT.parse(skipBox.value);
-			setSliders();
-			applyOffset()								//this includes setActions at the end
-		});
-		skipFile.type = '';
-		skipFile.type = 'file';								//resets file input
-	};
-	fileReader.readAsText(fileToLoad)
-}
 
-//similar, for loading subtitles; includes option to generate skips for profanity
-function loadSubs(){
-	var fileToLoad = subFile.files[0],
-		fileReader = new FileReader();
-	fileReader.onload = function(fileLoadedEvent){
-		var URLFromFileLoaded = fileLoadedEvent.target.result;
-		var extension = fileToLoad.name.slice(-4);
-		if(extension == ".vtt" || extension == ".srt"){						//allow only .vtt and .srt formats
-			track = document.createElement("track");
-			track.kind = "captions";
-  			track.label = "Loaded";
-   			track.srclang = "en";
-			if(extension == ".vtt"){
-				track.src = URL.createObjectURL(fileToLoad)
-			}else{
-				var subs = URLFromFileLoaded;										//get subs in text format, to be edited
-				subs = 'WEBVTT\n\n' + subs.replace(/(\d),(\d)/g,'$1.$2');		//convert decimal commas to periods and add header
-				var subBlob = new Blob([subs], {"type": 'text/plain'});
-				track.src = URL.createObjectURL(subBlob);
+		if (isSafari) {
+			videoFile.accept = 'video/mp4,video/x-m4v,video/*';
+			container.style.backgroundColor = 'black';
+		}
+
+		// 4. Core Functions
+		function ready(fn) {
+			if (document.readyState !== 'loading') {
+				fn();
+			} else {
+				document.addEventListener('DOMContentLoaded', fn);
 			}
-			if(confirm("Do you want to generate silences for profanity found in the subtitles? Otherwise Cancel")){
-				if(!autoBeepGen(subs)) return			//bail out if subs aren't really needed
+		}
+
+		(function localFileVideoPlayer() {
+			const URL = window.URL || window.webkitURL;
+			const playSelectedFile = function (event) {
+				const file = this.files[0];
+				const type = file.type;
+				let canPlay = myVideo.canPlayType(type);
+				if (canPlay === '') canPlay = 'no';
+				const message = 'Can play type "' + type + '": ' + canPlay;
+				const isError = canPlay === 'no';
+				displayMessage(message, isError);
+
+				if (isError) {
+					return;
+				}
+
+				const fileURL = URL.createObjectURL(file);
+				myVideo.src = fileURL;
+				ready(function () {
+					cuts = PF_SRT.parse(skipBox.value);
+					setActions();
+					makeTimeLabels();
+				});
+				this.type = '';
+				this.type = 'file';
 			}
-			track.addEventListener("load", function(){
-				this.mode = "showing";
-				myVideo.textTracks[0].mode = "showing"; // thanks Firefox
+			videoFile.addEventListener('change', playSelectedFile, false);
+		})();
+
+		const displayMessage = function (message, isError) {
+			videoMsg.innerHTML = message;
+			videoMsg.className = isError ? 'error' : 'info';
+		}
+
+		function loadFileAsURL() {
+			let fileToLoad = skipFile.files[0];
+			let fileReader = new FileReader();
+			fileReader.onload = function (fileLoadedEvent) {
+				let URLFromFileLoaded = fileLoadedEvent.target.result;
+				let extension = fileToLoad.name.slice(-4);
+				if (extension === ".skp") {
+					let data = URLFromFileLoaded.split('data:image/jpeg;base64,');
+					let data1 = data[0].split('{');
+					skipFileName = fileToLoad.name.slice(0, -4).replace(/ \[[a-z0-9\-]*\]/, '');
+					skipBox.value = data1[0].trim();
+					if (data1[1]) offsets = JSON.parse('{' + data1[1].trim());
+					if (data[1]) screenShot.src = 'data:image/jpeg;base64,' + data[1];
+				} else {
+					boxMsg.textContent = "wrong file type";
+				}
+				boxMsg.textContent = 'This is the content of file: ' + fileToLoad.name;
+				ready(function () {
+					cuts = PF_SRT.parse(skipBox.value);
+					setSliders();
+					applyOffset();
+				});
+				skipFile.type = '';
+				skipFile.type = 'file';
+			};
+			fileReader.readAsText(fileToLoad);
+		}
+
+		function loadSubs() {
+			let fileToLoad = subFile.files[0];
+			let fileReader = new FileReader();
+			fileReader.onload = function (fileLoadedEvent) {
+				let URLFromFileLoaded = fileLoadedEvent.target.result;
+				let extension = fileToLoad.name.slice(-4);
+				if (extension === ".vtt" || extension === ".srt") {
+					let track = document.createElement("track");
+					track.kind = "captions";
+					track.label = "Loaded";
+					track.srclang = "en";
+					let subs = URLFromFileLoaded;
+					if (extension === ".vtt") {
+						track.src = URL.createObjectURL(fileToLoad);
+					} else {
+						subs = 'WEBVTT\n\n' + subs.replace(/(\d),(\d)/g, '$1.$2');
+						let subBlob = new Blob([subs], { "type": 'text/plain' });
+						track.src = URL.createObjectURL(subBlob);
+					}
+					if (confirm("Do you want to generate silences for profanity found in the subtitles? Otherwise Cancel")) {
+						if (!autoBeepGen(subs)) return;
+					}
+					track.addEventListener("load", function () {
+						this.mode = "showing";
+						if (myVideo.textTracks.length > 0) myVideo.textTracks[0].mode = "showing";
+					});
+					myVideo.appendChild(track);
+					displayMessage("Subtitles loaded. Enable them in the video with lower right icon", false);
+				} else {
+					displayMessage("Only .vtt  and .srt subs are supported", true);
+				}
+				subFile.type = '';
+				subFile.type = 'file';
+			};
+			fileReader.readAsText(fileToLoad);
+		}
+
+		function autoBeepGen(subs) {
+			// 1. Build strict word-boundary regex with an optional grammatical suffix matcher
+			let rawWords = blockList.textContent.split(',').map(w => w.trim()).filter(w => w.length > 0);
+			let escapedWords = rawWords.map(w => w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+
+			// Allows an optional single letter (for consonant doubling like 't' in shitting) 
+			// followed by standard English suffixes to catch derivatives without catching false positives.
+			let suffixPattern = '(?:[a-z])?(?:s|es|d|ed|ing|er|ers|y)?';
+			let blockListExp = new RegExp('\\b(' + escapedWords.join('|') + ')' + suffixPattern + '\\b', 'i');
+
+			let subObj = PF_SRT.parse(subs);
+
+			// 2. Safely extract existing cuts and header data
+			let currentBoxLines = skipBox.value.trim().split('\n');
+			let initialData = [];
+
+			if (currentBoxLines.length >= 2 && !currentBoxLines[0].includes('-->')) {
+				initialData = currentBoxLines.slice(0, 2);
+			}
+
+			// 3. Generate new cuts in memory
+			let generatedCuts = [];
+			for (let i = 0; i < subObj.length; i++) {
+				let match = subObj[i].text.match(blockListExp);
+				if (match) {
+					generatedCuts.push({
+						startTime: subObj[i].startTime - 0.15,
+						endTime: subObj[i].endTime + 0.15,
+						text: 'profane word 1 (' + match[0].toLowerCase() + ')',
+						action: 'mute'
+					});
+				}
+			}
+
+			// 4. Merge existing cuts with new cuts and sort chronologically
+			let allCuts = cuts.concat(generatedCuts);
+			allCuts.sort(function (a, b) { return a.startTime - b.startTime; });
+			cuts = allCuts;
+
+			// 5. Serialize back to text format for the skipBox
+			let newBoxText = '';
+			if (initialData.length > 0) {
+				newBoxText += initialData.join('\n') + '\n\n';
+			}
+
+			for (let i = 0; i < cuts.length; i++) {
+				newBoxText += toHMS(cuts[i].startTime) + ' --> ' + toHMS(cuts[i].endTime) + '\n' + cuts[i].text + '\n\n';
+			}
+
+			// 6. Update DOM and UI state exactly once
+			skipBox.value = newBoxText.trim();
+			document.getElementById('curseNum').value = 3;
+			for (let j = 0; j < sliders.length; j++) {
+				sliderValues[j] = sliders[j].value;
+			}
+
+			setActions();
+			makeTimeLabels();
+
+			return confirm("Cancel if don't really want to see subtitles, just scan for profanity");
+		}
+
+		function download(data, filename, type) {
+			let a = document.createElement("a");
+			let file = new Blob([data], { "type": type });
+			let url = URL.createObjectURL(file);
+			a.href = url;
+			a.download = filename;
+			document.body.appendChild(a);
+			a.click();
+			setTimeout(function () {
+				document.body.removeChild(a);
+				window.URL.revokeObjectURL(url);
+			}, 0);
+		}
+
+		const PF_SRT = (function () {
+			const pattern = /([\d:,.]+)\s*-*\>\s*([\d:,.]+)\s*\n([\s\S]*?(?=\n+\s*\d|\n{2}))?/gm;
+			let _regExp;
+
+			const init = function () {
+				_regExp = new RegExp(pattern);
+			};
+			const parse = function (f) {
+				if (typeof (f) !== "string") throw "Sorry, the parser accepts only strings";
+				let result = [];
+				if (f == null) return result;
+				f = f.replace(/\r\n|\r|\n/g, '\n') + '\n\n';
+				let matches;
+				while ((matches = pattern.exec(f)) !== null) {
+					result.push(toLineObj(matches));
+				}
+				return result;
+			}
+			const toLineObj = function (group) {
+				return {
+					startTime: fromHMS(group[1]),
+					endTime: fromHMS(group[2]),
+					text: group[3],
+					action: ''
+				};
+			}
+			init();
+			return { parse: parse };
+		})();
+
+		function toHMS(seconds) {
+			let hours = Math.floor(seconds / 3600);
+			seconds -= hours * 3600;
+			let minutes = Math.floor(seconds / 60);
+			minutes = (minutes >= 10) ? minutes : "0" + minutes;
+			seconds = Math.floor((seconds % 60) * 100) / 100;
+			seconds = (seconds >= 10) ? seconds : "0" + seconds;
+			return hours + ":" + minutes + ":" + seconds;
+		}
+
+		function fromHMS(timeString) {
+			timeString = timeString.replace(/,/, ".");
+			let time = timeString.split(":");
+			if (time.length === 3) {
+				return parseInt(time[0]) * 3600 + parseInt(time[1]) * 60 + parseFloat(time[2]);
+			} else if (time.length === 2) {
+				return parseInt(time[0]) * 60 + parseFloat(time[1]);
+			} else {
+				return parseFloat(time[0]);
+			}
+		}
+
+		function syncTimes() {
+			if (timeLabels.length === 0) {
+				boxMsg.textContent = "Must have at least one time in the box before clicking";
+				return;
+			} else if (timeLabels[0].length < 1) {
+				boxMsg.textContent = "Must have at least one time in the box before clicking";
+				return;
+			}
+			let initialData = skipBox.value.trim().split('\n').slice(0, 2);
+			let shotTime = fromHMS(initialData[0]);
+			let seconds = shotTime ? myVideo.currentTime - shotTime : 0;
+			seconds -= syncFix;
+			for (let i = 0; i < cuts.length; i++) {
+				cuts[i].startTime += seconds;
+				cuts[i].endTime += seconds;
+			}
+			times2box();
+
+			if (shotTime) {
+				initialData[0] = toHMS(shotTime + seconds);
+				skipBox.value = initialData.join('\n') + '\n\n' + skipBox.value;
+			}
+			if (seconds >= 0) {
+				boxMsg.textContent = "Skips delayed by " + Math.floor(seconds * 100) / 100 + " seconds";
+			} else {
+				boxMsg.textContent = "Skips advanced by " + Math.floor(-seconds * 100) / 100 + " seconds";
+			}
+
+			for (let service in offsets) {
+				offsets[service] -= seconds;
+				if (Math.abs(offsets[service]) < deltaT) offsets[service] = 0;
+			}
+
+			offsets['local'] = 0;
+
+			ready(function () {
+				setActions();
+				makeTimeLabels();
+				if (isSuper) moveShot();
+				ready(save2file);
 			});
-			myVideo.appendChild(track);
-			displayMessage("Subtitles loaded. Enable them in the video with lower right icon",false)
-		}else{
-			displayMessage("Only .vtt  and .srt subs are supported",true)
 		}
-		subFile.type = '';
-		subFile.type = 'file';								//resets file input
-	};
-	fileReader.readAsText(fileToLoad)
-}
 
-//inserts a silence for each subtitle found to contain words in the blockList, using full time for each; then reorders the skips by time
-function autoBeepGen(subs){
-	var blockListExp = new RegExp(blockList.textContent.replace(/, +/g,'|'),"g");
-	var subObj = PF_SRT.parse(subs);				//similar in structure to cuts, with keys: startTime, endTime, text, action (empty)
-	writeIn('\n\n',false);
-	for(var i = 0; i < subObj.length; i++){
-		var word = subObj[i].text.toLowerCase().match(blockListExp);
-		if(word){	//word found in block list; add extra .3 s buffer in case there are two in a row
-			writeIn(toHMS(subObj[i].startTime - 0.15) + ' --> ' + toHMS(subObj[i].endTime + 0.15) + '\nprofane word 1 (' + word[0] + ')\n\n',false)
-		}
-	}
-	var	initialData = skipBox.value.trim().split('\n').slice(0,2);					//first two lines containing screenshot timing
-	cuts = PF_SRT.parse(skipBox.value);
-	cuts.sort(function(a, b){return a.startTime - b.startTime;});
-	times2box();
-	if(initialData) skipBox.value = initialData.join('\n') + '\n\n' + skipBox.value;
-	curseNum.value = 3;
-	setActions();
-	makeTimeLabels();
-	return confirm("Cancel if don't really want to see subtitles, just scan for profanity")
-}
-
-//to download data to a file, from StackOverflow
-function download(data, filename, type) {
-	var a = document.createElement("a");
-	var file = new Blob([data], {"type": type}),
-		url = URL.createObjectURL(file);
-	a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    setTimeout(function() {
-       document.body.removeChild(a);
-       window.URL.revokeObjectURL(url);  
-    }, 0)
-}
-
-//to parse the content of the skip box in something close to .srt format, from StackOverflow
-var PF_SRT = function() {
-  //SRT format
-  var pattern = /([\d:,.]+)\s*-*\>\s*([\d:,.]+)\s*\n([\s\S]*?(?=\n+\s*\d|\n{2}))?/gm;		//no item number, can use decimal dot instead of comma, malformed arrows, no extra lines
-  var _regExp;
-
-  var init = function() {
-    _regExp = new RegExp(pattern);
-  };
-  var parse = function(f) {
-    if (typeof(f) != "string")
-      throw "Sorry, the parser accepts only strings";
-
-    var result = [];
-    if (f == null)
-      return _subtitles;
-
-    f = f.replace(/\r\n|\r|\n/g, '\n') + '\n\n';
-
-    while ((matches = pattern.exec(f)) != null) {
-      result.push(toLineObj(matches));
-    }
-    return result;
-  }
-  var toLineObj = function(group) {
-    return {
-      startTime: fromHMS(group[1]),
-      endTime: fromHMS(group[2]),
-      text: group[3],
-	  action: ''				//no action by default, to be filled later
-    };
-  }
-  init();
-  return {
-    parse: parse
-  }
-}();
-
-//to put seconds into hour:minute:second format
-function toHMS(seconds) {
-	var hours = Math.floor(seconds / 3600);
-	seconds -= hours * 3600;
-    var minutes = Math.floor(seconds / 60);
-    minutes = (minutes >= 10) ? minutes : "0" + minutes;
-    seconds = Math.floor((seconds % 60) * 100) / 100;			//precision is 0.01 s
-    seconds = (seconds >= 10) ? seconds : "0" + seconds;
-    return hours + ":" + minutes + ":" + seconds;
-}
-  
-//the opposite: hour:minute:second string to decimal seconds
-function fromHMS(timeString){
-	timeString = timeString.replace(/,/,".");			//in .srt format decimal seconds use a comma
-	var time = timeString.split(":");
-	if(time.length == 3){							//has hours
-		return parseInt(time[0])*3600 + parseInt(time[1])*60 + parseFloat(time[2])
-	}else if(time.length == 2){					//minutes and seconds
-		return parseInt(time[0])*60 + parseFloat(time[1])
-	}else{											//only seconds
-		return parseFloat(time[0])
-	}
-}
-
-const syncFix = 1/24;							//use a time that is actually 1 frame earlier than reported when dealing with the screenshot
-
-//shift all times so the screenshot has correct timing in the video
-function syncTimes(){
-	if(timeLabels.length == 0){
-		boxMsg.textContent = "Must have at least one time in the box before clicking";
-		return
-	}else if(timeLabels[0].length < 1){
-		boxMsg.textContent = "Must have at least one time in the box before clicking";
-		return
-	}
-	var	initialData = skipBox.value.trim().split('\n').slice(0,2),					//first two lines
-		shotTime = fromHMS(initialData[0]),
-		seconds = shotTime ? myVideo.currentTime - shotTime : 0;
-	seconds -= syncFix;
-	for(var i = 0; i < cuts.length; i++){
-		cuts[i].startTime += seconds;
-		cuts[i].endTime += seconds
-	}
-	times2box();											//put shifted times in the box
-	
-	if(shotTime){										//reconstruct initial data, if present, shifting the shot time as well
-		initialData[0] = toHMS(shotTime + seconds);
-		skipBox.value = initialData.join('\n') + '\n\n' + skipBox.value
-	}
-	if(seconds >= 0){
-		boxMsg.textContent = "Skips delayed by " + Math.floor(seconds*100)/100 + " seconds"
-	}else{
-		boxMsg.textContent = "Skips advanced by " + Math.floor(- seconds*100)/100 + " seconds"
-	}
-
-	for(var service in offsets){						//adjust offsets
-		offsets[service] -= seconds;
-		if(Math.abs(offsets[service]) < deltaT) offsets[service] = 0
-	}
-
-	offsets['local'] = 0;									//local key set to zero regardless
-
-	ready(function(){
-		setActions();
-		makeTimeLabels();
-		if(isSuper)moveShot();
-		ready(save2file)
-	})
-}
-
-//shift all times according to offset in loaded skip file
-function applyOffset(){
-	var	initialData = skipBox.value.trim().split('\n').slice(0,2),					//first two lines
-		shotTime = fromHMS(initialData[0]);
-	var offset = offsets['local'];
-	if(offset != undefined){						//there is an offset for 'local', so shift all times; otherwise do nothing
-		for(var i = 0; i < cuts.length; i++){
-			cuts[i].startTime += offset;
-			cuts[i].endTime += offset
-		}
-		times2box();											//put shifted times in the box
-	
-		if(shotTime){										//reconstruct initial data, if present, shifting the shot time as well
-			initialData[0] = toHMS(shotTime + offset);
-			skipBox.value = initialData.join('\n') + '\n\n' + skipBox.value
-		}
-		setActions();
-		makeTimeLabels();
-
-		boxMsg.textContent = "Skip times adjusted for this source"
-
-		for(var service in offsets){						//adjust offsets
-			offsets[service] -= offset
-		}
-	}else{									//no offset found, so scrub to shot time
-		offsets['local'] = 0;						//create key it if it didn't exist
-		setActions();
-		makeTimeLabels();
-		myVideo.currentTime = shotTime
-	}
-}
-
-//put data from the cuts array into skipBox
-function times2box(){
-	var text = '';
-	for(var i = 0; i < cuts.length; i++){
-		text += toHMS(cuts[i].startTime) + ' --> ' + toHMS(cuts[i].endTime) + '\n' + cuts[i].text + '\n\n'
-	}
-	skipBox.value = text.trim();
-	ready(makeTimeLabels)
-}
-
-//insert string in box, at cursor or replacing selection
-function writeIn(string,isScrub){
-	var start = skipBox.selectionStart,
-		end = skipBox.selectionEnd,
-		newEnd = start + string.length;
-	skipBox.value = skipBox.value.slice(0,start) + string + skipBox.value.slice(end,skipBox.length);
-	if(isScrub){
-		skipBox.setSelectionRange(start,newEnd)
-	}else{
-		skipBox.setSelectionRange(newEnd,newEnd);
-	}
-	skipBox.focus();
-	ready(function(){							//update skips and other data in memory
-		cuts = PF_SRT.parse(skipBox.value);
-		setActions();
-		makeTimeLabels()
-	})
-}
-
-//gets index of a particular HMS time in the box, by location; returns null if the cursor is not on a time label
-function getTimeIndex(){
-	var start = skipBox.selectionStart,
-		end = skipBox.selectionEnd;
-	for(var i = 0; i < timeLabels[0].length; i++){
-		if(timeLabels[1][i] <= start && timeLabels[2][i] >= end) return i
-	}
-}
-
-const deltaT = 1/24;				//seconds for each frame at 24 fps
-
-//called by forward button
-function fwdSkip(){
-	if(altMode.checked){										//special mode for shifting auto profanity skips, in case subtitle file was off
-		shiftProfSkips(true)
-
-	}else if(myVideo.paused){
-		if(skipBox.selectionStart != skipBox.selectionEnd){							//there is a selection
-			var index = getTimeIndex(),
-				tol = 0.02;
-			if(index != null){
-				skipBox.setSelectionRange(timeLabels[1][index],timeLabels[2][index]);
-				var selectedTime = fromHMS(timeLabels[0][index]);
-				if(Math.abs(myVideo.currentTime - selectedTime) > tol){				//first go there
-					myVideo.currentTime = selectedTime;
-				}else{
-					myVideo.currentTime += fineMode.checked ? deltaT : deltaT*12;	//now scrub by a small amount
-					writeIn(toHMS(myVideo.currentTime),true);						//and write it in
-				}			
-				skipBox.focus()
-			}
-		}else{											//scrub by one or twelve frames
-			myVideo.currentTime += fineMode.checked ? deltaT : deltaT*12
-		}
-	}else{
-		myVideo.pause();
-		speedMode = 0
-  	}
-}
-
-//called by back button
-function backSkip(){
-	if(altMode.checked){										//special mode for shifting auto profanity skips, in case subtitle file was off
-		shiftProfSkips(false)
-
-	}else if(myVideo.paused){
-		if(skipBox.selectionStart != skipBox.selectionEnd){							//there is a selection
-			var index = getTimeIndex(),
-				tol = 0.02;
-			if(index != null){
-				skipBox.setSelectionRange(timeLabels[1][index],timeLabels[2][index]);
-				var selectedTime = fromHMS(timeLabels[0][index]);
-				if(Math.abs(myVideo.currentTime - selectedTime) > tol){				//first go there
-					myVideo.currentTime = selectedTime;
-				}else{
-					myVideo.currentTime -= fineMode.checked ? deltaT : deltaT*12;	//now scrub by a small amount
-					writeIn(toHMS(myVideo.currentTime),true)							//and write it in
+		function applyOffset() {
+			let initialData = skipBox.value.trim().split('\n').slice(0, 2);
+			let shotTime = fromHMS(initialData[0]);
+			let offset = offsets['local'];
+			if (offset !== undefined) {
+				for (let i = 0; i < cuts.length; i++) {
+					cuts[i].startTime += offset;
+					cuts[i].endTime += offset;
 				}
-				skipBox.focus()
+				times2box();
+
+				if (shotTime) {
+					initialData[0] = toHMS(shotTime + offset);
+					skipBox.value = initialData.join('\n') + '\n\n' + skipBox.value;
+				}
+				setActions();
+				makeTimeLabels();
+
+				boxMsg.textContent = "Skip times adjusted for this source";
+
+				for (let service in offsets) {
+					offsets[service] -= offset;
+				}
+			} else {
+				offsets['local'] = 0;
+				setActions();
+				makeTimeLabels();
+				myVideo.currentTime = shotTime;
 			}
-		}else{											//scrub by one or twelve frames
-			myVideo.currentTime -= fineMode.checked ? deltaT : deltaT*12
 		}
-	}else{
-		myVideo.pause();
-		speedMode = 0
-	}
-}
 
-//called by the above, to shift auto-generated profanity skips
-function shiftProfSkips(isFwd){
-	var timeShift = 0,
-		isFine = fineMode.checked,
-		initialData = skipBox.value.trim().split('\n').slice(0,2);					//first two lines
-	for(var i = 0; i < cuts.length; i++){
-		if(cuts[i].text.match(/profane word 1 \(/)){								//do it only for auto-generated skips
-			timeShift = (isFine ? deltaT : deltaT*10)*(isFwd ? 1 : -1);
-			cuts[i].startTime += timeShift;
-			cuts[i].endTime += timeShift
+		function times2box() {
+			let text = '';
+			for (let i = 0; i < cuts.length; i++) {
+				text += toHMS(cuts[i].startTime) + ' --> ' + toHMS(cuts[i].endTime) + '\n' + cuts[i].text + '\n\n';
+			}
+			skipBox.value = text.trim();
+			ready(makeTimeLabels);
 		}
-	}
-	times2box();
-	if(initialData) skipBox.value = initialData.join('\n') + '\n\n' + skipBox.value
-}
 
-var speedMode = 1;
+		function writeIn(string, isScrub) {
+			let start = skipBox.selectionStart;
+			let end = skipBox.selectionEnd;
+			let newEnd = start + string.length;
+			skipBox.value = skipBox.value.slice(0, start) + string + skipBox.value.slice(end, skipBox.length);
+			if (isScrub) {
+				skipBox.setSelectionRange(start, newEnd);
+			} else {
+				skipBox.setSelectionRange(newEnd, newEnd);
+			}
+			skipBox.focus();
+			ready(function () {
+				cuts = PF_SRT.parse(skipBox.value);
+				setActions();
+				makeTimeLabels();
+			});
+		}
 
-//toggles normal, max, and zero speeds
-function toggleFF(){
-	if(myVideo.src == '') return;
-	skipBox.selectionStart = skipBox.selectionEnd;		//clear selection, if any
-	skipBox.focus();
-	if(myVideo.paused){							//if paused, restart, no speed change
-		speedMode = 1;
-		myVideo.volume = 1;
-		myVideo.playbackRate = 1;
-		myVideo.play()
-	}else{											//if playing, set speed
-		if(speedMode == 1){
-			speedMode = 2;
+		function getTimeIndex() {
+			let start = skipBox.selectionStart;
+			let end = skipBox.selectionEnd;
+			if (timeLabels.length > 0) {
+				for (let i = 0; i < timeLabels[0].length; i++) {
+					if (timeLabels[1][i] <= start && timeLabels[2][i] >= end) return i;
+				}
+			}
+			return null;
+		}
+
+		function fwdSkip() {
+			if (altMode.checked) {
+				shiftProfSkips(true);
+			} else if (myVideo.paused) {
+				if (skipBox.selectionStart !== skipBox.selectionEnd) {
+					let index = getTimeIndex();
+					let tol = 0.02;
+					if (index !== null) {
+						skipBox.setSelectionRange(timeLabels[1][index], timeLabels[2][index]);
+						let selectedTime = fromHMS(timeLabels[0][index]);
+						if (Math.abs(myVideo.currentTime - selectedTime) > tol) {
+							myVideo.currentTime = selectedTime;
+						} else {
+							myVideo.currentTime += fineMode.checked ? deltaT : deltaT * 12;
+							writeIn(toHMS(myVideo.currentTime), true);
+						}
+						skipBox.focus();
+					}
+				} else {
+					myVideo.currentTime += fineMode.checked ? deltaT : deltaT * 12;
+				}
+			} else {
+				myVideo.pause();
+				speedMode = 0;
+			}
+		}
+
+		function backSkip() {
+			if (altMode.checked) {
+				shiftProfSkips(false);
+			} else if (myVideo.paused) {
+				if (skipBox.selectionStart !== skipBox.selectionEnd) {
+					let index = getTimeIndex();
+					let tol = 0.02;
+					if (index !== null) {
+						skipBox.setSelectionRange(timeLabels[1][index], timeLabels[2][index]);
+						let selectedTime = fromHMS(timeLabels[0][index]);
+						if (Math.abs(myVideo.currentTime - selectedTime) > tol) {
+							myVideo.currentTime = selectedTime;
+						} else {
+							myVideo.currentTime -= fineMode.checked ? deltaT : deltaT * 12;
+							writeIn(toHMS(myVideo.currentTime), true);
+						}
+						skipBox.focus();
+					}
+				} else {
+					myVideo.currentTime -= fineMode.checked ? deltaT : deltaT * 12;
+				}
+			} else {
+				myVideo.pause();
+				speedMode = 0;
+			}
+		}
+
+		function shiftProfSkips(isFwd) {
+			let timeShift = 0;
+			let isFine = fineMode.checked;
+			let initialData = skipBox.value.trim().split('\n').slice(0, 2);
+			for (let i = 0; i < cuts.length; i++) {
+				if (cuts[i].text.match(/profane word 1 \(/)) {
+					timeShift = (isFine ? deltaT : deltaT * 10) * (isFwd ? 1 : -1);
+					cuts[i].startTime += timeShift;
+					cuts[i].endTime += timeShift;
+				}
+			}
+			times2box();
+			if (initialData) skipBox.value = initialData.join('\n') + '\n\n' + skipBox.value;
+		}
+
+		function toggleFF() {
+			if (myVideo.src === '') return;
+			skipBox.selectionStart = skipBox.selectionEnd;
+			skipBox.focus();
+			if (myVideo.paused) {
+				speedMode = 1;
+				myVideo.volume = 1;
+				myVideo.playbackRate = 1;
+				myVideo.play();
+			} else {
+				if (speedMode === 1) {
+					speedMode = 2;
+					myVideo.volume = 0;
+					myVideo.playbackRate = 16;
+				} else {
+					speedMode = 0;
+					myVideo.volume = 1;
+					myVideo.playbackRate = 1;
+					myVideo.pause();
+				}
+			}
+		}
+
+		function makeShot() {
+			if (myVideo.src === '') {
+				boxMsg.textContent = "Load a video first";
+				return;
+			}
+			myVideo.pause();
+			writeIn(toHMS(myVideo.currentTime - syncFix), false);
+			canvas.width = myVideo.videoWidth / myVideo.videoHeight * canvas.height;
+			ctx.drawImage(myVideo, 0, 0, canvas.width, canvas.height);
+			let dataURI = canvas.toDataURL('image/jpeg');
+			screenShot.src = dataURI;
+		}
+
+		function imageData(source) {
+			canvas.width = source.clientWidth / source.clientHeight * canvas.height;
+			ctx.drawImage(source, 0, 0, canvas.width, canvas.height);
+			return ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+		}
+
+		function errorCalc() {
+			let videoData = imageData(myVideo);
+			let length = Math.min(shotData.length, videoData.length);
+			let error = 0;
+			for (let i = 0; i < length; i += 4) {
+				error += Math.abs(videoData[i] - shotData[i]) + Math.abs(videoData[i + 1] - shotData[i + 1]) + Math.abs(videoData[i + 2] - shotData[i + 2]);
+			}
+			return error / length;
+		}
+
+		function scrub2shot() {
+			if (timeLabels.length === 0) {
+				boxMsg.textContent = "Must have at least one time in the box before clicking";
+				return;
+			} else if (timeLabels[0].length < 1) {
+				boxMsg.textContent = "Must have at least one time in the box before clicking";
+				return;
+			}
+			myVideo.pause();
+			let index = getTimeIndex();
+			if (index !== null) {
+				skipBox.setSelectionRange(timeLabels[2][index], timeLabels[2][index]);
+				myVideo.currentTime = fromHMS(timeLabels[0][index]);
+				skipBox.focus();
+			} else {
+				myVideo.currentTime = fromHMS(timeLabels[0][0]);
+			}
+		}
+
+		function moveShot() {
+			if (screenShot.src === '') {
+				boxMsg.textContent = "Nothing to superimpose";
+				return;
+			}
+			if (isSuper) {
+				isSuper = false;
+				screenShot.height = 240;
+				screenShot.style.width = myVideo.clientWidth / myVideo.clientHeight * 240 + 'px';
+				screenShot.style.height = '240px';
+				screenShot.width = parseInt(screenShot.style.width.slice(0, -2));
+				screenShot.style.position = '';
+				screenShot.style.top = '';
+				screenShot.style.left = '';
+				screenShot.style.opacity = '';
+			} else {
+				isSuper = true;
+				screenShot.style.height = myVideo.clientHeight + 'px';
+				screenShot.style.width = myVideo.clientWidth + 'px';
+				screenShot.height = parseInt(screenShot.style.height.slice(0, -2));
+				screenShot.width = parseInt(screenShot.style.width.slice(0, -2));
+				screenShot.style.position = 'absolute';
+				screenShot.style.top = myVideo.offsetTop + 'px';
+				screenShot.style.left = myVideo.offsetLeft + 'px';
+				screenShot.style.opacity = "50%";
+			}
+		}
+
+		function toggleBlurBox() {
+			if (isBlur) {
+				isBlur = false;
+				blurBox.style.display = 'none';
+			} else {
+				isBlur = true;
+				blurBox.style.display = '';
+				blurBox.style.height = myVideo.clientHeight / 3 + 'px';
+				blurBox.style.width = blurBox.style.height;
+				blurBox.style.top = myVideo.offsetTop + myVideo.clientHeight / 3 + 'px';
+				blurBox.style.left = myVideo.offsetLeft + myVideo.clientWidth / 2 - parseInt(blurBox.style.width.slice(0, -2)) / 2 + 'px';
+			}
+		}
+
+		function makeTimeLabels() {
+			timeLabels = [[], [], []];
+			let text = skipBox.value;
+			let string;
+			let start;
+			let end = 0;
+			let matches = text.replace(/\[.*\]/g, '').match(/\d+[\d:.]+/g);
+			if (matches) {
+				for (let i = 0; i < matches.length; i++) {
+					string = matches[i];
+					timeLabels[0][i] = string;
+					start = text.indexOf(string, end);
+					timeLabels[1][i] = start;
+					end = start + string.length;
+					timeLabels[2][i] = end;
+				}
+			}
+		}
+
+		function toggleHelp() {
+			if (instructions.style.display === 'none') {
+				instructions.style.display = 'block';
+			} else {
+				instructions.style.display = 'none';
+			}
+		}
+
+		function save2file() {
+			for (let i = 0; i < cuts.length; i++) {
+				if (!isContained(cuts[i].text.toLowerCase().replace(/\(.*\)/g, ''), /sex|nud|vio|gor|pro|cur|hat|alc|dru|smo|fri|sca|int|oth|bor/)) {
+					boxMsg.textContent = "Skip number " + (i + 1) + " is missing its category";
+					return;
+				}
+			}
+			if (screenShot.src === '' && timeLabels.length === 0) return;
+			let sourceList = Object.keys(offsets);
+			sourceList.sort(function (a, b) { return b.length - a.length; });
+			if (!skipFileName) skipFileName = prompt('Enter the file name. Extension .skp wil be added');
+			download(skipBox.value + '\n\n' + JSON.stringify(offsets) + '\n\n' + screenShot.src, skipFileName + ' [' + sourceList.join('-') + '].skp', "text/plain");
+			boxMsg.textContent = 'File saved with name ' + skipFileName + ' [' + sourceList.join('-') + '].skp Please share with other users';
+		}
+
+		const rubric = {
+			sex: ["Content at Medium, plus: Heterosexual kissing. Conversation involving sex. Dorsal or distant nudity",
+				"Content at Low, plus: Implicit sex. Homosexual situations. Passionate kissing. Frontal nudity",
+				"Explicit sex. Sodomy. Bestiality. Rape. Pornography. Abuse of minors"],
+			violence: ["Content at Medium, plus: Hitting. Belting. Distant shooting. Slapping. Corporal punishment",
+				"Content at Low, plus: Suicide. Dismemberment. Close-range or cold-blooded shooting. Knifing",
+				"Sadism. Masochism. Torture. Gore designed to shock"],
+			curse: ["Content at Medium, plus: Dirty words in general. Cursing",
+				"Content at Low, plus: Idiomatic blasphemy. Racial slurs",
+				"Intentional blasphemy. Satanism"],
+			booze: ["Content at Medium, plus: Substance use other than incidental. Addict behavior",
+				"Content at Low, plus: Intravenous use. Preparation of drugs. Teen use",
+				"Content designed to incite substance abuse"],
+			scare: ["Spooky. Scary. Emotionally hard for children",
+				"Shocking or emotionally hard for teens",
+				"Shocking to adults"],
+			other: ["Mild content",
+				"Moderate content",
+				"Intense content"]
+		};
+
+		for (let i = 0; i < sliders.length; i++) {
+			sliders[i].addEventListener('mousemove', showRubric);
+			sliders[i].addEventListener('mouseleave', hideRubric);
+		}
+
+		function showRubric() {
+			let category = this.id.slice(0, -3);
+			let level = 3 - this.value;
+			if (level >= 3) { rubricText.textContent = ''; return; }
+			rubricText.textContent = rubric[category][level];
+		}
+
+		function hideRubric() {
+			rubricText.textContent = '';
+		}
+
+		function isContained(containerStr, regex) {
+			let result = false;
+			if (isFirefox) {
+				result = containerStr.search(regex) !== -1;
+			} else if (isSafari || isEdge || isChrome) {
+				result = regex.test(containerStr);
+			} else {
+				result = !!containerStr.match(regex);
+			}
+			return result;
+		}
+
+		function isSkipped(label) {
+			let nuMatches = label.match(/\d/);
+			let level = parseInt(nuMatches ? nuMatches[0] : 1);
+			level = level >= 3 ? 3 : level;
+			if (isContained(label, /sex|nud/)) {
+				return (parseInt(document.getElementById('sexNum').value) + level) > 3;
+			} else if (isContained(label, /vio|gor/)) {
+				return (parseInt(document.getElementById('violenceNum').value) + level) > 3;
+			} else if (isContained(label, /pro|cur|hat/)) {
+				return (parseInt(document.getElementById('curseNum').value) + level) > 3;
+			} else if (isContained(label, /alc|dru|smo/)) {
+				return (parseInt(document.getElementById('boozeNum').value) + level) > 3;
+			} else if (isContained(label, /fri|sca|int/)) {
+				return (parseInt(document.getElementById('scareNum').value) + level) > 3;
+			} else if (isContained(label, /oth|bor/)) {
+				return (parseInt(document.getElementById('otherNum').value) + level) > 3;
+			} else {
+				return false;
+			}
+		}
+
+		function setSliders() {
+			for (let i = 0; i < 6; i++) sliders[i].value = 0;
+			let noGrade = false;
+			for (let i = 0; i < cuts.length; i++) {
+				if (cuts[i].text) {
+					let label = cuts[i].text.toLowerCase().replace(/\(.*\)/g, '');
+					let grades = label.match(/\d/);
+					let grade = 4;
+					if (!grades) {
+						noGrade = true;
+					} else {
+						grade = parseInt(grades[0]);
+					}
+					if (isContained(label, /sex|nud/)) document.getElementById('sexNum').value = Math.max(4 - grade, document.getElementById('sexNum').value);
+					if (isContained(label, /vio|gor/)) document.getElementById('violenceNum').value = Math.max(4 - grade, document.getElementById('violenceNum').value);
+					if (isContained(label, /pro|cur|hat/)) document.getElementById('curseNum').value = Math.max(4 - grade, document.getElementById('curseNum').value);
+					if (isContained(label, /alc|dru|smo/)) document.getElementById('boozeNum').value = Math.max(4 - grade, document.getElementById('boozeNum').value);
+					if (isContained(label, /fri|sca|int/)) document.getElementById('scareNum').value = Math.max(4 - grade, document.getElementById('scareNum').value);
+					if (isContained(label, /oth|bor/)) document.getElementById('otherNum').value = Math.max(4 - grade, document.getElementById('otherNum').value);
+				}
+			}
+			for (let i = 0; i < 6; i++) sliderValues[i] = sliders[i].value;
+			if (noGrade) ready(function () {
+				boxMsg.textContent = "WARNING: This file contains ungraded edits, which won't work unless its slider is set High";
+			});
+		}
+
+		function setActions() {
+			for (let i = 0; i < cuts.length; i++) {
+				if (cuts[i].text) {
+					let ignore = cuts[i].text.includes('//');
+					let label = cuts[i].text.toLowerCase().replace(/\(.*\)/g, '');
+					let isAudio = isContained(label, /aud|sou|spe|wor|mut/);
+					let isVideo = isContained(label, /vid|ima|img|bla/);
+					let isBlurred = isContained(label, /blu/);
+					let isFast = isContained(label, /fas/);
+					let position = label.match(/\[.*\]/);
+					if (ignore) {
+						cuts[i].action = '';
+					} else if (!isAudio && !isVideo && !isBlurred && !isFast) {
+						cuts[i].action = isSkipped(label) ? 'skip' : '';
+					} else if (isAudio) {
+						cuts[i].action = isSkipped(label) ? 'mute' : '';
+					} else if (isVideo) {
+						if (position) {
+							cuts[i].action = isSkipped(label) ? 'blank ' + position[0] : '';
+						} else {
+							cuts[i].action = isSkipped(label) ? 'blank' : '';
+						}
+					} else if (isBlurred) {
+						if (position) {
+							cuts[i].action = isSkipped(label) ? 'blur ' + position[0] : '';
+						} else {
+							cuts[i].action = isSkipped(label) ? 'blur' : '';
+						}
+					} else {
+						cuts[i].action = isSkipped(label) ? 'fast' : '';
+					}
+				}
+			}
+		}
+
+		function findShot() {
+			if (screenShot.src === '') {
+				boxMsg.textContent = "Must have a screenshot first";
+				return;
+			}
+			shotData = imageData(screenShot);
+			errorData = [[], []];
+			let endTime = myVideo.currentTime;
+			let startTime = endTime - 1.5;
+			myVideo.currentTime = startTime;
+			if (!isSuper) moveShot();
 			myVideo.volume = 0;
-			myVideo.playbackRate = 16
-		}else{
-			speedMode = 0;
-			myVideo.volume = 1;
-			myVideo.playbackRate = 1;
-			myVideo.pause()
+			myVideo.playbackRate = accel;
+			myVideo.play();
+			let collection = setInterval(function () {
+				errorData[0].push(myVideo.currentTime);
+				errorData[1].push(errorCalc());
+			}, deltaT * 1000 / accel);
+			setTimeout(function () {
+				clearInterval(collection);
+				myVideo.pause();
+				myVideo.playbackRate = 1;
+				myVideo.currentTime = minTime(errorData) + deltaT / 2 * accel;
+				myVideo.volume = 1;
+				fineMode.checked = true;
+				boxMsg.textContent = "Auto shot finding done. You may need to repeat it or adjust with time arrows. Then click Sync times.";
+			}, 2500 / accel);
 		}
-	}
-}
 
-//for screenshots
-var canvas = document.createElement('canvas');
-canvas.width = 320;  //for full scale: myVideo.videoWidth - 100 
-canvas.height = 240;
-var ctx = canvas.getContext('2d')
-
-//to take a screen shot
-function makeShot(){
-	if(myVideo.src == ''){
-		boxMsg.textContent = "Load a video first";
-		return
-	}
-	myVideo.pause();
-	writeIn(toHMS(myVideo.currentTime - syncFix),false);							//insert time in box
-		//draw image to canvas. scale to target dimensions
-	canvas.width = myVideo.videoWidth / myVideo.videoHeight * canvas.height;
-	ctx.drawImage(myVideo, 0, 0, canvas.width, canvas.height);
-
-		//convert to desired file format
-	var dataURI = canvas.toDataURL('image/jpeg'); // can also use 'image/png' but the file is 10x bigger
-	screenShot.src = dataURI
-}
-
-//get image data at current time; returns an array
-function imageData(source){
-	canvas.width = source.clientWidth / source.clientHeight * canvas.height;
-	ctx.drawImage(source, 0, 0, canvas.width, canvas.height);
-	return ctx.getImageData(0,0,canvas.width,canvas.height).data
-}
-
-//get the absolute error between the screenShot and the video
-function errorCalc(){
-	var videoData = imageData(myVideo),
-		length = Math.min(shotData.length,videoData.length),
-		error = 0;
-	for(var i = 0; i < length; i += 4){			//every pixel takes 4 data points: R, G, B, alpha, in the 0 to 255 range; alpha data ignored
-		error += Math.abs(videoData[i] - shotData[i]) + Math.abs(videoData[i+1] - shotData[i+1]) + Math.abs(videoData[i+2] - shotData[i+2])		//all channels abs
-	}
-	return error / length
-}
-
-//scrub to first time in the box, unless a time is selected
-function scrub2shot(){
-	if(timeLabels.length == 0){
-		boxMsg.textContent = "Must have at least one time in the box before clicking";
-		return
-	}else if(timeLabels[0].length < 1){
-		boxMsg.textContent = "Must have at least one time in the box before clicking";
-		return
-	}
-	myVideo.pause();
-	var index = getTimeIndex();
-	if(index != null){
-		skipBox.setSelectionRange(timeLabels[2][index],timeLabels[2][index]);		//deselect if previously selected
-		myVideo.currentTime = fromHMS(timeLabels[0][index]);
-		skipBox.focus()
-	}else{											//scrub to 1st time
-		myVideo.currentTime = fromHMS(timeLabels[0][0])
-	}
-}
-
-var isSuper = false;
-
-//put the screenshot on top of the video so a perfect match can be found, and back
-function moveShot(){
-	if(screenShot.src == ''){
-		boxMsg.textContent = "Nothing to superimpose";
-		return
-	}
-	if(isSuper){
-		isSuper = false;
-		screenShot.height = 240;
-		screenShot.style.width = myVideo.clientWidth / myVideo.clientHeight * 240 + 'px';
-		screenShot.style.height = '240px';
-		screenShot.width = parseInt(screenShot.style.width.slice(0,-2));
-		screenShot.style.position = '';
-		screenShot.style.top = '';
-		screenShot.style.left = '';
-		screenShot.style.opacity = ''
-	}else{
-		isSuper = true;
-		screenShot.style.height = myVideo.clientHeight + 'px';				//rescales the picture
-		screenShot.style.width = myVideo.clientWidth + 'px';
-		screenShot.height = parseInt(screenShot.style.height.slice(0,-2));
-		screenShot.width = parseInt(screenShot.style.width.slice(0,-2));
-		screenShot.style.position = 'absolute';
-		screenShot.style.top = myVideo.offsetTop + 'px';
-		screenShot.style.left = myVideo.offsetLeft + 'px';
-		screenShot.style.opacity = "50%"
-	}
-}
-
-//similar to the previous, to put a blur spot on the video
-var isBlur = false;
-
-function toggleBlurBox(){
-	if(isBlur){
-		isBlur = false;
-		blurBox.style.display = 'none'
-	}else{
-		isBlur = true;
-		blurBox.style.display = '';
-		blurBox.style.height = myVideo.clientHeight / 3 + 'px';
-		blurBox.style.width = blurBox.style.height;
-		blurBox.style.top = myVideo.offsetTop + myVideo.clientHeight / 3 + 'px';
-		blurBox.style.left = myVideo.offsetLeft + myVideo.clientWidth / 2 - parseInt(blurBox.style.width.slice(0,-2)) / 2 + 'px'
-	}
-}
-
-var timeLabels = [];
-
-//remakes array timeLabels containing HMS times, plus their positions in the box [HMS time, start, end]
-function makeTimeLabels(){
-	timeLabels = [[],[],[]];							//string, startPosition, endPosition
-	var	text = skipBox.value,
-		string, start, end = 0;
-	var matches = text.replace(/\[.*\]/g,'').match(/\d+[\d:.]+/g);		//remove local blur positions
-	if(matches){
-		for(var i = 0; i < matches.length; i++){
-			string = matches[i];
-			timeLabels[0][i] = string;
-			start = text.indexOf(string,end)
-			timeLabels[1][i] = start;
-			end = start + string.length;
-			timeLabels[2][i] = end
-		}
-	}
-}
-
-//toggle instructions on and off
-function toggleHelp(){
-	if(instructions.style.display == 'none'){
-		instructions.style.display = 'block'
-	}else{
-		instructions.style.display = 'none'
-	}
-}
-
-//save skips to file
-function save2file(){
-	//first check that all skips have a category
-	for(var i = 0; i < cuts.length; i++){
-		if(!isContained(cuts[i].text.toLowerCase().replace(/\(.*\)/g,''),/sex|nud|vio|gor|pro|cur|hat|alc|dru|smo|fri|sca|int|oth|bor/)){
-			boxMsg.textContent = "Skip number " + (i+1) + " is missing its category";
-			return
-		}
-	}
-	if(screenShot.src == '' && timeLabels.length == 0) return;
-	var sourceList = Object.keys(offsets);
-	sourceList.sort(function(a,b){return b.length - a.length;});		//sort alphabetically
-	if(!name) name = prompt('Enter the file name. Extension .skp wil be added');
-	download(skipBox.value + '\n\n' + JSON.stringify(offsets) + '\n\n' + screenShot.src, name + ' [' + sourceList.join('-') + '].skp', "text/plain");
-	boxMsg.textContent = 'File saved with name ' + name + ' [' + sourceList.join('-') + '].skp Please share with other users'
-}
-
-//to display as the mouse moves over the sliders
-const rubric = {
-sex: ["Content at Medium, plus: Heterosexual kissing. Conversation involving sex. Dorsal or distant nudity",
-"Content at Low, plus: Implicit sex. Homosexual situations. Passionate kissing. Frontal nudity",
-"Explicit sex. Sodomy. Bestiality. Rape. Pornography. Abuse of minors"],
-violence: ["Content at Medium, plus: Hitting. Belting. Distant shooting. Slapping. Corporal punishment",
-"Content at Low, plus: Suicide. Dismemberment. Close-range or cold-blooded shooting. Knifing",
-"Sadism. Masochism. Torture. Gore designed to shock"],
-curse: ["Content at Medium, plus: Dirty words in general. Cursing",
-"Content at Low, plus: Idiomatic blasphemy. Racial slurs",
-"Intentional blasphemy. Satanism"],
-booze: ["Content at Medium, plus: Substance use other than incidental. Addict behavior",
-"Content at Low, plus: Intravenous use. Preparation of drugs. Teen use",
-"Content designed to incite substance abuse"],
-scare: ["Spooky. Scary. Emotionally hard for children",
-"Shocking or emotionally hard for teens",
-"Shocking to adults"],
-other: ["Mild content",
-"Moderate content",
-"Intense content"]};
-
-const sliders = filters.querySelectorAll('input');
-
-for(var i = 0; i < sliders.length; i++){
-	sliders[i].addEventListener('mousemove',showRubric);
-	sliders[i].addEventListener('mouseleave',hideRubric)
-}
-
-function showRubric(){
-	var category = this.id.slice(0,-3),
-		level = 3 - this.value;
-	if(level >= 3){rubricText.textContent = '';return};
-	rubricText.textContent = rubric[category][level]
-}
-
-function hideRubric(){
-	rubricText.textContent = ''
-}
-
-//faster way to check for content depending on browser; returns a Boolean; regex and stringArray content should match
-function isContained(containerStr, regex){
-	var result = false;
-	if(isFirefox){
-		result = containerStr.search(regex) != -1
-	}else if(isSafari || isEdge || isChrome){
-		result = regex.test(containerStr)
-	}else{
-		result = !!containerStr.match(regex)
-	}
-	return result
-}
-
-//to decide whether a particular content is to be skipped, according to 3-level sliders. Allows alternative and incomplete keywords
-function isSkipped(label){
-	var nuMatches = label.match(/\d/),
-		level = parseInt(nuMatches ? nuMatches[0] : 1);			//if no level is found, make it level 1
-	level = level >= 3 ? 3 : level;								//highest level is 3
-	if(isContained(label,/sex|nud/)){
-		return (parseInt(sexNum.value) + level) > 3
-	}else if(isContained(label,/vio|gor/)){
-		return (parseInt(violenceNum.value) + level) > 3
-	}else if(isContained(label,/pro|cur|hat/)){
-		return (parseInt(curseNum.value) + level) > 3
-	}else if(isContained(label,/alc|dru|smo/)){
-		return (parseInt(boozeNum.value) + level) > 3
-	}else if(isContained(label,/fri|sca|int/)){
-		return (parseInt(scareNum.value) + level) > 3
-	}else if(isContained(label,/oth|bor/)){
-		return (parseInt(otherNum.value) + level) > 3
-	}else{
-		return false
-	}
-}
-
-//set switches for edits present in skip file; used only when a file is loaded
-function setSliders(){
-	for(var i = 0; i < 6; i++) sliders[i].value = 0;
-	var noGrade = false;
-	for(var i = 0; i < cuts.length; i++){
-		if(cuts[i].text){
-			var label = cuts[i].text.toLowerCase().replace(/\(.*\)/g,''),			//ignore text in parentheses
-				grades = label.match(/\d/);
-			if(!grades){
-				noGrade = true;				//raise flag for ungraded edit
-				var grade = 4					//assume 4 if ungraded
-			}else{
-				var grade = parseInt(grades[0])
+		function minTime(errorData) {
+			let minError = 5000;
+			let lastTime = errorData[0][0];
+			let minIndex = 0;
+			let lastIndex = errorData[0].length - 1;
+			for (let i = 1; i <= lastIndex; i++) {
+				if (errorData[1][i] < minError && errorData[0][i] !== lastTime) {
+					minError = errorData[1][i];
+					minIndex = i;
+				}
+				lastTime = errorData[0][i];
 			}
-			if(isContained(label,/sex|nud/)) sexNum.value = Math.max( 4 - grade, sexNum.value);
-			if(isContained(label,/vio|gor/)) violenceNum.value = Math.max( 4 - grade, violenceNum.value);
-			if(isContained(label,/pro|cur|hat/)) curseNum.value = Math.max( 4 - grade, curseNum.value);
-			if(isContained(label,/alc|dru|smo/)) boozeNum.value = Math.max( 4 - grade, boozeNum.value);
-			if(isContained(label,/fri|sca|int/)) scareNum.value = Math.max( 4 - grade, scareNum.value);
-			if(isContained(label,/oth|bor/)) otherNum.value = Math.max( 4 - grade, otherNum.value)
+			return errorData[0][minIndex];
 		}
-	}
-	for(var i = 0; i < 6; i++) sliderValues[i] = sliders[i].value;
-	if(noGrade) ready(function(){
-		boxMsg.textContent = "WARNING: This file contains ungraded edits, which won't work unless its slider is set High"
-	})
-}
 
-//fills the action field in object cuts, according to the position of the check boxes and the text at each time
-function setActions(){
-	for(var i = 0; i < cuts.length; i++){
-		if(cuts[i].text){
-			var ignore = cuts[i].text.includes('//'),										//ignore skip containing // in text
-				label = cuts[i].text.toLowerCase().replace(/\(.*\)/g,''),				//ignore text in parentheses
-				isAudio = isContained(label,/aud|sou|spe|wor|mut/),
-				isVideo = isContained(label,/vid|ima|img|bla/),
-				isBlurred = isContained(label,/blu/),
-				isFast = isContained(label,/fas/),
-				position = label.match(/\[.*\]/);				//position formatted as array within square brackets
-			if(ignore){
-				cuts[i].action = ''
-			}else if(!isAudio && !isVideo && !isBlurred && !isFast){
-				cuts[i].action = isSkipped(label) ? 'skip' : ''	
-			}else if(isAudio){
-				cuts[i].action = isSkipped(label) ? 'mute' : ''
-			}else if(isVideo){
-				if(position){
-					cuts[i].action = isSkipped(label) ? 'blank ' + position[0]: ''		//localized blank
-				}else{
-					cuts[i].action = isSkipped(label) ? 'blank' : ''
+		// High-performance cut evaluation loop supporting nested/non-sequential cuts
+		function evaluationLoop() {
+			if (!myVideo.paused && !myVideo.ended && cuts && cuts.length > 0) {
+				let action = '';
+				let tempAction = '';
+				let skipTargetTime = null;
+				const currentTime = myVideo.currentTime;
+
+				// Evaluate all cuts to properly handle nesting and overlaps
+				for (let i = 0; i < cuts.length; i++) {
+					const startTime = cuts[i].startTime;
+					const endTime = cuts[i].endTime;
+
+					if (currentTime > startTime && currentTime < endTime) {
+						tempAction = cuts[i].action;
+					} else {
+						tempAction = '';
+					}
+
+					if (tempAction === 'skip') {
+						action = 'skip';
+						skipTargetTime = endTime;
+						break; // 'skip' takes absolute priority over everything else
+					} else if (tempAction === 'fast') {
+						action = (action === 'skip') ? 'skip' : 'fast';
+					} else if (tempAction.includes('blank')) {
+						action = ((action === 'skip') || (action === 'fast')) ? action : tempAction;
+					} else if (tempAction.includes('blur')) {
+						action = ((action === 'skip') || (action === 'fast') || (action === 'blank')) ? action : tempAction;
+					} else if (tempAction === 'mute') {
+						action += 'mute';
+					}
 				}
-			}else if(isBlurred){
-				if(position){
-					cuts[i].action = isSkipped(label) ? 'blur ' + position[0]: ''		//localized blur
-				}else{
-					cuts[i].action = isSkipped(label) ? 'blur' : ''
+
+				// Native HTML5 video subtitle track handling
+				if (myVideo.textTracks && myVideo.textTracks.length > 0) {
+					const targetTrackMode = action.includes('mute') ? 'disabled' : 'showing';
+					for (let t = 0; t < myVideo.textTracks.length; t++) {
+						if (myVideo.textTracks[t].mode !== targetTrackMode) {
+							myVideo.textTracks[t].mode = targetTrackMode;
+						}
+					}
 				}
-			}else{
-				cuts[i].action = isSkipped(label) ? 'fast' : ''
+
+				// Apply visual and playback state changes ONLY when the action state changes
+				if (action !== prevAction) {
+					if (action === 'skip' || action === 'skipmute') {
+						if (skipTargetTime !== null) {
+							myVideo.currentTime = skipTargetTime;
+						}
+					} else if (action === 'blank' || action === 'blankmute') {
+						myVideo.style.opacity = 0;
+					} else if (action.includes('blank')) {
+						const position = action.match(/\[.*\]/);
+						if (position) moveBlurBox(JSON.parse(position[0]));
+						blurBox.style.backgroundColor = 'black';
+					} else if (action === 'blur' || action === 'blurmute') {
+						myVideo.style.filter = 'blur(20px)';
+					} else if (action.includes('blur')) {
+						if (isSafari) {
+							myVideo.style.filter = 'blur(20px)';
+						} else {
+							const position = action.match(/\[.*\]/);
+							if (position) moveBlurBox(JSON.parse(position[0]));
+							isBlur = true;
+						}
+					} else if (action === 'fast' || action === 'fastmute') {
+						myVideo.playbackRate = 16;
+					} else {
+						myVideo.style.opacity = '';
+						myVideo.style.filter = '';
+						myVideo.playbackRate = speedMode === 2 ? 16 : 1;
+						blurBox.style.display = 'none';
+						isBlur = false;
+					}
+					prevAction = action;
+				}
+
+				// Volume management (independent of prevAction gate)
+				const targetVolume = (action.includes('mute') || speedMode === 2) ? 0 : 1;
+				if (myVideo.volume !== targetVolume) {
+					myVideo.volume = targetVolume;
+				}
+			}
+			requestAnimationFrame(evaluationLoop);
+		}
+
+		// Initiate the rAF loop
+		requestAnimationFrame(evaluationLoop);
+
+		function getVideoPos() {
+			let frameRatio = myVideo.clientWidth / myVideo.clientHeight;
+			let trueRatio = myVideo.videoWidth / myVideo.videoHeight;
+			if (frameRatio <= trueRatio) {
+				videoX1 = myVideo.offsetLeft;
+				videoX2 = videoX1 + myVideo.clientWidth;
+				videoY1 = myVideo.offsetTop + myVideo.clientHeight / 2 - (myVideo.clientWidth / trueRatio) / 2;
+				videoY2 = videoY1 + myVideo.clientWidth / trueRatio;
+			} else {
+				videoY1 = myVideo.offsetTop;
+				videoY2 = videoY1 + myVideo.clientHeight;
+				videoX1 = myVideo.offsetLeft + myVideo.clientWidth / 2 - (myVideo.clientHeight * trueRatio) / 2;
+				videoX2 = videoX1 + myVideo.clientHeight * trueRatio;
 			}
 		}
-	}
-}
 
-var	errorData = [[],[]];
-const accel = 2;				//determined experimentally
-
-//process to get the error between the video and the screenshot as a double array of times and errors, starting 2 seconds before current video time, and move to best
-function findShot(){
-	if(screenShot.src == ''){
-		boxMsg.textContent = "Must have a screenshot first";
-		return
-	}
-	shotData = imageData(screenShot);				//previously defined global variables
-	errorData = [[],[]];
-	var endTime = myVideo.currentTime,
-		startTime = endTime - 1.5;
-	myVideo.currentTime = startTime;
-	if(!isSuper) moveShot();							//superimpose shot for best results
-	myVideo.volume = 0;
-	myVideo.playbackRate = accel;
-	myVideo.play();
-	var collection = setInterval(function () {							//collect data every deltaT seconds
-		errorData[0].push(myVideo.currentTime);
-		errorData[1].push(errorCalc())
-	}, deltaT*1000/accel);
-	setTimeout(function(){
-		clearInterval(collection);
-		myVideo.pause();
-		myVideo.playbackRate = 1;	
-		myVideo.currentTime = minTime(errorData) + deltaT/2*accel;					//scrub video to position of minimum error, plus half frame as fix
-		myVideo.volume = 1;
-		fineMode.checked = true;
-		boxMsg.textContent = "Auto shot finding done. You may need to repeat it or adjust with time arrows. Then click Sync times."
-	},2500/accel)									//do all this for 2.5 seconds so it catches 1.5 second before and 1 after. Results will be in errorData array
-}
-
-//find time for minimum error; errorData is a double list of errors and time
-function minTime(errorData){
-	var minError = 5000,						//sufficiently large to be larger than any error in errorData
-		lastTime = errorData[0][0],
-		minIndex = 0,
-		lastIndex = errorData[0].length - 1;
-	for(var i = 1; i <= lastIndex; i++){		//first find index for the minimum error in the array, ignoring first one
-		if(errorData[1][i] < minError && errorData[0][i] != lastTime){
-			minError = errorData[1][i];
-			minIndex = i
+		function moveBlurBox(position) {
+			getVideoPos();
+			blurBox.style.display = '';
+			blurBox.style.height = (videoY2 - videoY1) * (position[3] - position[1]) / 100 + 'px';
+			blurBox.style.width = (videoX2 - videoX1) * (position[2] - position[0]) / 100 + 'px';
+			blurBox.style.top = videoY1 + (videoY2 - videoY1) * position[1] / 100 + 'px';
+			blurBox.style.left = videoX1 + (videoX2 - videoX1) * position[0] / 100 + 'px';
 		}
-		lastTime = errorData[0][i]			//to get beyond stuck time at the beginning
-	}
-	return errorData[0][minIndex]				//time for minimum error in the data array
-}
 
-var prevAction = '';
+		btnFS.addEventListener('click', goFullScreen);
 
-//to skip video during playback, also collect data for auto sync
-myVideo.ontimeupdate = function(){
-	var action = '', tempAction = '', startTime, endTime;
-	for(var i = 0; i < cuts.length; i++){			//find out what action to take, according to timing and setting in cuts object
-		startTime = cuts[i].startTime;
-		endTime = cuts[i].endTime;
-		if(myVideo.currentTime > startTime && myVideo.currentTime < endTime){
-			tempAction = cuts[i].action
-		}else{
-			tempAction = ''
+		function getBlurPos() {
+			getVideoPos();
+			let x1 = parseInt(blurBox.style.left.slice(0, -2) - videoX1) / (videoX2 - videoX1) * 100;
+			let y1 = parseInt(blurBox.style.top.slice(0, -2) - videoY1) / (videoY2 - videoY1) * 100;
+			let x2 = x1 + parseInt(blurBox.style.width.slice(0, -2)) / (videoX2 - videoX1) * 100;
+			let y2 = y1 + parseInt(blurBox.style.height.slice(0, -2)) / (videoY2 - videoY1) * 100;
+			return [x1, y1, x2, y2];
 		}
-		if(tempAction == 'skip'){					//retain the strongest action valid for the current time. Hierarchy: skip > fast > blank > blur > mute
-			action = 'skip';
-			break							//can't get any stronger, so stop looking for this time
-		}else if(tempAction == 'fast'){
-			action = (action == 'skip') ? 'skip' : 'fast'
-		}else if(tempAction.includes('blank')){
-			action = ((action == 'skip') || (action == 'fast')) ? action : tempAction
-		}else if(tempAction.includes('blur')){
-			action = ((action == 'skip') || (action == 'fast') || (action == 'blank')) ? action : tempAction			//may include position for local blur	
-		}else if(tempAction == 'mute'){
-			action += 'mute'		//add mute rather than replace
+
+		function goFullScreen() {
+			if (isBlur) blurPos = getBlurPos();
+			let fullscreenElement = document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
+			if (fullscreenElement) {
+				exitFullscreen();
+			} else {
+				launchIntoFullscreen(container);
+			}
 		}
-	}
-	if(action == prevAction){					//apply action to the DOM if there's a change
-		return
-	}else if(action == 'skip' || action == 'skipmute'){			//video edits
-		myVideo.currentTime = endTime;
-		myVideo.play()
-	}else if(action == 'blank' || action == 'blankmute'){				//blank whole screeen
-		myVideo.style.opacity =  0
-	}else if(action.includes('blank')){								//localized blank
-			var position = action.match(/\[.*\]/);
-			if(position) moveBlurBox(JSON.parse(position[0]));
-			blurBox.style.backgroundColor = 'black'
-	}else if(action == 'blur' || action == 'blurmute'){				//blur whole screeen
-		myVideo.style.filter = 'blur(20px)'
-	}else if(action.includes('blur')){								//localized blur
-		if(isSafari){
-			myVideo.style.filter = 'blur(20px)'			//blur location unreliable in Safari, so blur whole screen
-		}else{
-			var position = action.match(/\[.*\]/);
-			if(position) moveBlurBox(JSON.parse(position[0]));
-			isBlur = true
+
+		function launchIntoFullscreen(element) {
+			if (element.requestFullscreen) {
+				element.requestFullscreen();
+			} else if (element.mozRequestFullScreen) {
+				element.mozRequestFullScreen();
+			} else if (element.webkitRequestFullscreen) {
+				element.webkitRequestFullscreen();
+			} else if (element.msRequestFullscreen) {
+				element.msRequestFullscreen();
+			}
 		}
-	}else if(action == 'fast' || action == 'fastmute'){				//fast forward
-		myVideo.playbackRate = 16
-	}else{
-		myVideo.style.opacity = '';
-		myVideo.style.filter = '';
-		myVideo.playbackRate = 1;
-		blurBox.style.display = 'none';
-		isBlur = false
-	}
-	if(action.includes('mute')){					//audio edits
-		myVideo.volume = 0;
-		if(myVideo.textTracks.length > 0) myVideo.textTracks[0].mode = 'disabled'
-	}else{
-		myVideo.volume = 1;
-		if(myVideo.textTracks.length > 0) myVideo.textTracks[0].mode = 'showing';
-	}
-	prevAction = action
-}
 
-var videoX1, videoX2, videoY1, videoY2;									//coordinates of the actual video corners without black bars
+		function exitFullscreen() {
+			if (document.exitFullscreen) {
+				document.exitFullscreen();
+			} else if (document.mozCancelFullScreen) {
+				document.mozCancelFullScreen();
+			} else if (document.webkitExitFullscreen) {
+				document.webkitExitFullscreen();
+			}
+		}
 
-//get real video position, excluding black bars
-function getVideoPos(){
-	var	frameRatio = myVideo.clientWidth / myVideo.clientHeight,					//includes the bars
-		trueRatio = myVideo.videoWidth / myVideo.videoHeight;						//without black bars
-	if(frameRatio <= trueRatio){			//possible black bars at top and bottom
-		videoX1 = myVideo.offsetLeft;
-		videoX2 = videoX1 + myVideo.clientWidth;
-		videoY1 = myVideo.offsetTop + myVideo.clientHeight / 2 - (myVideo.clientWidth / trueRatio) / 2;
-		videoY2 = videoY1 + myVideo.clientWidth / trueRatio;
-	}else{									//possible black bars at left and right
-		videoY1 = myVideo.offsetTop;
-		videoY2 = videoY1 + myVideo.clientHeight;
-		videoX1 = myVideo.offsetLeft + myVideo.clientWidth / 2 - (myVideo.clientHeight * trueRatio) / 2;
-		videoX2 = videoX1 + myVideo.clientHeight * trueRatio;
-	}
-}
+		window.onresize = function () {
+			if (((screen.availWidth || screen.width - 30) <= window.outerWidth) && VSstatus) {
+				showSettings();
+				fadeTimer = setTimeout(function () {
+					VSstatus.style.display = 'none';
+					btnFS.style.display = 'none';
+					myVideo.style.cursor = 'none';
+				}, 3300);
+				myVideo.style.width = '100vw';
+				myVideo.style.height = '100vh';
+				isFull = true;
+			} else {
+				VSstatus.style.display = 'none';
+				myVideo.style.width = '';
+				myVideo.style.height = '';
+				isFull = false;
+			}
+			if (isBlur && blurPos) moveBlurBox(blurPos);
+		}
 
-//move blur spot to position given by array
-function moveBlurBox(position){
-	getVideoPos();							//first get the true position of the video, minus black bars			
-	blurBox.style.display = '';
-	blurBox.style.height = (videoY2 - videoY1) * (position[3] - position[1]) / 100 + 'px';			//resize and move the box
-	blurBox.style.width = (videoX2 - videoX1) * (position[2] - position[0]) / 100 + 'px';
-	blurBox.style.top = videoY1 + (videoY2 - videoY1) * position[1] / 100 + 'px';
-	blurBox.style.left = videoX1 + (videoX2 - videoX1) * position[0] / 100 + 'px'
-}
+		function wakeUpUI() {
+			clearTimeout(fadeTimer);
 
-//to do full screen from container
-btnFS.addEventListener('click', goFullScreen);
+			if (((screen.availWidth || screen.width - 30) <= window.outerWidth) && VSstatus) {
+				showSettings();
+			}
 
-var blurPos;			//array containing blur spot position, so it stays when going back and forth from full screen
-
-//gets position of blur spot as percent of video dimensions
-function getBlurPos(){
-	getVideoPos();
-	var x1 = parseInt(blurBox.style.left.slice(0,-2) - videoX1) / (videoX2 - videoX1) * 100,
-		y1 = parseInt(blurBox.style.top.slice(0,-2) - videoY1) / (videoY2 - videoY1) * 100,
-		x2 = x1 + parseInt(blurBox.style.width.slice(0,-2)) / (videoX2 - videoX1) * 100,
-		y2 = y1 + parseInt(blurBox.style.height.slice(0,-2)) / (videoY2 - videoY1) * 100;
-	return [x1,y1,x2,y2]
-}
-
-function goFullScreen() {
-	if(isBlur) blurPos = getBlurPos();
-	var fullscreenElement = document.fullscreenElement || document.mozFullScreenElement || document.webkitFullscreenElement || document.msFullscreenElement;
-	if(fullscreenElement){
-  		exitFullscreen();
-  	}else {
-  		launchIntoFullscreen(document.getElementById('container'));
-  	}
-}
-
-// From https://davidwalsh.name/fullscreen
-// Find the right method, call on correct element
-function launchIntoFullscreen(element) {
-  if (element.requestFullscreen) {
-    element.requestFullscreen();
-  } else if (element.mozRequestFullScreen) {
-    element.mozRequestFullScreen();
-  } else if (element.webkitRequestFullscreen) {
-    element.webkitRequestFullscreen();
-  } else if (element.msRequestFullscreen) {
-    element.msRequestFullscreen();
-  }
-}
-
-// Whack fullscreen
-function exitFullscreen() {
-  if (document.exitFullscreen) {
-    document.exitFullscreen();
-  } else if (document.mozCancelFullScreen) {
-    document.mozCancelFullScreen();
-  } else if (document.webkitExitFullscreen) {
-    document.webkitExitFullscreen();
-  }
-}
-
-var isFull = false;			//for a Safari fix
-
-//show filter settings as soon as the video goes full screen, and when the mouse is moved on fullscreen
-window.onresize = function(){
-	if(((screen.availWidth || screen.width-30) <= window.outerWidth) && VSstatus){		//it's fullscreen now
-		showSettings();
-		fadeTimer = setTimeout(function(){
-			VSstatus.style.display = 'none';
-			btnFS.style.display = 'none';
-			myVideo.style.cursor = 'none'
-		},3300);
-		myVideo.style.width = '100vw';	//needed by Firefox
-		myVideo.style.height = '100vh';
-		isFull = true
-	}else{									//no longer fullscreen
-		VSstatus.style.display = 'none'
-		myVideo.style.width = '';
-		myVideo.style.height = '';
-		isFull = false
-	}
-	if(isBlur && blurPos) moveBlurBox(blurPos)
-}
-
-window.onmousemove = function(){
-	if(((screen.availWidth || screen.width-30) <= window.outerWidth) && VSstatus){		//display selected filters in fullscreen
-		clearTimeout(fadeTimer);
-		fadeTimer = null;
-		showSettings();
-		if(btnFS.style.display == 'none'){
 			btnFS.style.display = 'block';
-			myVideo.style.cursor = ''
+			myVideo.style.cursor = '';
+
+			fadeTimer = setTimeout(function () {
+				if (VSstatus) VSstatus.style.display = 'none';
+				btnFS.style.display = 'none';
+				myVideo.style.cursor = 'none';
+			}, 4000);
 		}
-		if(!fadeTimer) fadeTimer = setTimeout(function(){
-			VSstatus.style.display = 'none';
-			btnFS.style.display = 'none';
-			myVideo.style.cursor = 'none'
-		},4000)
-	}else if(btnFS.style.display == 'none'){							//display full screen button
-		clearTimeout(fadeTimer);
-		fadeTimer = null;
-		btnFS.style.display = 'block';
-		myVideo.style.cursor = '';
-		if(!fadeTimer) fadeTimer = setTimeout(function(){
-			btnFS.style.display = 'none';
-			myVideo.style.cursor = 'none'
-		},4000)
-	}
-}
 
-//this displays the filter settings on the full screen video
-function showSettings(){
-	VSstatus.textContent = '';
-	if(cuts.length == 0){
-		VSstatus.textContent = "  VideoSkip: no edits loaded  "
-	}else{
-		var	keyWords = ['sex','violence','profanity','substance','intense','other'],
-			output = [];
-		for(var i = 0; i < keyWords.length; i++){
-			if(sliderValues[i] != '0') output.push(keyWords[i])
+		window.addEventListener('mousemove', wakeUpUI);
+		window.addEventListener('touchstart', wakeUpUI, { passive: true });
+		window.addEventListener('click', wakeUpUI);
+
+		function showSettings() {
+			VSstatus.textContent = '';
+			if (cuts.length === 0) {
+				VSstatus.textContent = "  VideoSkip: no edits loaded  ";
+			} else {
+				let keyWords = ['sex', 'violence', 'profanity', 'substance', 'intense', 'other'];
+				let output = [];
+				for (let i = 0; i < keyWords.length; i++) {
+					if (sliderValues[i] !== '0') output.push(keyWords[i]);
+				}
+				if (output.length === 0) {
+					VSstatus.textContent = "  VideoSkip: no filters engaged  ";
+				} else {
+					VSstatus.textContent = "  VideoSkip on: " + output.join(', ') + "  ";
+				}
+			}
+			VSstatus.style.display = '';
+		};
+
+		btnFS.style.top = myVideo.offsetTop + 10 + 'px';
+
+		// 6. Event Listeners Connection
+		filters.addEventListener('change', setActions);
+		skipFile.addEventListener('change', loadFileAsURL);
+
+		function loadPage() {
+			const urls = ['https://videoskip.herokuapp.com/exchange', 'https://albatenia.com'];
+			if (this.value) window.open(urls[this.value]);
 		}
-		if(output.length == 0){
-			VSstatus.textContent = "  VideoSkip: no filters engaged  "
-		}else{
-			VSstatus.textContent = "  VideoSkip on: " + output.join(', ') + "  "
+
+		websites.addEventListener('change', loadPage);
+		subFile.addEventListener('change', loadSubs);
+		timeBtn.addEventListener('click', function () { writeIn(toHMS(myVideo.currentTime), false) });
+		arrowBtn.addEventListener('click', function () { writeIn(' --> ', false) });
+		beepBtn.addEventListener('click', function () {
+			let time = myVideo.currentTime;
+			writeIn(toHMS(time - 0.7) + ' --> ' + toHMS(time) + '\nprofane word\n\n', false);
+		});
+
+		posBtn.addEventListener('click', function () {
+			if (isBlur) {
+				let x = getBlurPos();
+				for (let i = 0; i < 4; i++) x[i] = x[i].toPrecision(4);
+				writeIn('[' + x[0] + ',' + x[1] + ',' + x[2] + ',' + x[3] + ']', false);
+			}
+		});
+
+		instructions.style.display = 'none';
+		help.addEventListener('click', toggleHelp);
+		saveFile.addEventListener('click', save2file);
+		fwdBtn.addEventListener('click', fwdSkip);
+		fFwdBtn.addEventListener('click', toggleFF);
+		backBtn.addEventListener('click', backSkip);
+		shotTimeBtn.addEventListener('click', scrub2shot);
+		autoBtn.addEventListener('click', findShot);
+		moveBtn.addEventListener('click', moveShot);
+		blurBoxBtn.addEventListener('click', toggleBlurBox);
+		syncBtn.addEventListener('click', syncTimes);
+		shotBtn.addEventListener('click', makeShot);
+
+		skipBox.addEventListener('change', function () {
+			cuts = PF_SRT.parse(skipBox.value);
+			setActions();
+			makeTimeLabels();
+		});
+
+		for (let i = 0; i < sliders.length; i++) {
+			sliders[i].addEventListener('change', function () {
+				for (let j = 0; j < sliders.length; j++) sliderValues[j] = sliders[j].value;
+				setActions();
+			});
 		}
-	}
-	VSstatus.style.display = ''
-};
 
-//move full screen button to corner
-btnFS.style.top = myVideo.offsetTop + 10 + 'px';
+		function dragElement(elmnt) {
+			let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+			elmnt.onmousedown = dragMouseDown;
 
-//now connect functions to the buttons
+			elmnt.addEventListener('contextmenu', function (e) {
+				e.preventDefault();
+				return false;
+			}, false);
 
-filters.addEventListener('change', setActions);
+			function dragMouseDown(e) {
+				e = e || window.event;
+				e.preventDefault();
+				pos3 = e.screenX;
+				pos4 = e.screenY;
+				document.onmouseup = closeDragElement;
+				if (altMode.checked !== (!!e.altKey || e.button === 2)) {
+					document.onmousemove = elementResize;
+				} else {
+					document.onmousemove = elementDrag;
+				}
+			}
 
-skipFile.addEventListener('change', loadFileAsURL);
+			function elementDrag(e) {
+				e = e || window.event;
+				e.preventDefault();
+				pos1 = pos3 - e.screenX;
+				pos2 = pos4 - e.screenY;
+				pos3 = e.screenX;
+				pos4 = e.screenY;
+				elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+				elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+			}
 
-//loads other websites from a select option list
-function loadPage(){
-	const urls = ['https://videoskip.herokuapp.com/exchange', 'https://albatenia.com'];
-	if(this.value) window.open(urls[this.value])
-}
+			function elementResize(e) {
+				e = e || window.event;
+				e.preventDefault();
+				pos1 = pos3 - e.screenX;
+				pos2 = pos4 - e.screenY;
+				pos3 = e.screenX;
+				pos4 = e.screenY;
+				elmnt.style.height = (elmnt.clientHeight - pos2) + "px";
+				elmnt.style.width = (elmnt.clientWidth - pos1) + "px";
+			}
 
-websites.addEventListener('change', loadPage);
+			function closeDragElement() {
+				document.onmouseup = null;
+				document.onmousemove = null;
+			}
+		}
 
-//exchangeBtn.addEventListener('click', function(){window.open('https://videoskip.org/exchange')});
+		dragElement(blurBox);
+		dragElement(screenShot);
 
-subFile.addEventListener('change', loadSubs);
+		blurBox.style.display = 'none';
 
-timeBtn.addEventListener('click', function(){writeIn(toHMS(myVideo.currentTime),false)});
-
-arrowBtn.addEventListener('click', function(){writeIn(' --> ',false)});
-
-beepBtn.addEventListener('click', function(){
-	var time  = myVideo.currentTime;
-	writeIn(toHMS(time - 0.7) + ' --> ' + toHMS(time) + '\nprofane word\n\n',false)
-});
-
-posBtn.addEventListener('click', function(){						//write relative position of blur spot, 2 decimals
-	if(isBlur){
-		var x = getBlurPos();
-		for(var i = 0; i < 4; i++) x[i] = x[i].toPrecision(4);
-		writeIn('[' + x[0] + ',' + x[1] + ',' + x[2] + ',' + x[3] + ']',false)
-	}
-});
-
-instructions.style.display = 'none';
-
-help.addEventListener('click', toggleHelp);
-
-saveFile.addEventListener('click', save2file);
-
-fwdBtn.addEventListener('click',fwdSkip);
-
-fFwdBtn.addEventListener('click',toggleFF);
-
-backBtn.addEventListener('click',backSkip);
-
-shotTimeBtn.addEventListener('click',scrub2shot);
-
-autoBtn.addEventListener('click',findShot);
-
-moveBtn.addEventListener('click',moveShot);
-
-blurBoxBtn.addEventListener('click',toggleBlurBox);
-
-syncBtn.addEventListener('click',syncTimes);
-
-shotBtn.addEventListener('click',makeShot);
-
-skipBox.addEventListener('change', function(){
-	cuts = PF_SRT.parse(skipBox.value);
-	setActions();
-	makeTimeLabels()
-});
-
-for(var i = 0; i < sliders.length; i++){
-	sliders[i].addEventListener('change',function(){
-		for(var j = 0; j < sliders.length; j++) sliderValues[j] = sliders[j].value;
-		setActions()
-	})
-}
-
-//to make blur spot draggable, from W3schools
-function dragElement(elmnt) {
-  var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-    elmnt.onmousedown = dragMouseDown;
-	
-  elmnt.addEventListener('contextmenu', function(e) {					//disable right-click menu
-		e.preventDefault();
-    	return false;
-  }, false);
-
-  function dragMouseDown(e) {
-    e = e || window.event;
-    e.preventDefault();
-    // get the mouse cursor position at startup:
-    pos3 = e.screenX;
-    pos4 = e.screenY;
-    document.onmouseup = closeDragElement;
-    // call a function whenever the cursor moves:
-	if(altMode.checked != (!!e.altKey || e.button == 2)){				//alt combinations or right-click resizes, regular moves
-		document.onmousemove = elementResize
-	}else{
-    	document.onmousemove = elementDrag
-	}
-  }
-
-  function elementDrag(e) {
-    e = e || window.event;
-    e.preventDefault();
-    // calculate the new cursor position:
-    pos1 = pos3 - e.screenX;
-    pos2 = pos4 - e.screenY;
-    pos3 = e.screenX;
-    pos4 = e.screenY;
-    // set the element's new position:
-    elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
-    elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
-  }
-  
-  function elementResize(e) {
-    e = e || window.event;
-    e.preventDefault();
-    // calculate the new cursor position:
-    pos1 = pos3 - e.screenX;
-    pos2 = pos4 - e.screenY;
-    pos3 = e.screenX;
-    pos4 = e.screenY;
-	//resize element:
-    elmnt.style.height = (elmnt.clientHeight - pos2) + "px";
-    elmnt.style.width = (elmnt.clientWidth - pos1) + "px";
-  }
-
-  function closeDragElement() {
-    // stop moving when mouse button is released:
-    document.onmouseup = null;
-    document.onmousemove = null;
-  }
-}
-
-//apply the above to the box and the screenshot
-dragElement(blurBox);
-dragElement(screenShot);
-
-blurBox.style.display = 'none'
-</script>
+	</script>
 </body>
+
 </html>
