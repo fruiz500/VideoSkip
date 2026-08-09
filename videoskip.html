@@ -179,9 +179,8 @@
 			z-index: 1;
 			border-radius: 6px;
 			border: 1px solid var(--border-color);
-			width: 100%;
-			max-width: 320px;
-			height: auto;
+			height: 240px;
+			width: auto;
 			margin-top: 10px;
 		}
 
@@ -193,7 +192,8 @@
 			border-radius: 8px;
 			font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
 			font-size: 16px;
-			font-weight: bold;  /* Ensures arrow glyphs render with uniform bold stroke weight */
+			font-weight: bold;
+			/* Ensures arrow glyphs render with uniform bold stroke weight */
 			padding: 10px 16px;
 			text-decoration: none;
 			border: 1px solid var(--border-color);
@@ -1240,8 +1240,11 @@
 				return;
 			}
 			myVideo.pause();
-			writeIn(toHMS(myVideo.currentTime - syncFix), false);
-			canvas.width = myVideo.videoWidth / myVideo.videoHeight * canvas.height;
+			writeIn(toHMS(myVideo.currentTime - syncFix) + '\n', false);
+
+			canvas.height = 240;
+			canvas.width = (myVideo.videoWidth / myVideo.videoHeight) * canvas.height;
+
 			ctx.drawImage(myVideo, 0, 0, canvas.width, canvas.height);
 			let dataURI = canvas.toDataURL('image/jpeg');
 			screenShot.src = dataURI;
@@ -1287,29 +1290,37 @@
 				boxMsg.textContent = "Nothing to superimpose";
 				return;
 			}
+
+			let superShot = document.getElementById('superShot');
+			let container = document.getElementById('container');
+
 			if (isSuper) {
 				isSuper = false;
-				screenShot.height = 240;
-				screenShot.style.width = myVideo.clientWidth / myVideo.clientHeight * 240 + 'px';
-				screenShot.style.height = '240px';
-				screenShot.width = parseInt(screenShot.style.width.slice(0, -2));
-				screenShot.style.position = '';
-				screenShot.style.top = '';
-				screenShot.style.left = '';
-				screenShot.style.opacity = '';
+				if (superShot) {
+					superShot.remove();
+				}
 			} else {
 				isSuper = true;
-				screenShot.style.height = myVideo.clientHeight + 'px';
-				screenShot.style.width = myVideo.clientWidth + 'px';
-				screenShot.height = parseInt(screenShot.style.height.slice(0, -2));
-				screenShot.width = parseInt(screenShot.style.width.slice(0, -2));
-				screenShot.style.position = 'absolute';
-				screenShot.style.top = myVideo.offsetTop + 'px';
-				screenShot.style.left = myVideo.offsetLeft + 'px';
-				screenShot.style.opacity = "50%";
+
+				if (!superShot) {
+					superShot = document.createElement('img');
+					superShot.id = 'superShot';
+					container.appendChild(superShot);
+				}
+
+				superShot.src = screenShot.src;
+				superShot.style.position = 'absolute';
+				superShot.style.top = '0';
+				superShot.style.left = '0';
+				superShot.style.width = '100%';
+				superShot.style.height = '100%';
+				superShot.style.objectFit = 'contain';
+				superShot.style.opacity = '0.5';
+				superShot.style.pointerEvents = 'none';
+				superShot.style.zIndex = '10';
 			}
 		}
-
+		
 		function toggleBlurBox() {
 			if (isBlur) {
 				isBlur = false;
